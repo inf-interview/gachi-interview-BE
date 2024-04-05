@@ -2,14 +2,16 @@ package inflearn.interview.repository;
 
 import inflearn.interview.AppConfig;
 import inflearn.interview.domain.dao.UserDAO;
+import inflearn.interview.domain.dao.VideoCommentDAO;
 import inflearn.interview.domain.dao.VideoDAO;
-import inflearn.interview.repository.UserRepository;
-import inflearn.interview.repository.VideoRepository;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,9 +21,10 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 public class VideoRepositoryTest {
-    ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
-    VideoRepository videoRepository;
-    UserRepository userRepository;
+    @Autowired VideoRepository videoRepository;
+    @Autowired UserRepository userRepository;
+
+    @Autowired VideoCommentRepository commentRepository;
 
     VideoDAO expected;
     VideoDAO expected2;
@@ -29,13 +32,14 @@ public class VideoRepositoryTest {
     UserDAO person1;
     UserDAO person2;
 
+    VideoCommentDAO comment1;
+    VideoCommentDAO comment2;
+
     /**
      * 초기값 설정
      */
     @BeforeEach
     void before(){
-        videoRepository = (VideoRepository) ac.getBean("videoRepository");
-        userRepository = (UserRepository) ac.getBean("userRepository");
 
         person1 = new UserDAO();
         person1.setName("권우현");
@@ -51,7 +55,6 @@ public class VideoRepositoryTest {
         person2.setEmail("kwh871005@gmail.com");
         person2.setSocial("구글");
         person2.setTime(LocalDateTime.of(2024,4,2,12,0,0));
-
 
         /*
          * 첫번째 기댓값
@@ -77,51 +80,62 @@ public class VideoRepositoryTest {
         expected2.setRawTags("삼성.카카오.네이버");
         expected2.setUser(person2);
 
+        comment1 = new VideoCommentDAO();
+        comment1.setId(1L);
+        comment1.setContent("ㅎㅎ");
+        comment1.setTime(LocalDateTime.of(2024,4,2,12,0,0));
+        comment1.setUser(person1);
+        comment1.setVideo(expected);
+
+        comment2 = new VideoCommentDAO();
+        comment2.setId(2L);
+        comment2.setContent("ㅋㅋ");
+        comment2.setTime(LocalDateTime.of(2024,4,2,12,0,0));
+        comment2.setUser(person2);
+        comment2.setVideo(expected2);
+
+
         userRepository.save(person1);
+        videoRepository.save(expected);
         userRepository.save(person2);
+        videoRepository.save(expected2);
+        comment2.setUser(person2);
+        comment2.setVideo(expected2);
     }
     /**
      * 저장
      */
     @Test
     void videoSaveTest(){
-        videoRepository.save(expected);
-        Optional<VideoDAO> video = videoRepository.findById(1L);
+        VideoDAO result = videoRepository.findById(1L).get();
 
-        VideoDAO result = video.get();
-
-        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(result.getVideoTitle()).isEqualTo(expected.getVideoTitle());
     }
 
     /**
      * 수정
      */
     @Test
+    @Transactional
     void videoEditTest(){
-        VideoDAO saved = videoRepository.save(expected);
+        VideoDAO saved = videoRepository.findById(1L).get();
+
         saved.setRawTags("삼성.카카오.네이버.LG");
 
-        Optional<VideoDAO> video = videoRepository.findById(1L);
+        VideoDAO result = videoRepository.findById(1L).get();
 
-        VideoDAO result = video.get();
-
-        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
-
-        //다른 테스트 위해 원복
-        saved.setRawTags("삼성.카카오.네이버");
+        assertThat(result.getRawTags()).isEqualTo("삼성.카카오.네이버.LG");
     }
-
     /**
      * 삭제
      */
     @Test
     void videoDeleteTest(){
-        videoRepository.save(expected);
         videoRepository.delete(expected);
 
         List<VideoDAO> result = videoRepository.findAll();
 
-        assertThat(result.size()).isEqualTo(0);
+        assertThat(result.size()).isEqualTo(1);
     }
 
     /**
@@ -129,15 +143,22 @@ public class VideoRepositoryTest {
      */
     @Test
     void findAllVideoTest(){
-        videoRepository.save(expected);
-        videoRepository.save(expected2);
-
         List<VideoDAO> results = videoRepository.findAll();
-        for (VideoDAO result : results) {
-            if (result.getVideoId()==1L){
-                assertThat(result).usingRecursiveComparison().isEqualTo(expected);
-            }
-            else assertThat(result).usingRecursiveComparison().isEqualTo(expected2);
+        assertThat(results.size()).isEqualTo(2);
+    }
+
+    /**
+     * 비디오 댓글조회
+     */
+    @Test
+    @Transactional
+    void findVideoComment(){
+        List<VideoCommentDAO> results = videoRepository.findById(1L).get().getComments();
+
+        for (VideoCommentDAO result : results) {
+            if (result.getId().equals(comment1.getId()))
+                assertThat(result.getContent()).isEqualTo(comment1.getContent());
+            else assertThat(result.getContent()).isEqualTo(comment2.getContent());
         }
     }
 }

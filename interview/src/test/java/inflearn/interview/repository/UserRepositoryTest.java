@@ -46,7 +46,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void videoSaveTest(){
+    void userSaveTest(){
         userRepository.save(person1);
         Optional<UserDAO> find = userRepository.findById(1L);
 
@@ -59,25 +59,22 @@ public class UserRepositoryTest {
      * 수정
      */
     @Test
-    void videoEditTest(){
+    void userEditTest(){
         UserDAO saved = userRepository.save(person1);
-        person1.setSocial("카카오");
+        saved.setSocial("카카오");
 
         Optional<UserDAO> find = userRepository.findById(1L);
 
         UserDAO result = find.get();
 
         assertThat(result).usingRecursiveComparison().isEqualTo(person1);
-
-        //다른 테스트 위해 원복
-        saved.setSocial("카카오");
     }
 
     /**
      * 삭제
      */
     @Test
-    void videoDeleteTest(){
+    void userDeleteTest(){
         userRepository.save(person1);
         userRepository.delete(person1);
 
@@ -90,7 +87,7 @@ public class UserRepositoryTest {
      * 모두 조회
      */
     @Test
-    void findAllVideoTest(){
+    void findAllUserTest(){
         userRepository.save(person1);
         userRepository.save(person2);
 
