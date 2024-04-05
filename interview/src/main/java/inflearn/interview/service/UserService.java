@@ -2,6 +2,7 @@ package inflearn.interview.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import inflearn.interview.domain.User;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,17 @@ public class UserService {
 
         Gson gson = new Gson();
 
-        JsonObject jsonObject = gson.fromJson(kakaoInfo, JsonObject.class);
+        JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
 
+        //이메일 추출
+        String email = jsonObject.getAsJsonObject("kakao_account").get("email").getAsString();
+
+        //닉네임 추출
         String nickname = jsonObject.getAsJsonObject("properties").get("nickname").getAsString();
 
         User user = new User();
         user.setName(nickname);
+        user.setEmail(email);
         user.setSocial("KAKAO");
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
