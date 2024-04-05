@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,7 +22,7 @@ public class VideoDAO {
     @Column(name = "UPDATED_AT")
     LocalDateTime updatedTime;
     @NotNull
-//    @Column(name = "public")
+    @Column(name = "public")
     Boolean exposure;
     @NotNull
     @Column(name = "video_title")
@@ -31,9 +33,11 @@ public class VideoDAO {
     @Column(name = "tag")
     String rawTags;
 
+    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL)
+    private List<VideoCommentDAO> comments = new ArrayList<>();
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "User_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     UserDAO user;
 }

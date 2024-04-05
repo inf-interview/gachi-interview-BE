@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class UserDAO {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
     @NotNull
     String name;
@@ -24,7 +23,8 @@ public class UserDAO {
     @NotNull
     String social;
     @NotNull
+    @Column(name = "created_at")
     LocalDateTime time;
-
+    @Column(name = "updated_at")
     LocalDateTime updatedTime;
 }

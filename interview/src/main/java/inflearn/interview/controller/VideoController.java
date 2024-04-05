@@ -21,7 +21,7 @@ public class VideoController {
     private final VideoService videoService;
 
     @GetMapping("/{video_id}")
-    public VideoDTO viewController(@PathVariable Long video_id){
+    public VideoDTO videoController(@PathVariable Long video_id){
         return videoService.getVideoById(video_id);
     }
 

@@ -2,12 +2,17 @@ package inflearn.interview.service;
 
 import inflearn.interview.converter.VideoDAOToDTOConverter;
 import inflearn.interview.converter.VideoDTOToDAOConverter;
+import inflearn.interview.domain.dao.UserDAO;
+import inflearn.interview.domain.dao.VideoCommentDAO;
 import inflearn.interview.domain.dao.VideoDAO;
 import inflearn.interview.domain.dto.VideoDTO;
+import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -16,6 +21,7 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final VideoDAOToDTOConverter DAOToDTOConverter;
     private final VideoDTOToDAOConverter DTOToDAOConverter;
+    private final UserRepository userRepository;
 
     public VideoDTO getVideoById(Long videoId){
         VideoDTO videoDTO;
@@ -34,7 +40,6 @@ public class VideoService {
     public void deleteVideo(Long videoId){
         videoRepository.deleteById(videoId);
     }
-
 
 
 
