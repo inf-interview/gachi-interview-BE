@@ -1,6 +1,5 @@
 package inflearn.interview.service;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import inflearn.interview.domain.User;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -21,10 +21,8 @@ public class UserService {
     private final KakaoProvider kakaoProvider;
     private final UserRepository userRepository;
 
-    public void loginKakao(String code) {
+    public User loginKakao(String code) {
         String kakaoInfo = kakaoProvider.getKakaoInfo(code);
-
-        Gson gson = new Gson();
 
         JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
 
@@ -34,11 +32,20 @@ public class UserService {
         //닉네임 추출
         String nickname = jsonObject.getAsJsonObject("properties").get("nickname").getAsString();
 
-        User user = new User();
-        user.setName(nickname);
-        user.setEmail(email);
-        user.setSocial("KAKAO");
-        user.setCreatedAt(LocalDateTime.now());
-        userRepository.save(user);
+        //유저 정보가 DB에 있는지 체크
+        Optional<User> findUser = userRepository.findByEmail(email);
+        if (findUser.isEmpty()) {
+            User user = new User();
+            user.setName(nickname);
+            user.setEmail(email);
+            user.setSocial("KAKAO");
+            user.setCreatedAt(LocalDateTime.now());
+            userRepository.save(user);
+            return user;
+        }
+        else {
+            return findUser.get();
+        }
+
     }
 }
