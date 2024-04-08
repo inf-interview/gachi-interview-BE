@@ -38,12 +38,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return email;
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return name;
+        return email;
     }
 
     @Override

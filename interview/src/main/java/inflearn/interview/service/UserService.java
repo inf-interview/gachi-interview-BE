@@ -33,7 +33,7 @@ public class UserService {
         String nickname = jsonObject.getAsJsonObject("properties").get("nickname").getAsString();
 
         //유저 정보가 DB에 있는지 체크
-        Optional<User> findUser = userRepository.findByEmail(email);
+        Optional<User> findUser = userRepository.findUserByEmail(email);
         if (findUser.isEmpty()) {
             User user = new User();
             user.setName(nickname);
