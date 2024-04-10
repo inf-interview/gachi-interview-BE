@@ -33,6 +33,8 @@ public class Post {
 
     private LocalDateTime updatedAt;
 
+    private int numOfLike;
+
     public Post(String title, String content, String tag, String category) {
         this.title = title;
         this.content = content;
