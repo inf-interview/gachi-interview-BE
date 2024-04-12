@@ -35,7 +35,8 @@ public class Post {
 
     private int numOfLike;
 
-    public Post(String title, String content, String tag, String category) {
+    public Post(User user, String title, String content, String tag, String category) {
+        this.user = user;
         this.title = title;
         this.content = content;
         this.tag = tag;

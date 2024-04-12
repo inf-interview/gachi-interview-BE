@@ -1,8 +1,10 @@
 package inflearn.interview.service;
 
 import inflearn.interview.domain.Post;
+import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.repository.PostRepository;
+import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,14 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    //게시글 생성
+
     public Post getPostById(Long postId) {
         return postRepository.findById(postId).get();
     }
 
+    //게시글 생성
     public Long createPost(PostDTO postDTO) {
-        Post post = new Post(postDTO.getPostTitle(), postDTO.getContent(), DtoToEntityTagConverter(postDTO.getTag()), postDTO.getCategory());
+        User findUser = userRepository.findById(postDTO.getUserId()).get();
+        Post post = new Post(findUser, postDTO.getPostTitle(), postDTO.getContent(), DtoToEntityTagConverter(postDTO.getTag()), postDTO.getCategory());
         postRepository.save(post);
         return post.getPostId();
     }
@@ -47,10 +52,14 @@ public class PostService {
     }
 
     private String DtoToEntityTagConverter(String[] tags) {
-        StringBuilder tagMaker = new StringBuilder();
-        for (String tag : tags) {
-            tagMaker.append(tag).append(".");
+        if (tags != null) {
+            StringBuilder tagMaker = new StringBuilder();
+            for (String tag : tags) {
+                tagMaker.append(tag).append(".");
+            }
+            return tagMaker.toString();
+        } else {
+            return null;
         }
-        return tagMaker.toString();
     }
 }

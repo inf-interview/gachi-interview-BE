@@ -30,9 +30,12 @@ public class PostDTO {
     private int numOfLike;
 
     public PostDTO(Post post) {
+        this.userId = post.getUser().getUserId();
         this.postTitle = post.getTitle();
         this.category = post.getCategory();
-        this.tag = entityToDtoTagConverter(post.getTag());
+        if (post.getTag() != null) {
+            this.tag = entityToDtoTagConverter(post.getTag());
+        }
         this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
