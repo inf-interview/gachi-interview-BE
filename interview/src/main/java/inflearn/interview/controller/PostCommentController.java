@@ -19,7 +19,7 @@ public class PostCommentController {
     //댓글 목록 조회
     @GetMapping("/comments")
     public List<PostCommentDTO> postComments(@PathVariable Long postId) {
-        return postCommentService.getComments(postId);
+        return postCommentService.getComments(postId); // 안가져옴
     }
 
     //댓글 조회

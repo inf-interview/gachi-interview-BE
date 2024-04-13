@@ -3,6 +3,7 @@ package inflearn.interview.service;
 import inflearn.interview.domain.Post;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.PostDTO;
+import inflearn.interview.repository.PostLikeRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
 
 
-    public Post getPostById(Long postId) {
-        return postRepository.findById(postId).get();
+    public PostDTO getPostById(Long postId) {
+        Post post = postRepository.findById(postId).get();
+        return new PostDTO(post);
     }
 
     //게시글 생성
@@ -44,6 +47,8 @@ public class PostService {
 
     public void likePost(Long postId) {
         Post findPost = postRepository.findById(postId).get();
+
+//        postLikeRepository.findPostLikeByEmailAndPostId(이메일 ,postId);
 
         //유저 정보, postId를 이용하여 이미 like가 있는지 확인
 

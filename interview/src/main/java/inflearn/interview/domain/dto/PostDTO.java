@@ -13,6 +13,10 @@ public class PostDTO {
 
     private Long userId;
 
+    private String userName;
+
+    private Long postId;
+
     @NotNull
     private String postTitle;
 
@@ -31,18 +35,24 @@ public class PostDTO {
 
     public PostDTO(Post post) {
         this.userId = post.getUser().getUserId();
+        this.userName = post.getUser().getName();
+        this.postId = post.getPostId();
         this.postTitle = post.getTitle();
         this.category = post.getCategory();
         if (post.getTag() != null) {
             this.tag = entityToDtoTagConverter(post.getTag());
         }
+        this.numOfLike = post.getNumOfLike();
         this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
 
     }
 
+    public PostDTO() {
+    }
+
     private String[] entityToDtoTagConverter(String tag) {
-        return tag.split(".");
+        return tag.split("[.]");
     }
 }

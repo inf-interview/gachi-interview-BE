@@ -42,5 +42,6 @@ public class Post {
         this.tag = tag;
         this.category = category;
         this.createdAt = LocalDateTime.now();
+        this.numOfLike = 0;
     }
 }

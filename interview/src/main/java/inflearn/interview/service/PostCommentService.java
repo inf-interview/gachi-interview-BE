@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,7 +37,16 @@ public class PostCommentService {
 
     public List<PostCommentDTO> getComments(Long postId) {
         List<PostComment> commentList = postCommentRepository.findCommentList(postId);
-        return commentList.stream().map(postComment -> new PostCommentDTO()).toList();
+        List<PostCommentDTO> commentDTOS = new ArrayList<>();
+
+        for (PostComment postComment : commentList) {
+            PostCommentDTO postCommentDTO = new PostCommentDTO();
+            postCommentDTO.setUserId(postComment.getUser().getUserId());
+            postCommentDTO.setUsername(postComment.getUser().getName());
+            postCommentDTO.setContent(postComment.getContent());
+            commentDTOS.add(postCommentDTO);
+        }
+        return commentDTOS;
     }
 
     public PostCommentDTO createComment(PostCommentDTO postCommentDTO, Long postId) {

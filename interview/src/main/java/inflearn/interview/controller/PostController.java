@@ -24,11 +24,8 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public void postDetail(@PathVariable Long postId) {
-        Post findPost = postService.getPostById(postId);
-        PostDTO postDTO = new PostDTO(findPost);
-
-
+    public PostDTO postDetail(@PathVariable Long postId) {
+        return postService.getPostById(postId);
     }
 
     @PostMapping("/write")

@@ -23,6 +23,7 @@ public class PostServiceTest {
     private PostService postService;
 
     @BeforeEach
+    @Transactional
     void before() {
         User user = new User();
         user.setName("상욱");
@@ -38,9 +39,9 @@ public class PostServiceTest {
         PostDTO postDTO = new PostDTO(post);
 
         Long id = postService.createPost(postDTO);
-        Post getPost = postService.getPostById(id);
+        PostDTO getPost = postService.getPostById(id);
 
-        assertThat(postDTO.getPostTitle()).isEqualTo(getPost.getTitle());
+        assertThat(postDTO.getPostTitle()).isEqualTo(getPost.getPostTitle());
     }
 
     @Test
@@ -58,9 +59,9 @@ public class PostServiceTest {
 
         postService.updatePost(id, postDTO2);
 
-        Post getPost = postService.getPostById(1L);
+        PostDTO getPost = postService.getPostById(1L);
 
-        assertThat(getPost.getTitle()).isEqualTo("new title");
+        assertThat(getPost.getPostTitle()).isEqualTo("new title");
     }
 
     @Test
