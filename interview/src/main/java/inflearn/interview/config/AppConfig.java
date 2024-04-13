@@ -1,6 +1,7 @@
 package inflearn.interview.config;
 
 import inflearn.interview.repository.UserRepository;
+import inflearn.interview.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +19,8 @@ public class AppConfig {
     private final UserRepository userRepository;
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        return username -> userRepository.findUserDetailsByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public CustomUserDetailsService userDetailsService(){
+        return new CustomUserDetailsService(userRepository);
     }
 
     @Bean

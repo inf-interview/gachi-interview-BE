@@ -31,6 +31,8 @@ public class User implements UserDetails {
 
     private LocalDateTime updatedAt;
 
+    private String refreshToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -43,7 +45,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return userId.toString();
     }
 
     @Override
