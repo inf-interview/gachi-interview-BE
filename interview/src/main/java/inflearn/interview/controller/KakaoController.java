@@ -23,19 +23,22 @@ public class KakaoController {
     @Value("${spring.kakao.client_id}")
     private String clientId;
 
-    @GetMapping("/login")
+    @GetMapping("/getAuth")
     public void kakaoLogin(HttpServletResponse response) throws IOException {
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ clientId + "&redirect_uri=http://localhost:8080/user/getInfo";
+        //인가 코드 받기
+        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ clientId + "&redirect_uri=http://localhost:8080/user/login";
         response.sendRedirect(url);
     }
 
-    @GetMapping("/getInfo")
+    @GetMapping("/login")
     public void kakaoGetInfo(@RequestParam String code) {
+
         User user = userService.loginKakao(code);
         log.info("user = {}", user);
 
-        //가져온 유저 정보 바탕으로 jwt 토큰 생성, 반환
+        //받은 유저 정보로 jwt 토큰 생성, 반환
         String token = authenticationService.register(user);
         log.info("token = {}", token);
+
     }
 }

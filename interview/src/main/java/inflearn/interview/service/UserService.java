@@ -22,7 +22,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User loginKakao(String code) {
-        String kakaoInfo = kakaoProvider.getKakaoInfo(code);
+        String accessToken = kakaoProvider.getAccessToken(code);
+        String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
 
         JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
 
