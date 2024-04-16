@@ -1,5 +1,6 @@
 package inflearn.interview.domain.dto;
 
+import inflearn.interview.domain.PostComment;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +20,13 @@ public class PostCommentDTO {
 
     private LocalDateTime createdAt;
 
+    public PostCommentDTO() {
+    }
+
+    public PostCommentDTO(PostComment postComment) {
+        this.commentId = postComment.getPostCommentId();
+        this.userId = postComment.getUser().getUserId();
+        this.username = postComment.getUser().getName();
+        this.content = postComment.getContent();
+    }
 }

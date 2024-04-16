@@ -15,7 +15,6 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
 @Slf4j
 public class KakaoController {
 
@@ -25,22 +24,22 @@ public class KakaoController {
     @Value("${spring.kakao.client_id}")
     private String clientId;
 
-    @GetMapping("/getAuth")
+    @GetMapping("/user/getAuth")
     public void kakaoLogin(HttpServletResponse response) throws IOException {
         //인가 코드 받기
         String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ clientId + "&redirect_uri=http://localhost:8080/user/login";
         response.sendRedirect(url);
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<String> kakaoGetInfo(@RequestParam String code) {
+    @GetMapping("/user/login")
+    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam String code) {
 
         User user = userService.loginKakao(code);
         log.info("user = {}", user);
 
         //받은 유저 정보로 jwt 토큰 생성, 반환
-        String token = authenticationService.register(user);
-        log.info("token = {}", token);
-        return ResponseEntity.status(HttpStatus.OK).body(token);
+        String[] tokens = authenticationService.register(user);
+        log.info("accessToken = {}", tokens[0]);
+        return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken
     }
 }

@@ -2,7 +2,13 @@ package inflearn.interview.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.MyPostDTO;
+import inflearn.interview.domain.dto.PostCommentDTO;
+import inflearn.interview.domain.dto.PostDTO;
+import inflearn.interview.repository.PostCommentRepository;
+import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +27,8 @@ public class UserService {
 
     private final KakaoProvider kakaoProvider;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final PostCommentRepository postCommentRepository;
 
     public User loginKakao(String code) {
         String accessToken = kakaoProvider.getAccessToken(code);
@@ -47,6 +56,14 @@ public class UserService {
         else {
             return findUser.get();
         }
+    }
 
+    public List<MyPostDTO> getMyPost(Long userId) {
+        return postRepository.findPostByUserId(userId);
+    }
+
+    public List<PostCommentDTO> getMyComment(Long userId) {
+        List<PostComment> comments = postCommentRepository.findCommentByUserId(userId);
+        return comments.stream().map(comment -> new PostCommentDTO(comment)).toList();
     }
 }
