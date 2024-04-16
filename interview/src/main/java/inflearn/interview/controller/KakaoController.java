@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -31,7 +33,7 @@ public class KakaoController {
     }
 
     @GetMapping("/login")
-    public void kakaoGetInfo(@RequestParam String code) {
+    public ResponseEntity<String> kakaoGetInfo(@RequestParam String code) {
 
         User user = userService.loginKakao(code);
         log.info("user = {}", user);
@@ -39,6 +41,6 @@ public class KakaoController {
         //받은 유저 정보로 jwt 토큰 생성, 반환
         String token = authenticationService.register(user);
         log.info("token = {}", token);
-
+        return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 }

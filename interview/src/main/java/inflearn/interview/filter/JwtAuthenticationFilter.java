@@ -63,17 +63,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         );
 
                         SecurityContextHolder.getContext().setAuthentication(authToken);
+                        response.setHeader("userId", userId);
                     }
                 }
             }
         } catch (ExpiredJwtException e) {
-            recreateAccessToken(request, response, e);
+            String id = recreateAccessToken(request, response, e);
+            response.setHeader("userId", id);
         }
-
         filterChain.doFilter(request,response);
     }
 
-    private void recreateAccessToken(HttpServletRequest request, HttpServletResponse response, Exception exception) {
+    private String recreateAccessToken(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         try {
             log.info("기존 토큰 만료");
             String refreshToken = request.getHeader("Refresh-Token");
@@ -104,9 +105,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
+            return id;
 
         } catch (Exception e) {
             request.setAttribute("exception", e);
+            return null;
         }
+
     }
 }
