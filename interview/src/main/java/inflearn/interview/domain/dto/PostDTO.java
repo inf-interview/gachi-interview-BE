@@ -17,21 +17,20 @@ public class PostDTO {
 
     private Long postId;
 
-    @NotNull
     private String postTitle;
 
-    @NotNull
     private String category;
 
     private String[] tag;
 
-    @NotNull
     private String content;
 
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int numOfLike;
+
+    private int commentCount;
 
     public PostDTO(Post post) {
         this.userId = post.getUser().getUserId();
@@ -46,7 +45,6 @@ public class PostDTO {
         this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
-
     }
 
     public PostDTO() {

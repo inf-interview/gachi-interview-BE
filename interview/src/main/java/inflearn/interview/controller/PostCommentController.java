@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/board/{postId}")
+@RequestMapping("/board/{post_id}")
 @RequiredArgsConstructor
 public class PostCommentController {
 
@@ -18,33 +18,33 @@ public class PostCommentController {
 
     //댓글 목록 조회
     @GetMapping("/comments")
-    public List<PostCommentDTO> postComments(@PathVariable Long postId) {
-        return postCommentService.getComments(postId); // 안가져옴
+    public List<PostCommentDTO> postComments(@PathVariable(name = "post_id") Long postId) {
+        return postCommentService.getComments(postId);
     }
 
     //댓글 조회
-    @GetMapping("/{commentId}")
-    public ResponseEntity<PostCommentDTO> postComment(@PathVariable Long postId, @PathVariable Long commentId) {
+    @GetMapping("/{comment_id}")
+    public ResponseEntity<PostCommentDTO> postComment(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId) {
         PostCommentDTO comment = postCommentService.getComment(commentId);
         return ResponseEntity.ok(comment);
     }
 
     //댓글 작성
     @PostMapping("/submit")
-    public ResponseEntity<PostCommentDTO> postCommentWrite(@PathVariable Long postId, @RequestBody PostCommentDTO postCommentDTO) {
+    public ResponseEntity<PostCommentDTO> postCommentWrite(@PathVariable(name = "post_id") Long postId, @RequestBody PostCommentDTO postCommentDTO) {
         PostCommentDTO comment = postCommentService.createComment(postCommentDTO, postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(comment);
     }
 
     //댓글 수정
-    @PatchMapping("/{commentId}")
-    public void postCommentEdit(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody PostCommentDTO postCommentDTO) {
+    @PatchMapping("/{comment_id}")
+    public void postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody PostCommentDTO postCommentDTO) {
         postCommentService.updateComment(postCommentDTO, commentId);
     }
 
     //댓글 삭제
-    @DeleteMapping("/{commentId}")
-    public void postCommentDelete(@PathVariable Long postId, @PathVariable Long commentId) {
+    @DeleteMapping("/{comment_id}")
+    public void postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId) {
         postCommentService.deleteComment(commentId);
     }
 }

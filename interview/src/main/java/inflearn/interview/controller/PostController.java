@@ -1,8 +1,7 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.Post;
+import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
-import inflearn.interview.domain.dto.PostRequest;
 import inflearn.interview.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +18,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/list")
-    public void postList(@RequestParam String page) {
-
+    public void postList(@RequestParam int page, @RequestBody PageInfo pageInfo) {
+        postService.getAllPost(page, 10, pageInfo);
     }
 
     @GetMapping("/{postId}")
@@ -53,8 +52,9 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/like")
-    public void postLike(@PathVariable Long postId) {
-        postService.likePost(postId);
+    public void postLike(@PathVariable Long postId, @RequestBody PostDTO postDTO) {
+        Long userId = postDTO.getUserId();
+        postService.likePost(postId, userId);
     }
 
 

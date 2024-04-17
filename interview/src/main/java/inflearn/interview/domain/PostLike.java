@@ -24,4 +24,12 @@ public class PostLike {
 
     private LocalDateTime updatedAt;
 
+    public PostLike(Post post, User user) {
+        this.post = post;
+        this.user = user;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public PostLike() {
+    }
 }
