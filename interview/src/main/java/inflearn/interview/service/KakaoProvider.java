@@ -1,6 +1,6 @@
 package inflearn.interview.service;
 
-import inflearn.interview.domain.dto.KakaoAccessTokenResponse;
+import inflearn.interview.domain.dto.KakaoTokenResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -19,8 +19,9 @@ public class KakaoProvider {
     @Value("${spring.kakao.client_secret}")
     String clientSecret;
 
-    public String getAccessToken(String code) {
-        String accessTokenUrl = "https://kauth.kakao.com/oauth/token";
+    private final String GET_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
+
+    public String[] getAccessToken(String code) {
 
         //엑세스 토큰 폼타입으로 요청
         HttpHeaders headers1 = new HttpHeaders();
@@ -37,15 +38,14 @@ public class KakaoProvider {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<KakaoAccessTokenResponse> accessTokenResponse = restTemplate.postForEntity(accessTokenUrl, requestEntity1, KakaoAccessTokenResponse.class);
+        ResponseEntity<KakaoTokenResponse> tokenResponse = restTemplate.postForEntity(GET_TOKEN_URL, requestEntity1, KakaoTokenResponse.class);
 
-        if (accessTokenResponse.getStatusCode() == HttpStatus.OK && accessTokenResponse.getBody() != null) {
-            return accessTokenResponse.getBody().getAccessToken();
+        if (tokenResponse.getStatusCode() == HttpStatus.OK && tokenResponse.getBody() != null) {
+            log.info("accessToken={} refreshToken={}", tokenResponse.getBody().getAccessToken(), tokenResponse.getBody().getRefreshToken());
+            return new String[]{tokenResponse.getBody().getAccessToken(), tokenResponse.getBody().getRefreshToken()};
         } else {
             return null;
         }
-
-
     }
 
     //발급받은 accessToken으로 유저 정보 가져오기 - JSON 반환
@@ -61,5 +61,29 @@ public class KakaoProvider {
         RestTemplate restTemplate = new RestTemplate();
 
         return restTemplate.postForEntity(requestInfoUrl, requestEntity2, String.class).getBody();
+    }
+
+    //리프레시토큰으로 accessToken갱신 - 반환값 String[accessToken, refreshToken]
+    public String[] getAccessTokenByRefreshToken(String refreshToken) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "refresh_token");
+        params.add("client_id", clientId);
+        params.add("refresh_token", refreshToken);
+        params.add("client_secret", clientSecret);
+
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<KakaoTokenResponse> tokenResponse = restTemplate.postForEntity(GET_TOKEN_URL, requestEntity, KakaoTokenResponse.class);
+
+        if (tokenResponse.getStatusCode() == HttpStatus.OK && tokenResponse.getBody() != null) {
+            return new String[]{tokenResponse.getBody().getAccessToken(), tokenResponse.getBody().getRefreshToken()};
+        }
+        return null;
     }
 }

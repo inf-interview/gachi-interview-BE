@@ -30,9 +30,9 @@ public class UserService {
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
 
-    public User loginKakao(String code) {
-        String accessToken = kakaoProvider.getAccessToken(code);
-        String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
+    public Object[] loginKakao(String code) { // 반환 값 User, RefreshToken
+        String[] tokens = kakaoProvider.getAccessToken(code);
+        String kakaoInfo = kakaoProvider.getKakaoInfo(tokens[0]);
 
         JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
 
@@ -51,11 +51,29 @@ public class UserService {
             user.setSocial("KAKAO");
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
-            return user;
+            return new Object[]{user, tokens[1]};
         }
-        else {
-            return findUser.get();
+        return new Object[]{findUser.get(), tokens[1]};
+
+    }
+
+    public Object[] reLoginKakao(String refreshToken) {
+        String[] tokens = kakaoProvider.getAccessTokenByRefreshToken(refreshToken); // accessToken, refreshToken(Optional)
+
+        //유저 정보 가져오기
+        String kakaoInfo = kakaoProvider.getKakaoInfo(tokens[0]);
+
+        JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
+
+        String email = jsonObject.getAsJsonObject("kakao_account").get("email").getAsString();
+
+        Optional<User> findUser = userRepository.findUserByEmail(email);
+        if (findUser.isEmpty()) {
+            //쿠키에는 refreshToken이 있지만 찾아온 유저 정보가 없는경우
         }
+
+        return new Object[]{findUser.get(), tokens[1]};
+
     }
 
     public List<MyPostDTO> getMyPost(Long userId) {
