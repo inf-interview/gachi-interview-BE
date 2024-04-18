@@ -2,10 +2,8 @@ package inflearn.interview.service;
 
 import inflearn.interview.domain.Users;
 import inflearn.interview.domain.Workbook;
-import inflearn.interview.dto.WorkbookDto;
 import inflearn.interview.repository.WorkbookRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,16 +15,13 @@ public class WorkbookService {
 
     private final WorkbookRepository workbookRepository;
 
-    public List<WorkbookDto> getWorkbooks() {
-        return workbookRepository.findAll().stream().map(WorkbookDto::new)
-                .collect(Collectors.toList());
+    public List<Workbook> getWorkbooks() {
+        return workbookRepository.findAll();
     }
 
     public Workbook createWorkbook(Users user, String title) {
         // TODO : 반환값 재확인 필요
-        Workbook workbook = new Workbook();
-        workbook.setUser(user);
-        workbook.setTitle(title);
+        Workbook workbook = new Workbook(user, title);
         return workbookRepository.save(workbook);
     }
 
@@ -35,7 +30,8 @@ public class WorkbookService {
     }
 
 
-    public Workbook updateWorkbook(Workbook workbook, String newTitle) {
+    public Workbook updateWorkbook(Long workbookId, String newTitle) {
+        Workbook workbook = findWorkbook(workbookId);
         workbook.setTitle(newTitle);
         return workbookRepository.save(workbook);
     }

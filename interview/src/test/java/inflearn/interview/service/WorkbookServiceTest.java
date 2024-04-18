@@ -58,7 +58,7 @@ class WorkbookServiceTest {
     }
 
     @Test
-    void 해당하는_워크북이_없으면_NPE가_발생한다() {
+    void 수정하려는_워크북이_없으면_NPE가_발생한다() {
         // TODO : 예외 처리 필요
         Workbook workbook = workbookService.createWorkbook(null, "workbook1");
         assertThrows(NullPointerException.class, () -> workbookService.findWorkbook(123456789L));
@@ -66,10 +66,15 @@ class WorkbookServiceTest {
 
     @Test
     void 워크북_제목을_수정할_수_있다() {
-        Workbook workbook = workbookService.createWorkbook(null, "workbook1");
-        Workbook result = workbookService.updateWorkbook(workbook, "updated!");
-        Workbook result2 = workbookRepository.findById(workbook.getId()).get();
+        Long workbookId = workbookService.createWorkbook(null, "workbook1").getId();
+        Workbook result = workbookService.updateWorkbook(workbookId, "updated!");
+        Workbook result2 = workbookRepository.findById(workbookId).get();
         assertThat(result2.getTitle()).isEqualTo("updated!");
+    }
+
+    @Test
+    void 워크북은_작성자만_수정할_수_있다() {
+        // TODO
     }
 
     @Test
