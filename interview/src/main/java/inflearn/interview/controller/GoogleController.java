@@ -37,7 +37,7 @@ public class GoogleController {
     }
 
     @GetMapping("/user/google/login")
-    public ResponseEntity<String[]> googleGetInfo(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String[]> googleGetInfo(@RequestParam(required = false) String code, HttpServletRequest request, HttpServletResponse response) {
 
         Cookie[] cookies = request.getCookies();
         Cookie getCookie = validCookie(cookies);

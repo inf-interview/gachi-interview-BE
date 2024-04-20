@@ -34,7 +34,7 @@ public class KakaoController {
     }
 
     @GetMapping("/user/login")
-    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam(required = false) String code, HttpServletRequest request, HttpServletResponse response) {
         //쿠키 확인
         Cookie[] cookies = request.getCookies();
         Cookie getCookie = validCookie(cookies);
