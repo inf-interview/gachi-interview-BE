@@ -11,52 +11,49 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class KakaoController {
+public class GoogleController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @Value("${spring.kakao.client_id}")
+    @Value("${spring.google.client_id}")
     private String clientId;
 
-    @GetMapping("/user/kakao")
-    public void kakaoLogin(HttpServletResponse response) throws IOException {
-        //인가 코드 받기
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ clientId + "&redirect_uri=http://localhost:8080/user/login";
+
+    @GetMapping("/user/google")
+    public void googleLogin(HttpServletResponse response) throws IOException {
+        //인가 코드
+        String url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + clientId + "&redirect_uri=http://localhost:8080/user/google/login&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=consent";
         response.sendRedirect(url);
     }
 
-    @GetMapping("/user/login")
-    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) {
-        //쿠키 확인
+    @GetMapping("/user/google/login")
+    public ResponseEntity<String[]> googleGetInfo(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) {
+
         Cookie[] cookies = request.getCookies();
         Cookie getCookie = validCookie(cookies);
 
-        //쿠키가 refresh-token이 있을경우
+        //카카오와 다르게 구글은 리프레시토큰 기간이 적게 남아도 재발급을 해주지 않음 -> 재로그인해야함
         if (getCookie != null) {
             log.info("재로그인 로직 시작");
-            Object[] userAndToken = userService.reLoginKakao(getCookie.getValue());
-            if (userAndToken[1] != null) {
-                getCookie.setMaxAge(0); // 기존 쿠키 제거
+            User user = userService.reLoginGoogle(getCookie.getValue());
 
-                Cookie newCookie = createCookie((String) userAndToken[1]);
-                response.addCookie(newCookie);
-            }
-            String[] tokens = authenticationService.register((User) userAndToken[0]);
+            String[] tokens = authenticationService.register(user);
             log.info("accessToken={}", tokens[0]);
             return ResponseEntity.status(HttpStatus.OK).body(tokens);
         }
 
         log.info("최초로그인 로직 시작");
-        //쿠키에 refresh-token이 없으므로 최초 로그인
-        Object[] userAndToken = userService.loginKakao(code); //User정보, refreshToken
+        Object[] userAndToken = userService.loginGoogle(code);
 
         Cookie cookie = createCookie((String) userAndToken[1]);
         response.addCookie(cookie);
@@ -70,7 +67,7 @@ public class KakaoController {
     private Cookie validCookie(Cookie[] cookies) { // 쿠키에 리프레시 토큰이 있는지 확인
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("kakao-refresh-token")) {
+                if (cookie.getName().equals("google-refresh-token")) {
                     return cookie;
                 }
             }
@@ -79,7 +76,7 @@ public class KakaoController {
     }
 
     private Cookie createCookie(String refreshToken) {
-        Cookie cookie = new Cookie("kakao-refresh-token", refreshToken);
+        Cookie cookie = new Cookie("google-refresh-token", refreshToken);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(604800); //1주일 (임시)
         return cookie;
