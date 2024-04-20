@@ -30,14 +30,7 @@ public class GoogleController {
 
 
     @GetMapping("/user/google")
-    public void googleLogin(HttpServletResponse response) throws IOException {
-        //인가 코드
-        String url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + clientId + "&redirect_uri=http://localhost:8080/user/google/login&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=consent";
-        response.sendRedirect(url);
-    }
-
-    @GetMapping("/user/google/login")
-    public ResponseEntity<String[]> googleGetInfo(@RequestParam(required = false) String code, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String[]> googleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         Cookie[] cookies = request.getCookies();
         Cookie getCookie = validCookie(cookies);
@@ -51,6 +44,15 @@ public class GoogleController {
             log.info("accessToken={}", tokens[0]);
             return ResponseEntity.status(HttpStatus.OK).body(tokens);
         }
+
+        //인가 코드
+        String url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + clientId + "&redirect_uri=http://localhost:8080/user/google/login&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=consent";
+        response.sendRedirect(url);
+        return null;
+    }
+
+    @GetMapping("/user/google/login")
+    public ResponseEntity<String[]> googleGetInfo(@RequestParam(required = false) String code, HttpServletRequest request, HttpServletResponse response) {
 
         log.info("최초로그인 로직 시작");
         Object[] userAndToken = userService.loginGoogle(code);

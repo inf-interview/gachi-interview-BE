@@ -27,15 +27,8 @@ public class KakaoController {
     private String clientId;
 
     @GetMapping("/user/kakao")
-    public void kakaoLogin(HttpServletResponse response) throws IOException {
-        //인가 코드 받기
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ clientId + "&redirect_uri=http://localhost:8080/user/login";
-        response.sendRedirect(url);
-    }
+    public ResponseEntity<String[]> kakaoLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    @GetMapping("/user/login")
-    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam(required = false) String code, HttpServletRequest request, HttpServletResponse response) {
-        //쿠키 확인
         Cookie[] cookies = request.getCookies();
         Cookie getCookie = validCookie(cookies);
 
@@ -53,6 +46,14 @@ public class KakaoController {
             log.info("accessToken={}", tokens[0]);
             return ResponseEntity.status(HttpStatus.OK).body(tokens);
         }
+        //인가 코드 받기
+        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ clientId + "&redirect_uri=http://localhost:8080/user/login";
+        response.sendRedirect(url);
+        return null;
+    }
+
+    @GetMapping("/user/login")
+    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam(required = false) String code, HttpServletRequest request, HttpServletResponse response) {
 
         log.info("최초로그인 로직 시작");
         //쿠키에 refresh-token이 없으므로 최초 로그인
