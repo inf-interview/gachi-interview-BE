@@ -19,19 +19,19 @@ public class Workbook {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Users user;
+    private User user;
 
     private String title;
     private int numOfQuestion = 0;
 
 
-    public Workbook(Users user, String title) {
+    public Workbook(User user, String title) {
         this.user = user;
         this.title = title;
         this.numOfQuestion = 0;
     }
 
-    public void setUser(Users user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
