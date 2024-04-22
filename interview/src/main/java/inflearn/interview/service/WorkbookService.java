@@ -1,6 +1,6 @@
 package inflearn.interview.service;
 
-import inflearn.interview.domain.Users;
+import inflearn.interview.domain.User;
 import inflearn.interview.domain.Workbook;
 import inflearn.interview.repository.WorkbookRepository;
 import java.util.List;
@@ -19,7 +19,7 @@ public class WorkbookService {
         return workbookRepository.findAll();
     }
 
-    public Workbook createWorkbook(Users user, String title) {
+    public Workbook createWorkbook(User user, String title) {
         // TODO : 반환값 재확인 필요
         Workbook workbook = new Workbook(user, title);
         return workbookRepository.save(workbook);

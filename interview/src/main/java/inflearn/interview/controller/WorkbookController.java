@@ -1,6 +1,6 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.Users;
+import inflearn.interview.domain.User;
 import inflearn.interview.domain.Workbook;
 import inflearn.interview.dto.WorkbookRequestDto;
 import inflearn.interview.dto.WorkbookResponseDto;
@@ -39,7 +39,7 @@ public class WorkbookController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<WorkbookResponseDto> createWorkbook(Users user,
+    public ResponseEntity<WorkbookResponseDto> createWorkbook(User user,
             @RequestBody WorkbookRequestDto requestDto) {
         Workbook workbook = workbookService.createWorkbook(null, requestDto.getTitle());
 

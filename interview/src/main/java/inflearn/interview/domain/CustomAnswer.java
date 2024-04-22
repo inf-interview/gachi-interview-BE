@@ -17,7 +17,7 @@ public class CustomAnswer extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    private Users user;
+    private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     private Question question;
     private String answer;
