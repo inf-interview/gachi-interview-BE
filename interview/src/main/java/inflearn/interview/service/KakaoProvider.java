@@ -31,7 +31,7 @@ public class KakaoProvider {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        params.add("redirect_uri", "http://localhost:8080/user/login"); // 리다이렉트 URL
+        params.add("redirect_uri", "http://localhost:8080/user/kakao/login"); // 리다이렉트 URL
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity1 = new HttpEntity<>(params, headers1);
@@ -63,27 +63,4 @@ public class KakaoProvider {
         return restTemplate.postForEntity(requestInfoUrl, requestEntity2, String.class).getBody();
     }
 
-    //리프레시토큰으로 accessToken갱신 - 반환값 String[accessToken, refreshToken]
-    public String[] getAccessTokenByRefreshToken(String refreshToken) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "refresh_token");
-        params.add("client_id", clientId);
-        params.add("refresh_token", refreshToken);
-        params.add("client_secret", clientSecret);
-
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        ResponseEntity<KakaoTokenResponse> tokenResponse = restTemplate.postForEntity(GET_TOKEN_URL, requestEntity, KakaoTokenResponse.class);
-
-        if (tokenResponse.getStatusCode() == HttpStatus.OK && tokenResponse.getBody() != null) {
-            return new String[]{tokenResponse.getBody().getAccessToken(), tokenResponse.getBody().getRefreshToken()};
-        }
-        return null;
-    }
 }

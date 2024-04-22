@@ -59,25 +59,6 @@ public class UserService {
 
     }
 
-    public Object[] reLoginKakao(String refreshToken) {
-        String[] tokens = kakaoProvider.getAccessTokenByRefreshToken(refreshToken); // accessToken, refreshToken(Optional)
-
-        //유저 정보 가져오기
-        String kakaoInfo = kakaoProvider.getKakaoInfo(tokens[0]);
-
-        JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
-
-        String email = jsonObject.getAsJsonObject("kakao_account").get("email").getAsString();
-
-        Optional<User> findUser = userRepository.findUserByEmail(email);
-        if (findUser.isEmpty()) {
-            //쿠키에는 refreshToken이 있지만 찾아온 유저 정보가 없는경우
-        }
-
-        return new Object[]{findUser.get(), tokens[1]};
-
-    }
-
     public Object[] loginGoogle(String code) {
 
         String[] tokens = googleProvider.getAccessToken(code);
@@ -101,22 +82,6 @@ public class UserService {
             return new Object[]{user, tokens[1]};
         }
         return new Object[]{findUser.get(), tokens[1]};
-    }
-
-    public User reLoginGoogle(String refreshToken) {
-        String accessToken = googleProvider.getAccessTokenByRefreshToken(refreshToken);
-        String googleInfo = googleProvider.getGoogleInfo(accessToken);
-
-        JsonObject jsonObject = JsonParser.parseString(googleInfo).getAsJsonObject();
-
-        String email = jsonObject.get("email").getAsString();
-
-        Optional<User> findUser = userRepository.findUserByEmail(email);
-        if (findUser.isEmpty()) {
-            //쿠키에는 refreshToken이 있지만 찾아온 유저 정보가 없는경우
-        }
-
-        return findUser.get();
     }
 
     public List<MyPostDTO> getMyPost(Long userId) {
