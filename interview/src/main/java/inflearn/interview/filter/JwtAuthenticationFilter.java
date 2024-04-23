@@ -1,8 +1,11 @@
 package inflearn.interview.filter;
 
+import inflearn.interview.exception.TokenNotValidateException;
 import inflearn.interview.service.CustomUserDetailsService;
 import inflearn.interview.service.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.SignatureException;
 
 @Component
 @RequiredArgsConstructor
@@ -67,10 +71,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
                 }
             }
-        } catch (ExpiredJwtException e) {
-            String id = recreateAccessToken(request, response, e);
-            response.setHeader("userId", id);
+        } catch (ExpiredJwtException e) { //토큰 만료
+            if (request.getHeader("Refresh-token") != null) { //리프레시 토큰과 함께 요청이 왔는지 체크
+                String id = recreateAccessToken(request, response, e);
+                response.setHeader("userId", id);
+            }
+            throw new TokenNotValidateException("만료된 JWT 토큰입니다", e);
+        } catch (UnsupportedJwtException e) { //지원되지 않는 jwt 토큰
+            throw new TokenNotValidateException("지원되지 않는 JWT 토큰입니다", e);
+        } catch (MalformedJwtException e) { //잘못된 서명(변조)
+            throw new TokenNotValidateException("잘못된 서명의 JWT 토큰입니다", e);
         }
+
         filterChain.doFilter(request,response);
     }
 
