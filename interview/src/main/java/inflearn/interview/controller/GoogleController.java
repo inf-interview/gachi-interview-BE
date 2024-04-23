@@ -38,10 +38,10 @@ public class GoogleController {
     public ResponseEntity<String[]> googleGetInfo(@RequestParam String code) {
 
         log.info("최초로그인 로직 시작");
-        Object[] userAndToken = userService.loginGoogle(code);
+        User user = userService.loginGoogle(code);
 
         //받은 유저 정보로 jwt 토큰 생성, 반환
-        String[] tokens = authenticationService.register((User) userAndToken[0]);
+        String[] tokens = authenticationService.register(user);
         log.info("accessToken = {}", tokens[0]);
         return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken
     }

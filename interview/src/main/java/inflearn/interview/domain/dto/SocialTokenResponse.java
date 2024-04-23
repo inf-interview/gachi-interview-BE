@@ -6,11 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GoogleTokenResponse {
+public class SocialTokenResponse {
 
     @JsonProperty("access_token")
     private String accessToken;
 
-    @JsonProperty("refresh_token")
-    private String refreshToken;
 }

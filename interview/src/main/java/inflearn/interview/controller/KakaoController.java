@@ -36,10 +36,10 @@ public class KakaoController {
 
         log.info("최초로그인 로직 시작");
         //쿠키에 refresh-token이 없으므로 최초 로그인
-        Object[] userAndToken = userService.loginKakao(code); //User정보, refreshToken
+        User user = userService.loginKakao(code); //User정보, refreshToken
 
         //받은 유저 정보로 jwt 토큰 생성, 반환
-        String[] tokens = authenticationService.register((User) userAndToken[0]);
+        String[] tokens = authenticationService.register(user);
         log.info("accessToken = {}", tokens[0]);
         return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken
     }
