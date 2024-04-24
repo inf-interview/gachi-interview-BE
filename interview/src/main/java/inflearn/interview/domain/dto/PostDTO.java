@@ -1,7 +1,7 @@
 package inflearn.interview.domain.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import inflearn.interview.domain.Post;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,11 +26,11 @@ public class PostDTO {
     private String content;
 
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private int numOfLike;
+    private LocalDateTime time;
+    private LocalDateTime updateTime;
 
-    private int commentCount;
+    private int numOfLike;
+    private int numOfComment;
 
     public PostDTO(Post post) {
         this.userId = post.getUser().getUserId();
@@ -43,8 +43,25 @@ public class PostDTO {
         }
         this.numOfLike = post.getNumOfLike();
         this.content = post.getContent();
-        this.createdAt = post.getCreatedAt();
-        this.updatedAt = post.getUpdatedAt();
+        this.time = post.getCreatedAt();
+        this.updateTime = post.getUpdatedAt();
+    }
+
+    @QueryProjection
+    public PostDTO(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, Long numOfComment, String tag) {
+        this.userId = userId;
+        this.userName = userName;
+        this.postId = postId;
+        this.postTitle = postTitle;
+        this.content = content;
+        this.category = category;
+        this.time = time;
+        this.updateTime = updateTime;
+        this.numOfLike = numOfLike;
+        this.numOfComment = Math.toIntExact(numOfComment);
+        if (tag != null) {
+            this.tag = entityToDtoTagConverter(tag);
+        }
     }
 
     public PostDTO() {

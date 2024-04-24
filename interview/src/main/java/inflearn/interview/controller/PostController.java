@@ -5,6 +5,7 @@ import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,8 +19,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/list")
-    public void postList(@RequestParam int page, @RequestBody PageInfo pageInfo) {
-        postService.getAllPost(page, 10, pageInfo);
+    public Page<PostDTO> postList(@RequestParam int page, @RequestBody PageInfo pageInfo) {
+        return postService.getAllPost(pageInfo, page);
     }
 
     @GetMapping("/{postId}")
