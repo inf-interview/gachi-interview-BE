@@ -43,7 +43,7 @@ public class UserService {
         String nickname = jsonObject.getAsJsonObject("properties").get("nickname").getAsString();
 
         //유저 정보가 DB에 있는지 체크
-        Optional<User> findUser = userRepository.findUserByEmail(email);
+        Optional<User> findUser = userRepository.findKakaoUserByEmail(email, "KAKAO");
         if (findUser.isEmpty()) {
             User user = new User();
             user.setName(nickname);
@@ -69,7 +69,7 @@ public class UserService {
         String name = jsonObject.get("name").getAsString();
         String email = jsonObject.get("email").getAsString();
 
-        Optional<User> findUser = userRepository.findUserByEmail(email);
+        Optional<User> findUser = userRepository.findGoogleUserByEmail(email, "GOOGLE");
         if (findUser.isEmpty()) {
             User user = new User();
             user.setName(name);
