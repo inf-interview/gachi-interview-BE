@@ -1,6 +1,7 @@
 package inflearn.interview.service;
 
 import inflearn.interview.domain.User;
+import inflearn.interview.exception.TokenNotValidateException;
 import inflearn.interview.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -40,6 +43,7 @@ public class JwtTokenProvider {
     }
 
     public String createRefreshToken(UserDetails userDetails) {
+
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
@@ -88,28 +92,28 @@ public class JwtTokenProvider {
     }
 
     @Transactional(readOnly = true)
-    public String validateRefreshToken(String refreshToken, String oldAccessToken) { //refreshToken과 만료된 AccessToken을 사용하여 refreshToken 검증
+    public UserDetails validateRefreshToken(String refreshToken) {
+
         try {
-            // DB에 있는 refreshToken과 같은지
             Long id = Long.parseLong(extractUsername(refreshToken));
             User findUser = userRepository.findById(id).get();
 
             if (refreshToken.equals(findUser.getRefreshToken())) {
-                log.info("리프레시 토큰 동일");
-                // refreshToken 형태가 맞는지 만료되지 않았는지
-                if (!isTokenExpired(refreshToken) && isTokenValid(refreshToken, findUser)) {
-                    log.info("사용자 정보 동일, RefreshToken 유효기간 만료되지 않음");
-                    //AccessToken 재생성
-                    String newAccessToken = recreateAccessToken(id);
-                    return newAccessToken;
+                if (isTokenValid(refreshToken, findUser)) {
+                    return findUser;
                 }
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.info("exception {}", e.getMessage());
+            throw new TokenNotValidateException("리프레시 토큰 검증에 실패했습니다", e);
         }
-        return null;
 
+        return null;
+    }
+
+    public String extractTokenType(String token) {
+        return (String) extractAllClaims(token).get("token_type");
     }
 
     private String recreateAccessToken(Long id) {
