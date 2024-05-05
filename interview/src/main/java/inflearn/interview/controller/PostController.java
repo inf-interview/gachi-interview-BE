@@ -1,15 +1,23 @@
 package inflearn.interview.controller;
 
+import inflearn.interview.domain.dto.ErrorResponse;
 import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/board")
@@ -29,11 +37,7 @@ public class PostController {
     }
 
     @PostMapping("/write")
-    public ResponseEntity<String> postWrite(@RequestBody @Valid PostDTO postDTO, BindingResult bindingResult) {
-        //받아온 정보에 오류가 있는지 bindingResult로 확인
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("값 입력 X");
-        }
+    public ResponseEntity<String> postWrite(@RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
 
         //PostDto를 서비스로 넘기기
         Long id = postService.createPost(postDTO);
@@ -43,20 +47,19 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}/edit")
-    public void postEdit(@PathVariable Long postId, @RequestBody PostDTO postDTO) {
+    public void postEdit(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
         postService.updatePost(postId, postDTO);
     }
 
     @DeleteMapping("/{postId}/delete")
-    public void postDelete(@PathVariable Long postId) {
-        postService.deletePost(postId);
+    public void postDelete(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
+        postService.deletePost(postId); // TODO 수정 필요
     }
 
     @PostMapping("/{postId}/like")
-    public void postLike(@PathVariable Long postId, @RequestBody PostDTO postDTO) {
+    public void postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
         Long userId = postDTO.getUserId();
         postService.likePost(postId, userId);
     }
-
 
 }
