@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PostCommentDTO {
+public class PostCommentDTO extends BaseDTO{
 
     public interface valid1{} // create, delete
     public interface valid2{} // update

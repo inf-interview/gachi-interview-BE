@@ -1,23 +1,15 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.dto.ErrorResponse;
+import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.service.PostService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/board")
@@ -36,6 +28,7 @@ public class PostController {
         return postService.getPostById(postId);
     }
 
+    @ValidateUser
     @PostMapping("/write")
     public ResponseEntity<String> postWrite(@RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
 
@@ -46,16 +39,19 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(id.toString());
     }
 
+    @ValidateUser
     @PatchMapping("/{postId}/edit")
     public void postEdit(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
         postService.updatePost(postId, postDTO);
     }
 
+    @ValidateUser
     @DeleteMapping("/{postId}/delete")
     public void postDelete(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
         postService.deletePost(postId); // TODO 수정 필요
     }
 
+    @ValidateUser
     @PostMapping("/{postId}/like")
     public void postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
         Long userId = postDTO.getUserId();

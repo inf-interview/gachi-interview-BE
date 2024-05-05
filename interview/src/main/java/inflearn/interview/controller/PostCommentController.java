@@ -1,5 +1,6 @@
 package inflearn.interview.controller;
 
+import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.service.PostCommentService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class PostCommentController {
     }
 
     //댓글 작성
+    @ValidateUser
     @PostMapping("/submit")
     public ResponseEntity<PostCommentDTO> postCommentWrite(@PathVariable(name = "post_id") Long postId, @RequestBody @Validated(PostCommentDTO.valid1.class) PostCommentDTO postCommentDTO) {
         PostCommentDTO comment = postCommentService.createComment(postCommentDTO, postId);
@@ -38,12 +40,14 @@ public class PostCommentController {
     }
 
     //댓글 수정
+    @ValidateUser
     @PatchMapping("/{comment_id}")
     public void postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.valid1.class) PostCommentDTO postCommentDTO) {
         postCommentService.updateComment(postCommentDTO, commentId);
     }
 
     //댓글 삭제
+    @ValidateUser
     @DeleteMapping("/{comment_id}")
     public void postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.valid2.class) PostCommentDTO postCommentDTO) {
         postCommentService.deleteComment(commentId);
