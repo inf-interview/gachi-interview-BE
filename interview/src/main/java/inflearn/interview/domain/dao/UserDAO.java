@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 public class UserDAO {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
     @NotNull
     String name;
@@ -27,4 +30,13 @@ public class UserDAO {
     LocalDateTime time;
     @Column(name = "updated_at")
     LocalDateTime updatedTime;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<VideoDAO> videos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<VideoCommentDAO> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<VideoLikeDAO> likes = new ArrayList<>();
 }

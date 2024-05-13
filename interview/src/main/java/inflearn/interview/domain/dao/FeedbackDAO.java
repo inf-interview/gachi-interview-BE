@@ -10,17 +10,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "video_comment")
-public class VideoCommentDAO {
+@Table(name = "feedback")
+public class FeedbackDAO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    String question;
+
     String content;
-    @Column(name = "created_AT")
+
     LocalDateTime time;
-    @Column(name = "UPDATED_AT")
-    LocalDateTime updatedTime;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

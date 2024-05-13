@@ -1,5 +1,6 @@
 package inflearn.interview.service;
 
+import inflearn.interview.converter.VideoCommentDAOToDTOConverter;
 import inflearn.interview.converter.VideoCommentDTOToDAOConverter;
 import inflearn.interview.domain.dao.VideoCommentDAO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
@@ -11,45 +12,45 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class VideoCommentService {
     private final VideoRepository videoRepository;
     private final VideoCommentRepository commentRepository;
     private final UserRepository userRepository;
     private final VideoCommentDTOToDAOConverter commentConverter;
-    public List<VideoCommentDAO> getComments(Long videoId) {
-        return videoRepository.findById(videoId).get().getComments();
-    }
+    private final VideoCommentDAOToDTOConverter converter;
 
-    public VideoCommentDAO getComment(Long commentId) {
-        return commentRepository.findById(commentId).get();
-    }
-
-    @Transactional
-    public VideoCommentDAO addComment(Long videoId, VideoCommentDTO comment) {
-        String userName = userRepository.findById(comment.getUserId()).get().getName();
-        comment.setUserName(userName);
-        comment.setVideoId(videoId);
-        comment.setTime(LocalDateTime.now());
-        VideoCommentDAO commentDAO = commentConverter.convert(comment);
-        VideoCommentDAO saved = commentRepository.save(commentDAO);
-        return saved;
-    }
-
-    @Transactional
-    public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {
-        VideoCommentDAO comment = commentRepository.findById(commentId).get();
-        comment.setContent(videoCommentDTO.getContent());
-    }
-
-    public void deleteComment(Long commentId, VideoCommentDTO videoCommentDTO) {
-        VideoCommentDAO comment = commentRepository.findById(commentId).get();
-        if (!comment.getUser().getUserId().equals(videoCommentDTO.getUserId())) {
-            return;
+    public List<VideoCommentDTO> getComments(Long videoId) {
+        List<VideoCommentDAO> comments = videoRepository.findById(videoId).get().getComments();
+        List<VideoCommentDTO> results = new ArrayList<>();
+        for (VideoCommentDAO comment : comments) {
+            results.add(converter.convert(comment));
         }
-        commentRepository.delete(comment);
+        return results;
+    }
+
+    public VideoCommentDTO getComment(Long commentId) {
+        VideoCommentDAO comment = commentRepository.findById(commentId).get();
+        return converter.convert(comment);
+    }
+
+    public void addComment(Long videoId, VideoCommentDTO comment) {
+        commentRepository.save(Objects.requireNonNull(commentConverter.convert(comment)));
+    }
+
+    public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {
+        VideoCommentDAO target = commentRepository.findById(commentId).get();
+        target.setUpdatedTime(LocalDateTime.now());
+        target.setContent(videoCommentDTO.getContent());
+    }
+
+    public void deleteComment(Long commentId) {
+        commentRepository.deleteById(commentId);
     }
 }

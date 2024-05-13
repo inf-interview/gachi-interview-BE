@@ -16,6 +16,8 @@ import java.util.List;
 public class VideoDAO {
 
     @Id
+    @Column(name = "video_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long videoId;
     @Column(name = "CREATED_AT")
     LocalDateTime time;
@@ -33,11 +35,13 @@ public class VideoDAO {
     @Column(name = "tag")
     String rawTags;
 
-    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL)
-    private List<VideoCommentDAO> comments = new ArrayList<>();
-
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    UserDAO user;
+    private UserDAO user;
+
+    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
+    List<VideoCommentDAO> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
+    List<VideoLikeDAO> likes = new ArrayList<>();
 }

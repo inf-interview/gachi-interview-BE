@@ -10,16 +10,16 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "video_comment")
-public class VideoCommentDAO {
+@Table(name = "video_like")
+public class VideoLikeDAO {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     Long id;
 
-    String content;
-    @Column(name = "created_AT")
+    @Column(name = "created_at")
     LocalDateTime time;
-    @Column(name = "UPDATED_AT")
+
+    @Column(name = "updated_at")
     LocalDateTime updatedTime;
 
     @NotNull

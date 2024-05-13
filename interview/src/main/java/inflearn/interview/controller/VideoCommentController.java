@@ -22,30 +22,29 @@ public class VideoCommentController {
 
     private final VideoCommentService commentService;
 
-    @GetMapping
-    public List<VideoCommentDAO> getVideoComments(@PathVariable("video_id") Long videoId) {
+    @GetMapping("/comments")
+    public List<VideoCommentDTO> getVideoCommentsController(@PathVariable("video_id") Long videoId) {
         return commentService.getComments(videoId);
     }
 
     @GetMapping("/{comment_id}")
-    public VideoCommentDAO getVideoComment(@PathVariable("comment_id") Long commentId) {
+    public VideoCommentDTO getVideoCommentController(@PathVariable("comment_id") Long commentId) {
         return commentService.getComment(commentId);
     }
 
     @PostMapping("/submit")
-    public VideoCommentDAO addVideoComment(@PathVariable("video_id") Long videoId, @RequestBody VideoCommentDTO videoCommentDTO) {
-        return commentService.addComment(videoId, videoCommentDTO);
+    public void addVideoCommentController(@PathVariable("video_id") Long videoId, @RequestBody VideoCommentDTO videoCommentDTO) {
+        commentService.addComment(videoId, videoCommentDTO);
     }
 
     @PatchMapping("/comments/{comment_id}")
-    public void updateVideoComment(@PathVariable("comment_id") Long commentId, @RequestBody VideoCommentDTO videoCommentDTO) {
+    public void updateVideoCommentController(@PathVariable("comment_id") Long commentId, @RequestBody VideoCommentDTO videoCommentDTO) {
         commentService.editComment(commentId, videoCommentDTO);
     }
 
     @DeleteMapping("/comments/{comment_id}")
-    public void deleteVideoComment(@PathVariable("comment_id") Long commentId, @RequestBody VideoCommentDTO videoCommentDTO) {
-        commentService.deleteComment(commentId, videoCommentDTO);
+    public void deleteVideoCommentController(@PathVariable("comment_id") Long commentId) {
+        commentService.deleteComment(commentId);
     }
-
 
 }

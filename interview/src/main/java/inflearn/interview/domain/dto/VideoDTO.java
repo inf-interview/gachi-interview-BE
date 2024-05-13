@@ -22,7 +22,6 @@ public class VideoDTO {
     String videoTitle;
     @NotNull
     String videoLink;
-    String rawTags;
     String[] tags;
-    Long like;
+    Long like = 0L;
 }
