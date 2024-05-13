@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -112,17 +110,4 @@ public class JwtTokenProvider {
         return null;
     }
 
-    public String extractTokenType(String token) {
-        return (String) extractAllClaims(token).get("token_type");
-    }
-
-    private String recreateAccessToken(Long id) {
-        Date now = new Date();
-        return Jwts.builder()
-                .setSubject(id.toString())
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + (30 * 60 * 1000L)))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
 }

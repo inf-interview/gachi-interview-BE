@@ -1,13 +1,9 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.dto.MyPostDTO;
-import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -17,13 +13,13 @@ public class MyPageController {
     private final UserService userService;
 
     @GetMapping("/{user_id}/boards")
-    public List<MyPostDTO> myPost(@PathVariable(name = "user_id") Long userId) {
-        return userService.getMyPost(userId);
+    public ResponseEntity<?> myPost(@PathVariable(name = "user_id") Long userId) {
+        return ResponseEntity.ok(userService.getMyPost(userId));
     }
 
     @GetMapping("/{user_id}/comments")
-    public List<PostCommentDTO> myComment(@PathVariable(name = "user_id") Long userId) {
-        return userService.getMyComment(userId);
+    public ResponseEntity<?> myComment(@PathVariable(name = "user_id") Long userId) {
+        return ResponseEntity.ok(userService.getMyComment(userId));
     }
 
     @GetMapping("/{user_id}/videos")

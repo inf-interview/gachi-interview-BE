@@ -1,8 +1,10 @@
 package inflearn.interview.controller;
 
 import inflearn.interview.aop.ValidateUser;
+import inflearn.interview.domain.dto.ErrorResponse;
 import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
+import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,32 +32,47 @@ public class PostController {
 
     @ValidateUser
     @PostMapping("/write")
-    public ResponseEntity<String> postWrite(@RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
+    public ResponseEntity<PostDTO> postWrite(@RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
 
         //PostDto를 서비스로 넘기기
-        Long id = postService.createPost(postDTO);
+        PostDTO post = postService.createPost(postDTO);
 
         //저장
-        return ResponseEntity.status(HttpStatus.CREATED).body(id.toString());
+        return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
 
     @ValidateUser
     @PatchMapping("/{postId}/edit")
-    public void postEdit(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
-        postService.updatePost(postId, postDTO);
+    public ResponseEntity<?> postEdit(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
+        try {
+            PostDTO getDTO = postService.updatePost(postId, postDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(getDTO);
+        } catch (RequestDeniedException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
+
     }
 
     @ValidateUser
     @DeleteMapping("/{postId}/delete")
-    public void postDelete(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
-        postService.deletePost(postId); // TODO 수정 필요
+    public ResponseEntity<?> postDelete(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
+        Long userId = postDTO.getUserId();
+        try {
+            postService.deletePost(postId, userId);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (RequestDeniedException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
     }
 
     @ValidateUser
     @PostMapping("/{postId}/like")
-    public void postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
+    public ResponseEntity<String> postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
         Long userId = postDTO.getUserId();
         postService.likePost(postId, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

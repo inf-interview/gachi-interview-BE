@@ -12,18 +12,19 @@ import java.time.LocalDateTime;
 @Setter
 public class PostCommentDTO extends BaseDTO{
 
-    public interface valid1{} // create, delete
-    public interface valid2{} // update
+    public interface create{}
+    public interface update{}
+    public interface delete{}
 
-    @NotNull(message = "댓글 아이디 누락", groups = valid2.class)
+    @NotNull(message = "댓글 아이디 누락", groups = {update.class, delete.class})
     private Long commentId;
 
-    @NotNull(message = "유저 아이디 누락", groups = {valid1.class, valid2.class})
+    @NotNull(message = "유저 아이디 누락", groups = {create.class, update.class, delete.class})
     private Long userId;
 
     private String username;
 
-    @NotBlank(message = "내용은 필수항목 입니다.", groups = {valid1.class, valid2.class})
+    @NotBlank(message = "내용은 필수항목 입니다.", groups = {create.class, update.class})
     private String content;
 
     private LocalDateTime createdAt;

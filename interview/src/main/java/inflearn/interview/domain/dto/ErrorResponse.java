@@ -28,4 +28,11 @@ public class ErrorResponse {
         this.path = path;
         this.timestamp = LocalDateTime.now().toString();
     }
+
+    public ErrorResponse(int status, String error, String message) {
+        this.status = status;
+        this.error = error;
+        this.message = message;
+        this.timestamp = LocalDateTime.now().toString();
+    }
 }

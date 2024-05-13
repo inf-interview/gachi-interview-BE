@@ -17,7 +17,7 @@ public class GlobalExceptionAdvice {
 
         StringBuilder message = new StringBuilder();
 
-        ex.getAllErrors().forEach(error-> {
+        ex.getAllErrors().forEach(error -> {
             String errorMessage = error.getDefaultMessage();
             message.append(errorMessage).append(" ");
         });

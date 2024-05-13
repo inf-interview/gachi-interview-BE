@@ -27,7 +27,7 @@ public class SecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/**").permitAll() // 해당 링크는 인증 없이 허용
+                        .requestMatchers("/user/kakao", "user/kakao/login", "user/google", "user/google/login").permitAll() // 해당 링크는 인증 없이 허용
                         .anyRequest().authenticated())
                 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
