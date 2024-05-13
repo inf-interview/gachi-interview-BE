@@ -1,5 +1,6 @@
-package inflearn.interview.domain.DO;
+package inflearn.interview.domain;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,15 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User {
-    @NotNull
     Long userId;
-    @NotNull
     String name;
-    @NotNull
     String email;
-    @NotNull
     String social;
-    @NotNull
     String createdAt;
     String updatedAt;
 }
