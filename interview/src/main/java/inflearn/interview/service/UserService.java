@@ -6,7 +6,6 @@ import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.MyPostDTO;
 import inflearn.interview.domain.dto.PostCommentDTO;
-import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.repository.PostCommentRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
@@ -31,10 +30,9 @@ public class UserService {
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
 
-
-    public Object[] loginKakao(String code) { // 반환 값 User, RefreshToken
-        String[] tokens = kakaoProvider.getAccessToken(code);
-        String kakaoInfo = kakaoProvider.getKakaoInfo(tokens[0]);
+    public User loginKakao(String code) { // 반환 값 User, RefreshToken
+        String accessToken = kakaoProvider.getAccessToken(code);
+        String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
 
         JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
 
@@ -45,7 +43,7 @@ public class UserService {
         String nickname = jsonObject.getAsJsonObject("properties").get("nickname").getAsString();
 
         //유저 정보가 DB에 있는지 체크
-        Optional<User> findUser = userRepository.findUserByEmail(email);
+        Optional<User> findUser = userRepository.findUserByEmailAndSocial(email, "KAKAO");
         if (findUser.isEmpty()) {
             User user = new User();
             user.setName(nickname);
@@ -53,16 +51,16 @@ public class UserService {
             user.setSocial("KAKAO");
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
-            return new Object[]{user, tokens[1]};
+            return user;
         }
-        return new Object[]{findUser.get(), tokens[1]}; // User, RefreshToken 반환
+        return findUser.get(); // User 반환
 
     }
 
-    public Object[] loginGoogle(String code) {
+    public User loginGoogle(String code) {
 
-        String[] tokens = googleProvider.getAccessToken(code);
-        String googleInfo = googleProvider.getGoogleInfo(tokens[0]);
+        String accessToken = googleProvider.getAccessToken(code);
+        String googleInfo = googleProvider.getGoogleInfo(accessToken);
 
         log.info("info={}", googleInfo);
 
@@ -71,7 +69,7 @@ public class UserService {
         String name = jsonObject.get("name").getAsString();
         String email = jsonObject.get("email").getAsString();
 
-        Optional<User> findUser = userRepository.findUserByEmail(email);
+        Optional<User> findUser = userRepository.findUserByEmailAndSocial(email, "GOOGLE");
         if (findUser.isEmpty()) {
             User user = new User();
             user.setName(name);
@@ -79,9 +77,9 @@ public class UserService {
             user.setSocial("GOOGLE");
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
-            return new Object[]{user, tokens[1]};
+            return user;
         }
-        return new Object[]{findUser.get(), tokens[1]};
+        return findUser.get();
     }
 
     public List<MyPostDTO> getMyPost(Long userId) {

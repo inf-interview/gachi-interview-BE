@@ -1,8 +1,11 @@
 package inflearn.interview.filter;
 
+import inflearn.interview.exception.TokenNotValidateException;
 import inflearn.interview.service.CustomUserDetailsService;
 import inflearn.interview.service.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +16,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -43,8 +45,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        jwt = authHeader.substring(7);
+
         try {
-            jwt = authHeader.substring(7);
             userId = jwtTokenProvider.extractUsername(jwt);
 
 
@@ -67,31 +70,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
                 }
             }
-        } catch (ExpiredJwtException e) {
-            String id = recreateAccessToken(request, response, e);
-            response.setHeader("userId", id);
+        } catch (ExpiredJwtException e) { //AccessToken 만료
+            String rawRefreshToken = request.getHeader("RefreshToken");
+            if (rawRefreshToken != null) {
+                String refreshToken = rawRefreshToken.substring(7);
+                if (!jwtTokenProvider.isTokenExpired(refreshToken)) {
+                    recreateAccessToken(request, response, refreshToken);
+                    return;
+                }
+                throw new TokenNotValidateException("리프레시 토큰이 만료되어 재로그인이 필요합니다", e);
+            }
+            throw new TokenNotValidateException("만료된 AccessToken, RefreshToken이 필요합니다", e);
+
+        } catch (UnsupportedJwtException e) { //지원되지 않는 jwt 토큰
+            throw new TokenNotValidateException("지원되지 않는 JWT 토큰입니다", e);
+        } catch (MalformedJwtException e) { //잘못된 서명(변조)
+            throw new TokenNotValidateException("잘못된 서명의 JWT 토큰입니다", e);
         }
+
         filterChain.doFilter(request,response);
     }
 
-    private String recreateAccessToken(HttpServletRequest request, HttpServletResponse response, Exception exception) {
+    private void recreateAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+
+        log.info("기존 Access 토큰 만료");
+        UserDetails getUser = jwtTokenProvider.validateRefreshToken(refreshToken);//refreshToken 검증 후 유저정보 가져옴
+
         try {
-            log.info("기존 토큰 만료");
-            String refreshToken = request.getHeader("Refresh-Token");
-            if (refreshToken == null) {
-                throw exception;
-            }
+            String accessToken = jwtTokenProvider.createAccessToken(getUser);
 
-            String rawOldAccessToken = request.getHeader("Authorization"); //만료된 토큰
-            String oldAccessToken = rawOldAccessToken.substring(7);
-
-            String newAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken, oldAccessToken);
-
-            String id = jwtTokenProvider.extractUsername(newAccessToken);
+            String id = jwtTokenProvider.extractUsername(accessToken);
             UserDetails userDetails = userDetailsService.loadUserById(Long.parseLong(id));
 
-            response.setHeader("New-Access-Token", newAccessToken);
-            log.info("newAccessToken={}", newAccessToken);
+            log.info("newAccessToken={}", accessToken);
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,
@@ -105,11 +116,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            return id;
+            response.setHeader("Authorization", "Bearer " + accessToken);
+            response.setHeader("userId", id);
 
         } catch (Exception e) {
-            request.setAttribute("exception", e);
-            return null;
+            log.info("exception {}", e.getMessage());
+            throw new TokenNotValidateException("엑세스 토큰 재생성중 오류 발생", e);
         }
 
     }

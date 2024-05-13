@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long> , CustomPostRepository {
 
     @Query("select new inflearn.interview.domain.dto.MyPostDTO(p, count(c.postCommentId)) " +
             "from Post p " +

@@ -5,10 +5,12 @@ import inflearn.interview.domain.PostLike;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
+import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostLikeRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -26,10 +29,9 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
 
 
-    public void getAllPost(int page, int size, PageInfo pageInfo) {
-        PageRequest pageRequest = PageRequest.of(page - 1, size);
-
-        Page<Post> findPosts = postRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+    public Page<PostDTO> getAllPost(PageInfo pageInfo, int page) {
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
+        return postRepository.findAllPostByPageInfo(pageInfo, pageRequest);
     }
 
     public PostDTO getPostById(Long postId) {
@@ -38,22 +40,38 @@ public class PostService {
     }
     //게시글 생성
 
-    public Long createPost(PostDTO postDTO) {
+    public PostDTO createPost(PostDTO postDTO) {
         User findUser = userRepository.findById(postDTO.getUserId()).get();
         Post post = new Post(findUser, postDTO.getPostTitle(), postDTO.getContent(), DtoToEntityTagConverter(postDTO.getTag()), postDTO.getCategory());
         postRepository.save(post);
-        return post.getPostId();
+        postDTO.setUserId(findUser.getUserId());
+        postDTO.setPostId(post.getPostId());
+        postDTO.setTime(post.getCreatedAt());
+        return postDTO;
     }
 
-    public void updatePost(Long postId, PostDTO postDTO) {
+    public PostDTO updatePost(Long postId, PostDTO postDTO) throws RequestDeniedException{
         Post findPost = postRepository.findById(postId).get();
-        findPost.setTitle(postDTO.getPostTitle());
-        findPost.setCategory(postDTO.getCategory());
-        findPost.setTag(DtoToEntityTagConverter(postDTO.getTag()));
-        findPost.setContent(postDTO.getContent());
+        if (postDTO.getUserId().equals(findPost.getUser().getUserId())) {
+            findPost.setTitle(postDTO.getPostTitle());
+            findPost.setCategory(postDTO.getCategory());
+            findPost.setTag(DtoToEntityTagConverter(postDTO.getTag()));
+            findPost.setContent(postDTO.getContent());
+            postDTO.setPostId(findPost.getPostId());
+            return postDTO;
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, Long userId) throws RequestDeniedException{
+        //유저가 작성한 포스트인지 체크
+        Post post = postRepository.findById(postId).get();
+        log.info("userId {}", post.getUser().getUserId());
+
+        if (!(post.getUser().getUserId()).equals(userId)) {
+            throw new RequestDeniedException();
+        }
         postRepository.deleteById(postId);
     }
 

@@ -38,8 +38,8 @@ public class PostServiceTest {
         Post post = new Post(user, "title", "content", null, "스터디");
         PostDTO postDTO = new PostDTO(post);
 
-        Long id = postService.createPost(postDTO);
-        PostDTO getPost = postService.getPostById(id);
+        PostDTO post1 = postService.createPost(postDTO);
+        PostDTO getPost = postService.getPostById(post1.getPostId());
 
         assertThat(postDTO.getPostTitle()).isEqualTo(getPost.getPostTitle());
     }
@@ -51,13 +51,13 @@ public class PostServiceTest {
         Post post = new Post(user, "title", "content", null, "스터디");
         PostDTO postDTO = new PostDTO(post);
 
-        Long id = postService.createPost(postDTO);
+        PostDTO post1 = postService.createPost(postDTO);
 
         Post newPost = new Post(user, "new title", "new content", null, "스터디");
         PostDTO postDTO2 = new PostDTO(newPost);
 
 
-        postService.updatePost(id, postDTO2);
+        postService.updatePost(post1.getPostId(), postDTO2);
 
         PostDTO getPost = postService.getPostById(1L);
 
@@ -71,8 +71,8 @@ public class PostServiceTest {
         Post post = new Post(user, "title", "content", null, "스터디");
         PostDTO postDTO = new PostDTO(post);
 
-        Long id = postService.createPost(postDTO);
+        PostDTO post1 = postService.createPost(postDTO);
 
-        postService.deletePost(id);
+        postService.deletePost(post1.getPostId(), user.getUserId());
     }
 }

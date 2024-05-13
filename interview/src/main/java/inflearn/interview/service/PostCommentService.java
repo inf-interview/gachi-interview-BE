@@ -4,6 +4,7 @@ import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.PostCommentDTO;
+import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostCommentRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
@@ -64,14 +65,24 @@ public class PostCommentService {
         return returnDto;
     }
 
-    public void updateComment(PostCommentDTO postCommentDTO, Long commentId) {
+    public void updateComment(Long postId, Long commentId, PostCommentDTO postCommentDTO) {
         PostComment findComment = postCommentRepository.findById(commentId).get();
+
+        if (!(findComment.getUser().getUserId()).equals(postCommentDTO.getUserId())) {
+            throw new RequestDeniedException();
+        }
+
         findComment.setContent(postCommentDTO.getContent());
         findComment.setUpdatedAt(LocalDateTime.now());
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long postId, Long commentId, PostCommentDTO postCommentDTO) {
         PostComment findComment = postCommentRepository.findById(commentId).get();
+
+        if (!(findComment.getUser().getUserId()).equals(postCommentDTO.getUserId())) {
+            throw new RequestDeniedException();
+        }
+
         postCommentRepository.delete(findComment);
     }
 }
