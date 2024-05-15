@@ -1,4 +1,5 @@
 package inflearn.interview.domain.dto;
 
-public class BaseDTO {
+public interface BaseDTO {
+    Long getUserId();
 }
