@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PostDTO extends BaseDTO{
+public class PostDTO implements BaseDTO{
 
     public interface valid1{} // create, update
     public interface valid2{} // delete, like

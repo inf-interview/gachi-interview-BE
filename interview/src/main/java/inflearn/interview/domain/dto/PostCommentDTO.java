@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PostCommentDTO extends BaseDTO{
+public class PostCommentDTO implements BaseDTO{
 
     public interface create{}
     public interface update{}

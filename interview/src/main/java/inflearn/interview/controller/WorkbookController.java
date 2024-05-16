@@ -1,9 +1,13 @@
 package inflearn.interview.controller;
 
+import inflearn.interview.aop.ValidateUser;
+import inflearn.interview.domain.Question;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Workbook;
-import inflearn.interview.dto.WorkbookRequestDto;
-import inflearn.interview.dto.WorkbookResponseDto;
+import inflearn.interview.domain.dto.QuestionRequestDTO;
+import inflearn.interview.domain.dto.QuestionResponseDTO;
+import inflearn.interview.domain.dto.WorkbookRequestDTO;
+import inflearn.interview.domain.dto.WorkbookResponseDTO;
 import inflearn.interview.service.WorkbookService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,59 +15,60 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // TODO: 로컬 테스트용. 이후 삭제 필요
-@RequestMapping("/interview/question")
-@Controller
+@RequestMapping("/workbook")
+@RestController
 public class WorkbookController {
 
     private final WorkbookService workbookService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<WorkbookResponseDto>> getWorkbookList() {
-        List<WorkbookResponseDto> workbooks = workbookService.getWorkbooks().stream()
-                .map(WorkbookResponseDto::new).collect(Collectors.toList());
+    public ResponseEntity<List<WorkbookResponseDTO>> getWorkbookList(@AuthenticationPrincipal User user) {
+        List<WorkbookResponseDTO> workbooks = workbookService.getWorkbooks(user).stream()
+                .map(WorkbookResponseDTO::new).collect(Collectors.toList());
 
         return new ResponseEntity<>(workbooks, HttpStatus.OK);
     }
 
-    @PostMapping("/list")
-    public ResponseEntity<WorkbookResponseDto> createWorkbook(User user,
-            @RequestBody WorkbookRequestDto requestDto) {
-        Workbook workbook = workbookService.createWorkbook(null, requestDto.getTitle());
-
-        return new ResponseEntity<>(new WorkbookResponseDto(workbook), HttpStatus.OK);
+    @ValidateUser
+    @PostMapping
+    public ResponseEntity<String> createWorkbook(@RequestBody WorkbookRequestDTO dto) {
+        workbookService.createWorkbook(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/list/{workbookId}")
-    public ResponseEntity<WorkbookResponseDto> getWorkbook(@PathVariable Long workbookId) {
-        Workbook workbook = workbookService.findWorkbook(workbookId);
-
-        return new ResponseEntity<>(new WorkbookResponseDto(workbook), HttpStatus.OK);
-    }
-
-    @PatchMapping("/list/{workbookId}")
-    public ResponseEntity<WorkbookResponseDto> updateWorkbook(@PathVariable Long workbookId,
-            @RequestBody WorkbookRequestDto requestDto) {
-        Workbook workbook = workbookService.updateWorkbook(workbookId, requestDto.getTitle());
-
-        return new ResponseEntity<>(new WorkbookResponseDto(workbook), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/list/{workbookId}")
-    public ResponseEntity<?> deleteWorkbook(@PathVariable Long workbookId) {
+    @ValidateUser
+    @DeleteMapping("/{workbook_id}")
+    public ResponseEntity<?> deleteWorkbook(@RequestBody WorkbookRequestDTO dto, @PathVariable(name = "workbook_id") Long workbookId) {
         workbookService.deleteWorkbook(workbookId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+    /**
+     * 질문 세트
+     */
+    @GetMapping("/{workbook_id}/question/list")
+    public ResponseEntity<List<QuestionResponseDTO>> getWorkbook(@PathVariable(name = "workbook_id") Long workbookId) {
+        List<QuestionResponseDTO> questions = workbookService.findQuestion(workbookId).stream().map(QuestionResponseDTO::new).toList();
+        return ResponseEntity.ok(questions);
+
+    }
+
+    @ValidateUser
+    @PostMapping("/{workbook_id}/question")
+    public ResponseEntity<?> writeQuestion(@PathVariable(name = "workbook_id") Long workbookId, @RequestBody QuestionRequestDTO dto) {
+        workbookService.createQuestion(workbookId, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/{workbook_id}/question/{question_id}")
+    public ResponseEntity<?> deleteQuestion(@PathVariable(name = "workbook_id") Long workbookId, @PathVariable(name = "question_id") Long questionId) {
+        workbookService.deleteQuestion(workbookId, questionId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

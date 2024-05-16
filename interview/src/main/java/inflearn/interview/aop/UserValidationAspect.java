@@ -33,20 +33,18 @@ public class UserValidationAspect {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) authentication.getPrincipal();
 
-            if (dto instanceof PostDTO) {
-                PostDTO postDTO = (PostDTO) dto;
-                if (!user.getUserId().equals(postDTO.getUserId())) {
-                    ErrorResponse errorResponse = createErrorResponse(request.getRequestURI());
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-                }
+            if (dto.getUserId() != null && user.getUserId().equals(dto.getUserId())) {
+                return joinPoint.proceed();
             }
-            // 추가 가능
+            else {
+                ErrorResponse errorResponse = createErrorResponse(request.getRequestURI());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            }
 
-            return joinPoint.proceed();
         }
 
         catch (Throwable throwable) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(throwable.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("유저 검증에 실패하였습니다.");
         }
 
     }
