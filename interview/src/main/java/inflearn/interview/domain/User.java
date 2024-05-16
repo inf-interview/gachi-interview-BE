@@ -5,66 +5,38 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Users")
-public class User implements UserDetails {
+@Table(name = "user_table")
+public class User {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long userId;
+    @NotNull
+    String name;
+    @Email
+    String email;
+    @NotNull
+    String social;
+    @NotNull
+    @Column(name = "created_at")
+    LocalDateTime time;
+    @Column(name = "updated_at")
+    LocalDateTime updatedTime;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Video> videos = new ArrayList<>();
 
-    private String name;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<VideoComment> comments = new ArrayList<>();
 
-    private String email;
-
-    private String social;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    private String refreshToken;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return userId.toString();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<VideoLike> likes = new ArrayList<>();
 }
