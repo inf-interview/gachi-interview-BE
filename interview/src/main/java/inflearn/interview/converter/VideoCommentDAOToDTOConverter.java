@@ -1,6 +1,6 @@
 package inflearn.interview.converter;
 
-import inflearn.interview.domain.dao.VideoCommentDAO;
+import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.VideoCommentDTO;
 import inflearn.interview.repository.VideoLikeRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class VideoCommentDAOToDTOConverter implements Converter< VideoCommentDAO, VideoCommentDTO> {
+public class VideoCommentDAOToDTOConverter implements Converter<VideoComment, VideoCommentDTO> {
     private final VideoLikeRepository videoLikeRepository;
     @Override
-    public VideoCommentDTO convert(VideoCommentDAO source) {
+    public VideoCommentDTO convert(VideoComment source) {
         VideoCommentDTO target = new VideoCommentDTO();
         target.setTime(source.getTime());
         target.setContent(source.getContent());

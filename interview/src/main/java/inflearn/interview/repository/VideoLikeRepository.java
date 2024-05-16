@@ -1,14 +1,14 @@
 package inflearn.interview.repository;
 
-import inflearn.interview.domain.dao.UserDAO;
-import inflearn.interview.domain.dao.VideoDAO;
-import inflearn.interview.domain.dao.VideoLikeDAO;
+import inflearn.interview.domain.User;
+import inflearn.interview.domain.Video;
+import inflearn.interview.domain.VideoLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface VideoLikeRepository extends JpaRepository<VideoLikeDAO, Long> {
-    void deleteByUserAndVideo(UserDAO user, VideoDAO video);
+public interface VideoLikeRepository extends JpaRepository<VideoLike, Long> {
+    void deleteByUserAndVideo(User user, Video video);
 
-    Long countAllByVideo(VideoDAO video);
+    Long countAllByVideo(Video video);
 }

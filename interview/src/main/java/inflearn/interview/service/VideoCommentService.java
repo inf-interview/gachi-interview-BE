@@ -2,7 +2,7 @@ package inflearn.interview.service;
 
 import inflearn.interview.converter.VideoCommentDAOToDTOConverter;
 import inflearn.interview.converter.VideoCommentDTOToDAOConverter;
-import inflearn.interview.domain.dao.VideoCommentDAO;
+import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.VideoCommentDTO;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoCommentRepository;
@@ -27,16 +27,16 @@ public class VideoCommentService {
     private final VideoCommentDAOToDTOConverter converter;
 
     public List<VideoCommentDTO> getComments(Long videoId) {
-        List<VideoCommentDAO> comments = videoRepository.findById(videoId).get().getComments();
+        List<VideoComment> comments = videoRepository.findById(videoId).get().getComments();
         List<VideoCommentDTO> results = new ArrayList<>();
-        for (VideoCommentDAO comment : comments) {
+        for (VideoComment comment : comments) {
             results.add(converter.convert(comment));
         }
         return results;
     }
 
     public VideoCommentDTO getComment(Long commentId) {
-        VideoCommentDAO comment = commentRepository.findById(commentId).get();
+        VideoComment comment = commentRepository.findById(commentId).get();
         return converter.convert(comment);
     }
 
@@ -45,7 +45,7 @@ public class VideoCommentService {
     }
 
     public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {
-        VideoCommentDAO target = commentRepository.findById(commentId).get();
+        VideoComment target = commentRepository.findById(commentId).get();
         target.setUpdatedTime(LocalDateTime.now());
         target.setContent(videoCommentDTO.getContent());
     }

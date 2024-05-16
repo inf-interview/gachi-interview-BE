@@ -1,4 +1,4 @@
-package inflearn.interview.domain.dao;
+package inflearn.interview.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "user_table")
-public class UserDAO {
+public class User {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +32,11 @@ public class UserDAO {
     LocalDateTime updatedTime;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<VideoDAO> videos = new ArrayList<>();
+    List<Video> videos = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<VideoCommentDAO> comments = new ArrayList<>();
+    List<VideoComment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<VideoLikeDAO> likes = new ArrayList<>();
+    List<VideoLike> likes = new ArrayList<>();
 }

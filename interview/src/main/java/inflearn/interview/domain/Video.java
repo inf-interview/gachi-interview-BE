@@ -1,4 +1,4 @@
-package inflearn.interview.domain.dao;
+package inflearn.interview.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "video")
-public class VideoDAO {
+public class Video {
 
     @Id
     @Column(name = "video_id")
@@ -37,11 +37,11 @@ public class VideoDAO {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserDAO user;
+    private User user;
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
-    List<VideoCommentDAO> comments = new ArrayList<>();
+    List<VideoComment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
-    List<VideoLikeDAO> likes = new ArrayList<>();
+    List<VideoLike> likes = new ArrayList<>();
 }

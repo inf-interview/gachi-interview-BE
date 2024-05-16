@@ -1,7 +1,7 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.dao.FeedbackDAO;
-import inflearn.interview.domain.dao.UserDAO;
+import inflearn.interview.domain.Feedback;
+import inflearn.interview.domain.User;
 import inflearn.interview.service.FeedbackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class FeedbackController {
 
 
     @PostMapping("/submit-gpt")
-    public void submit(@RequestBody UserDAO user, Long videoId){
+    public void submit(@RequestBody User user, Long videoId){
         feedbackService.GPTFeedback(videoId, user);
     }
 
@@ -33,12 +33,12 @@ public class FeedbackController {
 
 
     @GetMapping("/feedbacks")
-    public List<FeedbackDAO> getFeedbacks(Long videoId){
+    public List<Feedback> getFeedbacks(Long videoId){
         return feedbackService.getFeedbacks(videoId);
     }
 
     @GetMapping("/feedback/{feedbackId}")
-    public FeedbackDAO getFeedback(@PathVariable Long feedbackId){
+    public Feedback getFeedback(@PathVariable Long feedbackId){
         return feedbackService.getFeedback(feedbackId);
     }
 

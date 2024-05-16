@@ -1,7 +1,6 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.dao.VideoDAO;
-import inflearn.interview.domain.dto.VideoDTO;
+import inflearn.interview.domain.Video;
 import inflearn.interview.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,7 @@ public class InterviewController {
     private final VideoRepository videoRepository;
     @GetMapping
     @Transactional
-    public void complete(@RequestBody VideoDAO video){
+    public void complete(@RequestBody Video video){
         videoRepository.save(video);
     }
 }

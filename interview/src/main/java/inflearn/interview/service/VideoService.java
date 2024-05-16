@@ -1,7 +1,7 @@
 package inflearn.interview.service;
 
 import inflearn.interview.converter.VideoDAOToDTOConverter;
-import inflearn.interview.domain.dao.VideoDAO;
+import inflearn.interview.domain.Video;
 import inflearn.interview.domain.dto.VideoDTO;
 import inflearn.interview.repository.VideoLikeRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -25,7 +25,7 @@ public class VideoService {
 
     public VideoDTO getVideoById(Long videoId){
 
-        VideoDAO video = videoRepository.findById(videoId).get();
+        Video video = videoRepository.findById(videoId).get();
         Long likeCount = videoLikeRepository.countAllByVideo(video);
         VideoDTO videoDTO = DAOToDTOConverter.convert(video);
 
@@ -37,8 +37,8 @@ public class VideoService {
     }
 
     public void updateVideo(Long videoId, VideoDTO updatedVideo){
-        Optional<VideoDAO> result = videoRepository.findById(videoId);
-        VideoDAO originalVideo = result.get();
+        Optional<Video> result = videoRepository.findById(videoId);
+        Video originalVideo = result.get();
         updateVideoInformation(updatedVideo, originalVideo);
     }
 
@@ -55,7 +55,7 @@ public class VideoService {
 
 
 
-    private static void updateVideoInformation(VideoDTO updatedVideo, VideoDAO newVideo) {
+    private static void updateVideoInformation(VideoDTO updatedVideo, Video newVideo) {
         newVideo.setVideoLink(updatedVideo.getVideoLink());
         newVideo.setExposure(updatedVideo.getExposure());
         String[] tags = updatedVideo.getTags();
@@ -70,7 +70,7 @@ public class VideoService {
     public Page<VideoDTO> getVideoList(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
 
-        Page<VideoDAO> videoPage = videoRepository.findAll(pageable);
+        Page<Video> videoPage = videoRepository.findAll(pageable);
 
         return videoPage.map(DAOToDTOConverter::convert);
     }

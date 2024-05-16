@@ -3,9 +3,9 @@ package inflearn.interview.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import inflearn.interview.domain.dao.FeedbackDAO;
-import inflearn.interview.domain.dao.UserDAO;
-import inflearn.interview.domain.dao.VideoDAO;
+import inflearn.interview.domain.Feedback;
+import inflearn.interview.domain.User;
+import inflearn.interview.domain.Video;
 import inflearn.interview.repository.FeedbackRepository;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -42,8 +42,8 @@ public class FeedbackService {
     ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public void GPTFeedback(Long videoId, UserDAO user){
-        VideoDAO video = videoRepository.findById(videoId).get();
+    public void GPTFeedback(Long videoId, User user){
+        Video video = videoRepository.findById(videoId).get();
 
         RequestBody requestBody = new RequestBody();
         requestBody.setQuestion("YourQuestion");
@@ -70,8 +70,7 @@ public class FeedbackService {
 
 
         //db에 유저정보랑 질문, 답변 gpt 답변담아두고
-        FeedbackDAO target = new FeedbackDAO();
-
+        Feedback target = new Feedback();
 
         target.setContent(sendGPT(question, answer));
         target.setUser(userRepository.findById(user.getUserId()).get());
@@ -126,11 +125,11 @@ public class FeedbackService {
         feedbackRepository.deleteById(videoId);
     }
 
-    public List<FeedbackDAO> getFeedbacks(Long videoId) {
+    public List<Feedback> getFeedbacks(Long videoId) {
         return feedbackRepository.findByVideo(videoRepository.findById(videoId).get());
     }
 
-    public FeedbackDAO getFeedback(Long feedbackId) {
+    public Feedback getFeedback(Long feedbackId) {
         return feedbackRepository.findById(feedbackId).get();
     }
 

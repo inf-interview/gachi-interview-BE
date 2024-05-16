@@ -1,8 +1,8 @@
 package inflearn.interview.service;
 
-import inflearn.interview.domain.dao.UserDAO;
-import inflearn.interview.domain.dao.VideoDAO;
-import inflearn.interview.domain.dao.VideoLikeDAO;
+import inflearn.interview.domain.User;
+import inflearn.interview.domain.Video;
+import inflearn.interview.domain.VideoLike;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoLikeRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -20,10 +20,10 @@ public class VideoLikeService {
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
 
-    public void addLike(Long video_id, UserDAO userDAO){
-        UserDAO user = userRepository.findById(userDAO.getUserId()).get();
-        VideoDAO video = videoRepository.findById(video_id).get();
-        VideoLikeDAO videoLike = new VideoLikeDAO();
+    public void addLike(Long video_id, User userDAO){
+        User user = userRepository.findById(userDAO.getUserId()).get();
+        Video video = videoRepository.findById(video_id).get();
+        VideoLike videoLike = new VideoLike();
         videoLike.setVideo(video);
         videoLike.setUser(user);
         videoLike.setTime(LocalDateTime.now());
@@ -31,9 +31,9 @@ public class VideoLikeService {
         videoLikeRepository.save(videoLike);
     }
 
-    public void deleteLike(Long video_id, UserDAO userDAO){
-        VideoDAO video = videoRepository.findById(video_id).get();
-        UserDAO user = userRepository.findById(userDAO.getUserId()).get();
+    public void deleteLike(Long video_id, User userDAO){
+        Video video = videoRepository.findById(video_id).get();
+        User user = userRepository.findById(userDAO.getUserId()).get();
         videoLikeRepository.deleteByUserAndVideo(user, video);
     }
 }

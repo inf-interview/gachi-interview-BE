@@ -1,14 +1,14 @@
 package inflearn.interview.converter;
 
-import inflearn.interview.domain.dao.VideoDAO;
+import inflearn.interview.domain.Video;
 import inflearn.interview.domain.dto.VideoDTO;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VideoDAOToDTOConverter implements Converter<VideoDAO, VideoDTO>{
+public class VideoDAOToDTOConverter implements Converter<Video, VideoDTO>{
     @Override
-    public VideoDTO convert(VideoDAO source) {
+    public VideoDTO convert(Video source) {
         VideoDTO DTO = new VideoDTO();
         DTO.setUserId(source.getUser().getUserId());
         DTO.setUserName(source.getUser().getName());

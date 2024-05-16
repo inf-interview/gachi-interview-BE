@@ -1,8 +1,8 @@
 package inflearn.interview.repository;
 
-import inflearn.interview.domain.dao.UserDAO;
-import inflearn.interview.domain.dao.VideoCommentDAO;
-import inflearn.interview.domain.dao.VideoDAO;
+import inflearn.interview.domain.User;
+import inflearn.interview.domain.VideoComment;
+import inflearn.interview.domain.Video;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +20,18 @@ class VideoCommentRepositoryTest {
     @Autowired UserRepository userRepository;
     @Autowired VideoCommentRepository commentRepository;
 
-    VideoDAO expected;
-    VideoDAO expected2;
+    Video expected;
+    Video expected2;
 
-    VideoCommentDAO comment1;
-    VideoCommentDAO comment2;
+    VideoComment comment1;
+    VideoComment comment2;
 
-    UserDAO person1;
-    UserDAO person2;
+    User person1;
+    User person2;
 
     @BeforeEach
     void before(){
-        person1 = new UserDAO();
+        person1 = new User();
         person1.setName("권우현");
         person1.setUserId(1L);
         person1.setEmail("kwh1208@naver.com");
@@ -39,7 +39,7 @@ class VideoCommentRepositoryTest {
         person1.setTime(LocalDateTime.of(2024,4,2,12,0,0));
 
 
-        person2 = new UserDAO();
+        person2 = new User();
         person2.setName("고경희");
         person2.setUserId(2L);
         person2.setEmail("kwh871005@gmail.com");
@@ -50,7 +50,7 @@ class VideoCommentRepositoryTest {
         /*
          * 첫번째 기댓값
          */
-        expected = new VideoDAO();
+        expected = new Video();
         expected.setVideoId(1L);
         expected.setTime(LocalDateTime.of(2024, 4,2,12,0,0));
         expected.setExposure(true);
@@ -62,7 +62,7 @@ class VideoCommentRepositoryTest {
         /*
          * 두번째 기댓값
          */
-        expected2 = new VideoDAO();
+        expected2 = new Video();
         expected2.setVideoId(2L);
         expected2.setTime(LocalDateTime.of(2024,4,2,12,0,0));
         expected2.setExposure(true);
@@ -75,7 +75,7 @@ class VideoCommentRepositoryTest {
         userRepository.save(person2);
 
 
-        comment1 = new VideoCommentDAO();
+        comment1 = new VideoComment();
         comment1.setId(1L);
         comment1.setContent("ㅎㅎ");
         comment1.setTime(LocalDateTime.of(2024,4,2,12,0,0));
@@ -83,7 +83,7 @@ class VideoCommentRepositoryTest {
         comment1.setUser(person1);
         comment1.setVideo(expected);
 
-        comment2 = new VideoCommentDAO();
+        comment2 = new VideoComment();
         comment2.setId(2L);
         comment2.setContent("ㅋㅋ");
         comment2.setTime(LocalDateTime.of(2024,4,2,12,0,0));
@@ -108,7 +108,7 @@ class VideoCommentRepositoryTest {
         @Test
         @Transactional
         void videoCommentSaveTest(){
-            VideoCommentDAO result = commentRepository.findById(1L).get();
+            VideoComment result = commentRepository.findById(1L).get();
 
             assertThat(result).usingRecursiveComparison().isEqualTo(comment1);
         }
@@ -119,11 +119,11 @@ class VideoCommentRepositoryTest {
         @Test
         @Transactional
         void videoCommentEditTest(){
-            VideoCommentDAO saved = commentRepository.findById(1L).get();
+            VideoComment saved = commentRepository.findById(1L).get();
 
             saved.setContent("수정했습니다.");
 
-            VideoCommentDAO result = commentRepository.findById(1L).get();
+            VideoComment result = commentRepository.findById(1L).get();
 
             assertThat(result.getContent()).isEqualTo("수정했습니다.");
         }
@@ -135,7 +135,7 @@ class VideoCommentRepositoryTest {
         void videoCommentDeleteTest(){
             commentRepository.delete(comment1);
 
-            List<VideoCommentDAO> result = commentRepository.findAll();
+            List<VideoComment> result = commentRepository.findAll();
 
             assertThat(result.size()).isEqualTo(1);
         }
@@ -145,7 +145,7 @@ class VideoCommentRepositoryTest {
          */
         @Test
         void findAllVideoCommentTest(){
-            List<VideoCommentDAO> results = commentRepository.findAll();
+            List<VideoComment> results = commentRepository.findAll();
             assertThat(results.size()).isEqualTo(2);
         }
 

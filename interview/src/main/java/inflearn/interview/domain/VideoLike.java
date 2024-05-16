@@ -1,4 +1,4 @@
-package inflearn.interview.domain.dao;
+package inflearn.interview.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,25 +10,25 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "video_comment")
-public class VideoCommentDAO {
+@Table(name = "video_like")
+public class VideoLike {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     Long id;
 
-    String content;
-    @Column(name = "created_AT")
+    @Column(name = "created_at")
     LocalDateTime time;
-    @Column(name = "UPDATED_AT")
+
+    @Column(name = "updated_at")
     LocalDateTime updatedTime;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserDAO user;
+    private User user;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id")
-    private VideoDAO video;
+    private Video video;
 }

@@ -1,6 +1,5 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.dao.VideoCommentDAO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
 import inflearn.interview.service.VideoCommentService;
 import lombok.RequiredArgsConstructor;

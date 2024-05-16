@@ -1,7 +1,7 @@
 package inflearn.interview.controller;
 
 
-import inflearn.interview.domain.dao.UserDAO;
+import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.VideoDTO;
 import inflearn.interview.service.VideoLikeService;
 import inflearn.interview.service.VideoService;
@@ -33,12 +33,12 @@ public class VideoController {
     }
 
     @PostMapping("/{video_id}/like")
-    public void likeVideoController(@PathVariable Long video_id, @RequestBody UserDAO user){
+    public void likeVideoController(@PathVariable Long video_id, @RequestBody User user){
         videoLikeService.addLike(video_id, user);
     }
 
     @DeleteMapping("/{video_id}/like")
-    public void deleteVideoLike(@PathVariable Long video_id, @RequestBody UserDAO user){
+    public void deleteVideoLike(@PathVariable Long video_id, @RequestBody User user){
         videoLikeService.deleteLike(video_id, user);
     }
 
