@@ -3,7 +3,6 @@ package inflearn.interview.service;
 import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostLike;
 import inflearn.interview.domain.User;
-import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostLikeRepository;
@@ -29,9 +28,9 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
 
 
-    public Page<PostDTO> getAllPost(PageInfo pageInfo, int page) {
+    public Page<PostDTO> getAllPost(String sortType, String category, int page) {
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        return postRepository.findAllPostByPageInfo(pageInfo, pageRequest);
+        return postRepository.findAllPostByPageInfo(sortType, category, pageRequest);
     }
 
     public PostDTO getPostById(Long postId) {
