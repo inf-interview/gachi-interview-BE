@@ -32,8 +32,6 @@ public class Video {
     @NotNull
     @Column(name = "video_link")
     String videoLink;
-    @Column(name = "img_link")
-    String thumbnailLink;
     @Column(name = "tag")
     String rawTags;
 
