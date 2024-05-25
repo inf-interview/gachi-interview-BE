@@ -29,6 +29,8 @@ public class Video {
     @NotNull
     @Column(name = "video_title")
     String videoTitle;
+    @Column(name = "img_link")
+    String thumbnailLink;
     @NotNull
     @Column(name = "video_link")
     String videoLink;
