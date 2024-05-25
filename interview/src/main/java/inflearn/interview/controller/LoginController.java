@@ -1,6 +1,7 @@
 package inflearn.interview.controller;
 
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.JwtTokenResponse;
 import inflearn.interview.service.AuthenticationService;
 import inflearn.interview.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,17 +33,20 @@ public class LoginController {
      */
     @GetMapping("/user/kakao")
     public void kakaoLogin(HttpServletResponse response) throws IOException {
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ kakaoClientId + "&redirect_uri=http://localhost:8080/user/kakao/login";
+        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ kakaoClientId + "&redirect_uri=http://localhost:3000/user/kakao/login";
         response.sendRedirect(url);
     }
 
     @GetMapping("/user/kakao/login")
-    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam String code) {
+    public ResponseEntity<?> kakaoGetInfo(@RequestParam String code) {
         User user = userService.loginKakao(code);
 
         String[] tokens = authenticationService.register(user);
         log.info("accessToken = {}", tokens[0]);
-        return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken 반환
+
+        JwtTokenResponse jwtTokenResponse = new JwtTokenResponse(tokens[0], tokens[1]);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(jwtTokenResponse); // accessToken, refreshToken 반환
     }
 
     /**
@@ -50,7 +54,7 @@ public class LoginController {
      */
     @GetMapping("/user/google")
     public void googleLogin(HttpServletResponse response) throws IOException {
-        String url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + googleClientId + "&redirect_uri=http://localhost:8080/user/google/login&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=consent";
+        String url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + googleClientId + "&redirect_uri=http://localhost:3000/user/google/login&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=consent";
         response.sendRedirect(url);
     }
 
