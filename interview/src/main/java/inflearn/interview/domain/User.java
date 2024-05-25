@@ -9,29 +9,41 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Users")
+@Table(name = "user_table")
 public class User implements UserDetails {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
-
-    private String name;
-
-    private String email;
-
-    private String social;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long userId;
+    @NotNull
+    String name;
+    @Email
+    String email;
+    @NotNull
+    String social;
+    @NotNull
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    LocalDateTime updatedAt;
 
     private String refreshToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Video> videos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<VideoComment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<VideoLike> likes = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
