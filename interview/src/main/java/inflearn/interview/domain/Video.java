@@ -38,6 +38,10 @@ public class Video {
     @Column(name = "tag")
     String rawTags;
 
+    @OneToMany
+    @JoinColumn
+    List<Question> questions = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

@@ -2,6 +2,7 @@ package inflearn.interview.controller;
 
 import inflearn.interview.domain.User;
 import inflearn.interview.service.AuthenticationService;
+import inflearn.interview.service.FcmTokenService;
 import inflearn.interview.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class LoginController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final FcmTokenService fcmTokenService;
 
     @Value("${spring.kakao.client_id}")
     private String kakaoClientId;
@@ -39,6 +41,7 @@ public class LoginController {
     @GetMapping("/user/kakao/login")
     public ResponseEntity<String[]> kakaoGetInfo(@RequestParam String code) {
         User user = userService.loginKakao(code);
+        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
 
         String[] tokens = authenticationService.register(user);
         log.info("accessToken = {}", tokens[0]);
@@ -57,6 +60,7 @@ public class LoginController {
     @GetMapping("/user/google/login")
     public ResponseEntity<String[]> googleGetInfo(@RequestParam String code) {
         User user = userService.loginGoogle(code);
+        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
 
         String[] tokens = authenticationService.register(user);
         log.info("accessToken = {}", tokens[0]);

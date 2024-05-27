@@ -45,6 +45,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<VideoLike> likes = new ArrayList<>();
 
+    @OneToOne(mappedBy = "fcm", cascade = CascadeType.ALL)
+    FCM fcm = new FCM();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

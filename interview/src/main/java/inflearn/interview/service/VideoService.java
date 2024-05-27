@@ -8,6 +8,7 @@ import inflearn.interview.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,10 +47,22 @@ public class VideoService {
         videoRepository.deleteById(videoId);
     }
 
+    //정렬 : 최신순, 좋아요순, 댓글순
 
+    public Page<VideoDTO> getVideoList(int page, int size, String sortType, String sortDirection) {
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection);
 
+        Sort sort = switch (sortType) {
+            case "like" -> Sort.by(direction, "like");
+            case "comment" -> Sort.by(direction, "commentCount");
+            default -> Sort.by(direction, "time");
+        };
+        PageRequest pageable = PageRequest.of(page, size, sort);
 
+        Page<Video> videoPage = videoRepository.findAll(pageable);
 
+        return videoPage.map(DAOToDTOConverter::convert);
+    }
 
 
 
@@ -67,11 +80,5 @@ public class VideoService {
         newVideo.setUpdatedTime(LocalDateTime.now());
     }
 
-    public Page<VideoDTO> getVideoList(int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size);
 
-        Page<Video> videoPage = videoRepository.findAll(pageable);
-
-        return videoPage.map(DAOToDTOConverter::convert);
-    }
 }

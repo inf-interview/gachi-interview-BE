@@ -20,13 +20,13 @@ public class FcmTokenService {
     public void registerToken(Long userId, String token) {
         FCM fcm = new FCM();
         fcm.setUserId(userId);
-        fcm.setToken(token);
+        fcm.setFcmToken(token);
         fcmRepository.save(fcm);
     }
 
     private String getTokenByUserId(Long userId) {
         return fcmRepository.findByUserId(userId)
-                .map(FCM::getToken)
+                .map(FCM::getFcmToken)
                 .orElse(null);
     }
 
@@ -36,6 +36,10 @@ public class FcmTokenService {
         String title = titleName+"에 새로운 댓글이 작성되었습니다.";
         String body = commentUser+"님이 "+titleName+"에 댓글을 작성했습니다.";
 
+        sendNotification(token, title, body);
+    }
+
+    private void sendNotification(String token, String title, String body) {
         Notification notification = Notification.builder()
                 .setTitle(title)
                 .setBody(body)
@@ -52,4 +56,14 @@ public class FcmTokenService {
             throw new RuntimeException(e);
         }
     }
+
+    public void feedbackSendNotification(Long userId, String videoTitle) {
+        String token = getTokenByUserId(userId);
+
+        String title = videoTitle+"의 피드백이 완료되었습니다.";
+        String body = videoTitle+"의 피드백이 완료되었습니다.";
+
+        sendNotification(token, title, body);
+    }
+
 }

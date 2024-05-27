@@ -15,8 +15,12 @@ public class FCM {
     private Long id;
 
     private Long userId;
-    private String token;
+    private String FcmToken;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    User user;
 }

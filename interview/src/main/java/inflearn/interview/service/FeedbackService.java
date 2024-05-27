@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import inflearn.interview.domain.Feedback;
+import inflearn.interview.domain.Question;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Video;
 import inflearn.interview.repository.FeedbackRepository;
@@ -17,10 +18,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,6 +33,7 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
+    private final FcmTokenService fcmTokenService;
 
 
     @Value("파이썬 주소")
@@ -41,19 +45,19 @@ public class FeedbackService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-
+    @Async
     public void GPTFeedback(Long videoId, User user){
         Video video = videoRepository.findById(videoId).get();
+        List<Question> questions = video.getQuestions();
 
         RequestBody requestBody = new RequestBody();
-        requestBody.setQuestion("YourQuestion");
+        requestBody.setQuestion(questions.get(0).getContent());
         requestBody.setVideoURL(video.getVideoLink());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<RequestBody> requestEntity = new HttpEntity<>(requestBody, headers);
-
 
         String response = restTemplate.postForObject(pythonServerURL, requestEntity, String.class);
 
@@ -67,8 +71,6 @@ public class FeedbackService {
         String question = jsonNode.get("question").asText();
         String answer = jsonNode.get("answer").asText();
 
-
-
         //db에 유저정보랑 질문, 답변 gpt 답변담아두고
         Feedback target = new Feedback();
 
@@ -79,7 +81,7 @@ public class FeedbackService {
         target.setQuestion(question);
         feedbackRepository.save(target);
 
-        //실시간 알림보내기
+        fcmTokenService.feedbackSendNotification(video.getUser().getUserId(), video.getVideoTitle());
     }
 
     private String sendGPT(String question, String answer){
@@ -108,8 +110,8 @@ public class FeedbackService {
 
         String responseBody = responseEntity.getBody();
 
-        JSONObject jsonObject = null;
-        String result = null;
+        JSONObject jsonObject;
+        String result;
         try {
             jsonObject = new JSONObject(responseBody);
             result = jsonObject.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
@@ -125,8 +127,14 @@ public class FeedbackService {
         feedbackRepository.deleteById(videoId);
     }
 
-    public List<Feedback> getFeedbacks(Long videoId) {
-        return feedbackRepository.findByVideo(videoRepository.findById(videoId).get());
+    public List<Feedback> getFeedbacks(Long userId) {
+        User findUser = userRepository.findById(userId).get();
+        List<Video> findVideos = videoRepository.findByUser_UserId(findUser.getUserId());
+        List<Feedback> feedbacks = new ArrayList<>();
+        for (Video video : findVideos) {
+            feedbacks.addAll(feedbackRepository.findByVideo(videoRepository.findById(video.getVideoId()).get()));
+        }
+        return feedbacks;
     }
 
     public Feedback getFeedback(Long feedbackId) {
