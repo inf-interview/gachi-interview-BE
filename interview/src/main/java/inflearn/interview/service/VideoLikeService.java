@@ -21,19 +21,21 @@ public class VideoLikeService {
     private final VideoRepository videoRepository;
 
     public void addLike(Long video_id, User userDAO){
-        User user = userRepository.findById(userDAO.getUserId()).get();
-        Video video = videoRepository.findById(video_id).get();
-        VideoLike videoLike = new VideoLike();
-        videoLike.setVideo(video);
-        videoLike.setUser(user);
-        videoLike.setTime(LocalDateTime.now());
-
-        videoLikeRepository.save(videoLike);
-    }
-
-    public void deleteLike(Long video_id, User userDAO){
         Video video = videoRepository.findById(video_id).get();
         User user = userRepository.findById(userDAO.getUserId()).get();
-        videoLikeRepository.deleteByUserAndVideo(user, video);
+        VideoLike findResult = videoLikeRepository.findByUserAndVideo(user, video);
+        if(findResult == null){
+            VideoLike videoLike = new VideoLike();
+            videoLike.setVideo(video);
+            videoLike.setUser(user);
+            videoLike.setTime(LocalDateTime.now());
+
+            videoLikeRepository.save(videoLike);
+        }
+        else{
+            videoLikeRepository.deleteByUserAndVideo(user, video);
+        }
+
+
     }
 }
