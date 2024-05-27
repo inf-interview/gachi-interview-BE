@@ -1,7 +1,6 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.User;
-import inflearn.interview.domain.dto.JwtTokenResponse;
+import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.service.AuthenticationService;
 import inflearn.interview.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,20 +32,21 @@ public class LoginController {
      */
     @GetMapping("/user/kakao")
     public void kakaoLogin(HttpServletResponse response) throws IOException {
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ kakaoClientId + "&redirect_uri=http://localhost:3000/user/kakao/login";
+        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ kakaoClientId + "&redirect_uri=http://localhost:8080/user/kakao/login";
         response.sendRedirect(url);
     }
 
     @GetMapping("/user/kakao/login")
-    public ResponseEntity<?> kakaoGetInfo(@RequestParam String code) {
-        User user = userService.loginKakao(code);
+    public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code) {
+        LoginResponse loginResponse = userService.loginKakao(code);
 
-        String[] tokens = authenticationService.register(user);
+        String[] tokens = authenticationService.register(loginResponse.getUserId());
         log.info("accessToken = {}", tokens[0]);
 
-        JwtTokenResponse jwtTokenResponse = new JwtTokenResponse(tokens[0], tokens[1]);
+        loginResponse.setAccessToken(tokens[0]);
+        loginResponse.setRefreshToken(tokens[1]);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(jwtTokenResponse); // accessToken, refreshToken 반환
+        return ResponseEntity.status(HttpStatus.CREATED).body(loginResponse);
     }
 
     /**
@@ -54,17 +54,20 @@ public class LoginController {
      */
     @GetMapping("/user/google")
     public void googleLogin(HttpServletResponse response) throws IOException {
-        String url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + googleClientId + "&redirect_uri=http://localhost:3000/user/google/login&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=consent";
+        String url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" + googleClientId + "&redirect_uri=http://localhost:8080/user/google/login&response_type=code&scope=email%20profile%20openid&access_type=offline&prompt=consent";
         response.sendRedirect(url);
     }
 
     @GetMapping("/user/google/login")
-    public ResponseEntity<String[]> googleGetInfo(@RequestParam String code) {
-        User user = userService.loginGoogle(code);
+    public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code) {
+        LoginResponse loginResponse = userService.loginGoogle(code);
 
-        String[] tokens = authenticationService.register(user);
-        log.info("accessToken = {}", tokens[0]);
-        return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken 반환
+        String[] tokens = authenticationService.register(loginResponse.getUserId());
+
+        loginResponse.setAccessToken(tokens[0]);
+        loginResponse.setRefreshToken(tokens[1]);
+
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse); // accessToken, refreshToken 반환
     }
 
 }

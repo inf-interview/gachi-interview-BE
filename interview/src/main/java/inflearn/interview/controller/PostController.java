@@ -2,7 +2,6 @@ package inflearn.interview.controller;
 
 import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.dto.ErrorResponse;
-import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.service.PostService;
@@ -21,8 +20,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/list")
-    public Page<PostDTO> postList(@RequestParam int page, @RequestBody PageInfo pageInfo) {
-        return postService.getAllPost(pageInfo, page);
+    public Page<PostDTO> postList(@RequestParam int page, @RequestParam String sortType, @RequestParam String category) {
+        return postService.getAllPost(sortType, category, page);
     }
 
     @GetMapping("/{postId}")
