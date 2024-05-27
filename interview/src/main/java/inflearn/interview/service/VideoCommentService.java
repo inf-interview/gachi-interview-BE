@@ -4,7 +4,6 @@ import inflearn.interview.converter.VideoCommentDAOToDTOConverter;
 import inflearn.interview.converter.VideoCommentDTOToDAOConverter;
 import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.VideoCommentDTO;
-import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoCommentRepository;
 import inflearn.interview.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +21,9 @@ import java.util.Objects;
 public class VideoCommentService {
     private final VideoRepository videoRepository;
     private final VideoCommentRepository commentRepository;
-    private final UserRepository userRepository;
     private final VideoCommentDTOToDAOConverter commentConverter;
     private final VideoCommentDAOToDTOConverter converter;
+    private final FcmTokenService fcmTokenService;
 
     public List<VideoCommentDTO> getComments(Long videoId) {
         List<VideoComment> comments = videoRepository.findById(videoId).get().getComments();
@@ -40,8 +39,9 @@ public class VideoCommentService {
         return converter.convert(comment);
     }
 
-    public void addComment(Long videoId, VideoCommentDTO comment) {
-        commentRepository.save(Objects.requireNonNull(commentConverter.convert(comment)));
+    public void addComment(VideoCommentDTO comment) {
+        VideoComment saved = commentRepository.save(Objects.requireNonNull(commentConverter.convert(comment)));
+        fcmTokenService.commentSendNotification(saved.getVideo().getUser().getUserId(), saved.getVideo().getVideoTitle(), saved.getUser().getUsername());
     }
 
     public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {

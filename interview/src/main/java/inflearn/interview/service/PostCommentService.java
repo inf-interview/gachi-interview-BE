@@ -24,6 +24,7 @@ public class PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final FcmTokenService fcmTokenService;
 
     public PostCommentDTO getComment(Long commentId) {
         PostComment postComment = postCommentRepository.findById(commentId).get();
@@ -54,7 +55,9 @@ public class PostCommentService {
         Post findPost = postRepository.findById(postId).get();
         User findUser = userRepository.findById(postCommentDTO.getUserId()).get();
         PostComment postComment = new PostComment(findUser, findPost, postCommentDTO.getContent());
-        postCommentRepository.save(postComment);
+        PostComment saved = postCommentRepository.save(postComment);
+
+        fcmTokenService.commentSendNotification(saved.getPost().getUser().getUserId(), saved.getPost().getTitle(), saved.getUser().getUsername());
 
         PostCommentDTO returnDto = new PostCommentDTO();
         returnDto.setCommentId(postComment.getPostCommentId());
