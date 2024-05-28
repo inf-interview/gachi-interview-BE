@@ -3,7 +3,6 @@ package inflearn.interview.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import inflearn.interview.domain.dto.PageInfo;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.domain.dto.QPostDTO;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +23,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
     @Override
-    public Page<PostDTO> findAllPostByPageInfo(PageInfo pageInfo, Pageable pageable) {
-
-        String category = pageInfo.getCategory();
-        String sortType = pageInfo.getSortType();
+    public Page<PostDTO> findAllPostByPageInfo(String sortType, String category, Pageable pageable) {
 
         List<PostDTO> result = jpaQueryFactory
                 .select(new QPostDTO(
@@ -63,11 +59,11 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
     private BooleanExpression categoryEq(String category) { //all, study, interview
 
         switch (category) {
-            case "study" -> {
-                return post.category.eq("study");
+            case "studies" -> {
+                return post.category.eq("studies");
             }
-            case "interview" -> {
-                return post.category.eq("interview");
+            case "reviews" -> {
+                return post.category.eq("reviews");
             }
             default -> {
                 return null;

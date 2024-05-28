@@ -1,6 +1,7 @@
 package inflearn.interview.controller;
 
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.service.AuthenticationService;
 import inflearn.interview.service.FcmTokenService;
 import inflearn.interview.service.UserService;
@@ -39,13 +40,20 @@ public class LoginController {
     }
 
     @GetMapping("/user/kakao/login")
-    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam String code) {
-        User user = userService.loginKakao(code);
-        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
+    public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code) {
+        Object[] userAndResponse = userService.loginKakao(code);
 
-        String[] tokens = authenticationService.register(user);
+        LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
+        User user = (User) userAndResponse[0];
+        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
+  
+        String[] tokens = authenticationService.register(loginResponse.getUserId());
         log.info("accessToken = {}", tokens[0]);
-        return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken 반환
+
+        loginResponse.setAccessToken(tokens[0]);
+        loginResponse.setRefreshToken(tokens[1]);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(loginResponse);
     }
 
     /**
@@ -58,13 +66,19 @@ public class LoginController {
     }
 
     @GetMapping("/user/google/login")
-    public ResponseEntity<String[]> googleGetInfo(@RequestParam String code) {
-        User user = userService.loginGoogle(code);
-        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
+    public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code) {
+        Object[] userAndResponse = userService.loginGoogle(code);
 
-        String[] tokens = authenticationService.register(user);
-        log.info("accessToken = {}", tokens[0]);
-        return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken 반환
+        LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
+        User user = (User) userAndResponse[0];
+        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
+      
+        String[] tokens = authenticationService.register(loginResponse.getUserId());
+
+        loginResponse.setAccessToken(tokens[0]);
+        loginResponse.setRefreshToken(tokens[1]);
+
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse); // accessToken, refreshToken 반환
     }
 
 }
