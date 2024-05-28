@@ -1,5 +1,6 @@
 package inflearn.interview.controller;
 
+import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.service.AuthenticationService;
 import inflearn.interview.service.UserService;
@@ -38,7 +39,10 @@ public class LoginController {
 
     @GetMapping("/user/kakao/login")
     public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code) {
-        LoginResponse loginResponse = userService.loginKakao(code);
+        Object[] userAndResponse = userService.loginKakao(code);
+
+        LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
+        User user = (User) userAndResponse[0];
 
         String[] tokens = authenticationService.register(loginResponse.getUserId());
         log.info("accessToken = {}", tokens[0]);
@@ -60,7 +64,10 @@ public class LoginController {
 
     @GetMapping("/user/google/login")
     public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code) {
-        LoginResponse loginResponse = userService.loginGoogle(code);
+        Object[] userAndResponse = userService.loginGoogle(code);
+
+        LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
+        User user = (User) userAndResponse[0];
 
         String[] tokens = authenticationService.register(loginResponse.getUserId());
 
