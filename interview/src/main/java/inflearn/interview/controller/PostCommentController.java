@@ -43,7 +43,7 @@ public class PostCommentController {
 
     //댓글 수정
     @ValidateUser
-    @PatchMapping("/{comment_id}")
+    @PatchMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.update.class) PostCommentDTO postCommentDTO) {
 
         try {
@@ -57,7 +57,7 @@ public class PostCommentController {
 
     //댓글 삭제
     @ValidateUser
-    @DeleteMapping("/{comment_id}")
+    @DeleteMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.delete.class) PostCommentDTO postCommentDTO) {
         try {
             postCommentService.deleteComment(postId, commentId, postCommentDTO);
