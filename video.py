@@ -26,15 +26,18 @@ def process_video_from_url():
     return jsonify({"result": result_text}), 200
 
 
-def download_video(url):
+def download_video(url, local_dir='downloads'):
     local_filename = url.split('/')[-1]
-    local_path = os.path.join('downloads', local_filename)
+    local_path = os.path.join(local_dir, local_filename)
+    os.makedirs(local_dir, exist_ok=True)
+
     try:
         with requests.get(url, stream=True) as r:
             r.raise_for_status()
             with open(local_path, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
+        print(f"Video downloaded to: {local_path}")
         return local_path
     except requests.RequestException as e:
         print(f"Error downloading the video: {e}")
