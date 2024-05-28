@@ -20,11 +20,10 @@ public class FeedbackController {
         feedbackService.GPTFeedback(videoId, user);
     }
 
-    @DeleteMapping("/feedbackId}")
+    @DeleteMapping("/{feedbackId}")
     public void delete(@PathVariable Long feedbackId){
         feedbackService.deleteFeedback(feedbackId);
     }
-
 
     @GetMapping("/{userId}")
     public List<Feedback> getFeedbacks(@RequestParam Long userId){

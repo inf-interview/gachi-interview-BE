@@ -14,7 +14,6 @@ public class FCM {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
     private String FcmToken;
 
     @Column(name = "created_at")

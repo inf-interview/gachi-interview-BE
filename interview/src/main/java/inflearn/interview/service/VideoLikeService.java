@@ -20,7 +20,7 @@ public class VideoLikeService {
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
 
-    public void addLike(Long video_id, User userDAO){
+    public int addLike(Long video_id, User userDAO){
         Video video = videoRepository.findById(video_id).get();
         User user = userRepository.findById(userDAO.getUserId()).get();
         VideoLike findResult = videoLikeRepository.findByUserAndVideo(user, video);
@@ -35,6 +35,8 @@ public class VideoLikeService {
         else{
             videoLikeRepository.deleteByUserAndVideo(user, video);
         }
+
+        return videoRepository.findById(video_id).get().getLikes().size();
 
 
     }
