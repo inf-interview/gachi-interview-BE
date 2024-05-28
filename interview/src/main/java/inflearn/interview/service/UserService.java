@@ -31,7 +31,7 @@ public class UserService {
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
 
-    public LoginResponse loginKakao(String code) { // 반환 값 User, RefreshToken
+    public Object[] loginKakao(String code) { // 반환 값 User, RefreshToken
         String accessToken = kakaoProvider.getAccessToken(code);
         String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
 
@@ -57,14 +57,15 @@ public class UserService {
             user.setSocial("KAKAO");
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
-            return createLoginResponse(nickname, image, user.getUserId());
+            LoginResponse loginResponse = createLoginResponse(nickname, image, user.getUserId());
+            return new Object[]{user, loginResponse};
         }
-
-        return createLoginResponse(nickname, image, findUser.get().getUserId());
+        LoginResponse loginResponse = createLoginResponse(nickname, image, findUser.get().getUserId());
+        return new Object[]{findUser, loginResponse};
 
     }
 
-    public LoginResponse loginGoogle(String code) {
+    public Object[] loginGoogle(String code) {
 
         String accessToken = googleProvider.getAccessToken(code);
         String googleInfo = googleProvider.getGoogleInfo(accessToken);
@@ -85,9 +86,11 @@ public class UserService {
             user.setSocial("GOOGLE");
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
-            return createLoginResponse(name, image, user.getUserId());
+            LoginResponse loginResponse = createLoginResponse(name, image, user.getUserId());
+            return new Object[]{user, loginResponse};
         }
-        return createLoginResponse(name, image, findUser.get().getUserId());
+        LoginResponse loginResponse = createLoginResponse(name, image, findUser.get().getUserId());
+        return new Object[]{findUser, loginResponse};
     }
 
     public List<MyPostDTO> getMyPost(Long userId) {
