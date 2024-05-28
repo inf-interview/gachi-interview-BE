@@ -42,7 +42,8 @@ public class PostDTO implements BaseDTO{
     private int numOfLike;
     private int numOfComment;
 
-    public PostDTO(Post post) {
+
+    public PostDTO(Post post, Long commentCount) {
         this.userId = post.getUser().getUserId();
         this.userName = post.getUser().getName();
         this.postId = post.getPostId();
@@ -55,6 +56,7 @@ public class PostDTO implements BaseDTO{
         this.content = post.getContent();
         this.time = post.getCreatedAt();
         this.updateTime = post.getUpdatedAt();
+        this.numOfComment = Math.toIntExact(commentCount);
     }
 
     @QueryProjection

@@ -3,6 +3,7 @@ package inflearn.interview.service;
 import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostLike;
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.LikeNumDTO;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostLikeRepository;
@@ -34,8 +35,7 @@ public class PostService {
     }
 
     public PostDTO getPostById(Long postId) {
-        Post post = postRepository.findById(postId).get();
-        return new PostDTO(post);
+        return postRepository.findPostByPostId(postId);
     }
     //게시글 생성
 
@@ -74,7 +74,7 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public void likePost(Long postId, Long userId) {
+    public LikeNumDTO likePost(Long postId, Long userId) {
         Post findPost = postRepository.findById(postId).get();
         User user = userRepository.findById(userId).get();
 
@@ -90,6 +90,8 @@ public class PostService {
             postLikeRepository.delete(findPostLike.get());
             findPost.setNumOfLike(findPost.getNumOfLike() - 1);
         }
+
+        return new LikeNumDTO(findPost.getNumOfLike());
 
 
         //유저 정보, postId를 이용하여 이미 like가 있는지 확인

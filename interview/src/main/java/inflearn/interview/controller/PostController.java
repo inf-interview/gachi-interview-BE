@@ -2,6 +2,7 @@ package inflearn.interview.controller;
 
 import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.dto.ErrorResponse;
+import inflearn.interview.domain.dto.LikeNumDTO;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.service.PostService;
@@ -68,10 +69,10 @@ public class PostController {
 
     @ValidateUser
     @PostMapping("/{postId}/like")
-    public ResponseEntity<String> postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
+    public ResponseEntity<?> postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
         Long userId = postDTO.getUserId();
-        postService.likePost(postId, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        LikeNumDTO numOfLike = postService.likePost(postId, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(numOfLike);
     }
 
 }
