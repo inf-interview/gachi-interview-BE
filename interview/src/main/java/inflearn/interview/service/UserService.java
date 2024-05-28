@@ -30,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
+    private final FcmTokenService fcmTokenService;
 
     public Object[] loginKakao(String code) { // 반환 값 User, RefreshToken
         String accessToken = kakaoProvider.getAccessToken(code);
@@ -48,6 +49,8 @@ public class UserService {
         //이미지 추출
         String image = jsonObject.getAsJsonObject("properties").get("thumbnail_image").getAsString();
 
+        String fcmToken = jsonObject.get("fcmToken").getAsString();
+
         //유저 정보가 DB에 있는지 체크
         Optional<User> findUser = userRepository.findUserByEmailAndSocial(email, "KAKAO");
         if (findUser.isEmpty()) {
@@ -58,9 +61,12 @@ public class UserService {
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
             LoginResponse loginResponse = createLoginResponse(nickname, image, user.getUserId());
+            fcmTokenService.registerToken(user.getUserId(), fcmToken);
+
             return new Object[]{user, loginResponse};
         }
         LoginResponse loginResponse = createLoginResponse(nickname, image, findUser.get().getUserId());
+        fcmTokenService.registerToken(findUser.get().getUserId(), fcmToken);
         return new Object[]{findUser, loginResponse};
 
     }
@@ -78,6 +84,9 @@ public class UserService {
         String email = jsonObject.get("email").getAsString();
         String image = jsonObject.get("picture").getAsString();
 
+        String fcmToken = jsonObject.get("fcmToken").getAsString();
+
+
         Optional<User> findUser = userRepository.findUserByEmailAndSocial(email, "GOOGLE");
         if (findUser.isEmpty()) {
             User user = new User();
@@ -87,9 +96,13 @@ public class UserService {
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
             LoginResponse loginResponse = createLoginResponse(name, image, user.getUserId());
+            fcmTokenService.registerToken(user.getUserId(), fcmToken);
+
             return new Object[]{user, loginResponse};
         }
         LoginResponse loginResponse = createLoginResponse(name, image, findUser.get().getUserId());
+
+        fcmTokenService.registerToken(findUser.get().getUserId(), fcmToken);
         return new Object[]{findUser, loginResponse};
     }
 

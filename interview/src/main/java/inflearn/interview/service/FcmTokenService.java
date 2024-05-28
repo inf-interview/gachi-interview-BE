@@ -6,6 +6,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import inflearn.interview.domain.FCM;
 import inflearn.interview.repository.FCMRepository;
+import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class FcmTokenService {
 
     private final FCMRepository fcmRepository;
+    private final UserRepository userRepository;
 
     public void registerToken(Long userId, String token) {
         FCM fcm = new FCM();
-        fcm.setUserId(userId);
+        fcm.setUser(userRepository.findById(userId).get());
         fcm.setFcmToken(token);
         fcmRepository.save(fcm);
     }

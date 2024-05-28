@@ -22,7 +22,6 @@ public class LoginController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
-    private final FcmTokenService fcmTokenService;
 
     @Value("${spring.kakao.client_id}")
     private String kakaoClientId;
@@ -45,7 +44,6 @@ public class LoginController {
 
         LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
         User user = (User) userAndResponse[0];
-        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
   
         String[] tokens = authenticationService.register(loginResponse.getUserId());
         log.info("accessToken = {}", tokens[0]);
@@ -71,7 +69,6 @@ public class LoginController {
 
         LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
         User user = (User) userAndResponse[0];
-        fcmTokenService.registerToken(user.getUserId(), user.getFcm().getFcmToken());
       
         String[] tokens = authenticationService.register(loginResponse.getUserId());
 
