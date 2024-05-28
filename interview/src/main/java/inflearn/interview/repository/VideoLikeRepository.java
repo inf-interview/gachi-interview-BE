@@ -10,5 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface VideoLikeRepository extends JpaRepository<VideoLike, Long> {
     void deleteByUserAndVideo(User user, Video video);
 
+    VideoLike findByUserAndVideo(User user, Video video);
+
     Long countAllByVideo(Video video);
 }

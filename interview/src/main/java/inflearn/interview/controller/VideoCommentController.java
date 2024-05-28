@@ -33,7 +33,7 @@ public class VideoCommentController {
 
     @PostMapping("/submit")
     public void addVideoCommentController(@PathVariable("video_id") Long videoId, @RequestBody VideoCommentDTO videoCommentDTO) {
-        commentService.addComment(videoId, videoCommentDTO);
+        commentService.addComment(videoCommentDTO);
     }
 
     @PatchMapping("/comments/{comment_id}")

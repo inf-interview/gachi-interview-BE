@@ -37,14 +37,15 @@ public class VideoController {
         videoLikeService.addLike(video_id, user);
     }
 
-    @DeleteMapping("/{video_id}/like")
-    public void deleteVideoLike(@PathVariable Long video_id, @RequestBody User user){
-        videoLikeService.deleteLike(video_id, user);
-    }
+    /**
+     * 페이징이랑 sortType맞춰서 수정
+     */
 
     @GetMapping("/list")
     public Page<VideoDTO> videoListController(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "10") int size) {
-        return videoService.getVideoList(page, size);
+                                              @RequestParam(defaultValue = "10") int size,
+                                              @RequestParam(defaultValue = "time") String sortType,
+                                              @RequestParam(defaultValue = "DESC") String sortDirection) {
+        return videoService.getVideoList(page, size, sortType, sortDirection);
     }
 }
