@@ -1,6 +1,7 @@
 package inflearn.interview.controller;
 
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.FcmTokenDTO;
 import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.service.AuthenticationService;
 import inflearn.interview.service.FcmTokenService;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -22,6 +24,7 @@ public class LoginController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final FcmTokenService fcmTokenService;
 
     @Value("${spring.kakao.client_id}")
     private String kakaoClientId;
@@ -34,16 +37,13 @@ public class LoginController {
      */
     @GetMapping("/user/kakao")
     public void kakaoLogin(HttpServletResponse response) throws IOException {
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ kakaoClientId + "&redirect_uri=http://localhost:8080/user/kakao/login";
+        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + kakaoClientId + "&redirect_uri=http://localhost:8080/user/kakao/login";
         response.sendRedirect(url);
     }
 
     @GetMapping("/user/kakao/login")
     public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code) {
-        Object[] userAndResponse = userService.loginKakao(code);
-
-        LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
-        User user = (User) userAndResponse[0];
+        LoginResponse loginResponse = userService.loginKakao(code);
   
         String[] tokens = authenticationService.register(loginResponse.getUserId());
         log.info("accessToken = {}", tokens[0]);
@@ -65,11 +65,8 @@ public class LoginController {
 
     @GetMapping("/user/google/login")
     public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code) {
-        Object[] userAndResponse = userService.loginGoogle(code);
+        LoginResponse loginResponse = userService.loginGoogle(code);
 
-        LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
-        User user = (User) userAndResponse[0];
-      
         String[] tokens = authenticationService.register(loginResponse.getUserId());
 
         loginResponse.setAccessToken(tokens[0]);
@@ -78,4 +75,9 @@ public class LoginController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse); // accessToken, refreshToken 반환
     }
 
+    //fcmToken
+    @PostMapping("/user/fcm/token")
+    public void getFcmToken(@RequestBody FcmTokenDTO tokenDTO, @AuthenticationPrincipal User user) {
+        fcmTokenService.registerToken(user, tokenDTO.getFcmToken());
+    }
 }

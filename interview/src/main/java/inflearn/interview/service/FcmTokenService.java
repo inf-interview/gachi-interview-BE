@@ -5,6 +5,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import inflearn.interview.domain.FCM;
+import inflearn.interview.domain.User;
 import inflearn.interview.repository.FCMRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ public class FcmTokenService {
     private final FCMRepository fcmRepository;
     private final UserRepository userRepository;
 
-    public void registerToken(Long userId, String token) {
+    public void registerToken(User user, String token) {
         FCM fcm = new FCM();
-        fcm.setUser(userRepository.findById(userId).get());
+        fcm.setUser(user);
         fcm.setFcmToken(token);
         fcmRepository.save(fcm);
     }
