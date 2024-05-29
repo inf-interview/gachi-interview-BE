@@ -12,34 +12,26 @@ import java.util.List;
 @RequestMapping("/feedback")
 @RequiredArgsConstructor
 public class FeedbackController {
-    /*
-      gpt 피드백 보내기
-      gpt 피드백 삭제
-      내가 요청한 피드백들 보기
-     */
+
     private final FeedbackService feedbackService;
 
-
-
-    @PostMapping("/submit-gpt")
-    public void submit(@RequestBody User user, Long videoId){
+    @PostMapping("/{video_Id}")
+    public void submit(@RequestBody User user,@RequestParam Long videoId){
         feedbackService.GPTFeedback(videoId, user);
     }
 
-    @DeleteMapping("/delete-feedback/{feedbackId}")
+    @DeleteMapping("/{feedbackId}")
     public void delete(@PathVariable Long feedbackId){
         feedbackService.deleteFeedback(feedbackId);
     }
 
-
-    @GetMapping("/feedbacks")
-    public List<Feedback> getFeedbacks(Long videoId){
-        return feedbackService.getFeedbacks(videoId);
+    @GetMapping("/{userId}")
+    public List<Feedback> getFeedbacks(@RequestParam Long userId){
+        return feedbackService.getFeedbacks(userId);
     }
 
-    @GetMapping("/feedback/{feedbackId}")
+    @GetMapping("/{feedbackId}")
     public Feedback getFeedback(@PathVariable Long feedbackId){
         return feedbackService.getFeedback(feedbackId);
     }
-
 }

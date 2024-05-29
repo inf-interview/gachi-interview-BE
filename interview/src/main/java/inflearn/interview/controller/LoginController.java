@@ -3,6 +3,7 @@ package inflearn.interview.controller;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.service.AuthenticationService;
+import inflearn.interview.service.FcmTokenService;
 import inflearn.interview.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class LoginController {
 
         LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
         User user = (User) userAndResponse[0];
-
+  
         String[] tokens = authenticationService.register(loginResponse.getUserId());
         log.info("accessToken = {}", tokens[0]);
 
@@ -68,7 +69,7 @@ public class LoginController {
 
         LoginResponse loginResponse = (LoginResponse) userAndResponse[1];
         User user = (User) userAndResponse[0];
-
+      
         String[] tokens = authenticationService.register(loginResponse.getUserId());
 
         loginResponse.setAccessToken(tokens[0]);

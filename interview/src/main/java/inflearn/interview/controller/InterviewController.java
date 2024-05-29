@@ -19,7 +19,8 @@ public class InterviewController {
     private final VideoRepository videoRepository;
     @GetMapping
     @Transactional
-    public void complete(@RequestBody Video video){
-        videoRepository.save(video);
+    public Long complete(@RequestBody Video video){
+        Video saved = videoRepository.save(video);
+        return saved.getVideoId();
     }
 }
