@@ -36,10 +36,10 @@ public class FeedbackService {
     private final FcmTokenService fcmTokenService;
 
 
-    @Value("파이썬 주소")
+    @Value("${python.server.url}")
     private String pythonServerURL;
 
-    @Value("api-key")
+    @Value("${api.key}")
     private String apiKey;
     RestTemplate restTemplate = new RestTemplate();
 

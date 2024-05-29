@@ -36,7 +36,10 @@ public class Video {
     @Column(name = "video_link")
     String videoLink;
     @Column(name = "tag")
-    String rawTags;
+    String tag;
+
+    @Transient
+    List<String> tags;
 
     @OneToMany
     @JoinColumn

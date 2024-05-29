@@ -76,7 +76,7 @@ public class VideoService {
         for (String tag : tags) {
             rawTag.append(tag).append(".");
         }
-        newVideo.setRawTags(rawTag.toString());
+        newVideo.setTag(rawTag.toString());
         newVideo.setUpdatedTime(LocalDateTime.now());
     }
 
