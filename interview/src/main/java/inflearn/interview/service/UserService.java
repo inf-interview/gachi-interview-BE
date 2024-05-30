@@ -95,9 +95,10 @@ public class UserService {
 
     }
 
-    public List<MyPostDTO> getMyPost(Long userId) {
-        return postRepository.findPostByUserId(userId);
+    public List<MyPostDTO> getMyPost(Long userId, String category) {
+        return postRepository.findPostByUserId(userId, category);
     }
+
 
     public List<PostCommentDTO> getMyComment(Long userId) {
         List<PostComment> comments = postCommentRepository.findCommentByUserId(userId);

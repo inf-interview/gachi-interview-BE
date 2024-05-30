@@ -5,6 +5,7 @@ import inflearn.interview.domain.dto.BaseDTO;
 import inflearn.interview.domain.dto.ErrorResponse;
 import inflearn.interview.domain.dto.PostDTO;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,6 +20,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
+@Slf4j
 public class UserValidationAspect {
 
     @Pointcut("@annotation(ValidateUser) && (args(dto, ..) || args(.., dto))")
@@ -44,6 +46,7 @@ public class UserValidationAspect {
         }
 
         catch (Throwable throwable) {
+            log.info("[Throwable]={}", throwable.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("유저 검증에 실패하였습니다.");
         }
 

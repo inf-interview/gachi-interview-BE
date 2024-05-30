@@ -16,8 +16,8 @@ public interface PostRepository extends JpaRepository<Post, Long> , CustomPostRe
     @Query("select new inflearn.interview.domain.dto.MyPostDTO(p, count(c.postCommentId)) " +
             "from Post p " +
             "left join PostComment c on p.postId = c.post.postId " +
-            "where p.user.userId=:userId group by p.postId order by p.postId desc")
-    List<MyPostDTO> findPostByUserId(@Param("userId") Long userId);
+            "where p.user.userId=:userId and p.category=:category group by p.postId order by p.postId desc")
+    List<MyPostDTO> findPostByUserId(@Param("userId") Long userId, @Param("category") String category);
 
     @Query("select new inflearn.interview.domain.dto.PostDTO(p, count(c.postCommentId)) " +
             "from Post p " +

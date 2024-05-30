@@ -12,11 +12,15 @@ public class MyPageController {
 
     private final UserService userService;
 
-    @GetMapping("/{user_id}/boards")
-    public ResponseEntity<?> myPost(@PathVariable(name = "user_id") Long userId) {
-        return ResponseEntity.ok(userService.getMyPost(userId));
+    @GetMapping("/{user_id}/boards/reviews")
+    public ResponseEntity<?> getReviewPost(@PathVariable(name = "user_id") Long userId) {
+        return ResponseEntity.ok(userService.getMyPost(userId, "reviews"));
     }
 
+    @GetMapping("/{user_id}/boards/studies")
+    public ResponseEntity<?> getStudyPost(@PathVariable(name = "user_id") Long userId) {
+        return ResponseEntity.ok(userService.getMyPost(userId, "studies"));
+    }
     @GetMapping("/{user_id}/comments")
     public ResponseEntity<?> myComment(@PathVariable(name = "user_id") Long userId) {
         return ResponseEntity.ok(userService.getMyComment(userId));
