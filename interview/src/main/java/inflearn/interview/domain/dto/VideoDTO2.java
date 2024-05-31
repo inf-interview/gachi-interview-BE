@@ -57,6 +57,7 @@ public class VideoDTO2 implements BaseDTO{
         if (video.getTag() != null) {
             this.tags = entityToDtoTagConverter(video.getTag());
         }
+        videoLink = video.getVideoLink();
     }
 
 
