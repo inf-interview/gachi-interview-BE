@@ -93,7 +93,7 @@ public class VideoService {
         for (String tag : tags) {
             rawTag.append(tag).append(".");
         }
-        video.setRawTags(rawTag.toString());
+        video.setTag(rawTag.toString());
         video.setThumbnailLink(videoDTO.getThumbnailLink());
         video.setTime(LocalDateTime.now());
         Video saved = videoRepository.save(video);

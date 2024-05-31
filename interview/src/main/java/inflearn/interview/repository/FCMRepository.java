@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface FCMRepository extends JpaRepository<FCM, Long> {
     Optional<FCM> findByUserUserId(Long userId);
+
+    Optional<FCM> findByUser(User user);
 }
