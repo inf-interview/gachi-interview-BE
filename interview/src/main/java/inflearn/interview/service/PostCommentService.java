@@ -43,9 +43,12 @@ public class PostCommentService {
 
         for (PostComment postComment : commentList) {
             PostCommentDTO postCommentDTO = new PostCommentDTO();
+            postCommentDTO.setCommentId(postComment.getPostCommentId());
             postCommentDTO.setUserId(postComment.getUser().getUserId());
             postCommentDTO.setUsername(postComment.getUser().getName());
+            postCommentDTO.setImage(postComment.getUser().getImage());
             postCommentDTO.setContent(postComment.getContent());
+            postCommentDTO.setCreatedAt(postComment.getCreatedAt());
             commentDTOS.add(postCommentDTO);
         }
         return commentDTOS;

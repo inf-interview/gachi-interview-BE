@@ -37,7 +37,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                         post.updatedAt,
                         post.numOfLike,
                         select(postComment.count()).from(postComment).where(postComment.post.postId.eq(post.postId)),
-                        post.tag))
+                        post.tag,
+                        post.user.image))
                 .from(post)
                 .where(categoryEq(category))
                 .orderBy(sortTypeEq(sortType))

@@ -56,6 +56,7 @@ public class UserService {
             user.setEmail(email);
             user.setSocial("KAKAO");
             user.setCreatedAt(LocalDateTime.now());
+            user.setImage(image);
             userRepository.save(user);
 
             return createLoginResponse(nickname, image, user.getUserId());
@@ -86,6 +87,7 @@ public class UserService {
             user.setEmail(email);
             user.setSocial("GOOGLE");
             user.setCreatedAt(LocalDateTime.now());
+            user.setImage(image);
             userRepository.save(user);
 
             return createLoginResponse(name, image, user.getUserId());

@@ -28,17 +28,11 @@ public class VideoService {
     private final VideoQuestionRepository videoQuestionRepository;
     private final QuestionRepository questionRepository;
 
-    public VideoDTO getVideoById(Long videoId){
+    public VideoDTO2 getVideoById(Long videoId){
 
         Video video = videoRepository.findById(videoId).get();
-        Long likeCount = videoLikeRepository.countAllByVideo(video);
-        VideoDTO videoDTO = DAOToDTOConverter.convert(video);
+        return new VideoDTO2(video);
 
-        Objects.requireNonNull(videoDTO).setLike(likeCount);
-
-
-
-        return videoDTO;
     }
 
     public void updateVideo(Long videoId, VideoDTO updatedVideo){
