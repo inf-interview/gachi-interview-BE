@@ -54,8 +54,8 @@ public class VideoDTO2 implements BaseDTO{
         numOfLike = video.getNumOfLike();
         thumbnailLink = video.getThumbnailLink();
         image = video.getUser().getImage();
-        if (video.getRawTags() != null) {
-            this.tags = entityToDtoTagConverter(video.getRawTags());
+        if (video.getTag() != null) {
+            this.tags = entityToDtoTagConverter(video.getTag());
         }
     }
 

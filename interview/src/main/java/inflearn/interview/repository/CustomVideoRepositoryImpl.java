@@ -31,7 +31,7 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository{
                         video.time,
                         video.updatedTime,
                         video.numOfLike,
-                        video.rawTags,
+                        video.tag,
                         video.thumbnailLink,
                         video.user.image
                 ))

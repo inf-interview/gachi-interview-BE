@@ -42,7 +42,7 @@ public class VideoCommentService {
 
     public void addComment(VideoCommentDTO comment) {
         VideoComment saved = commentRepository.save(Objects.requireNonNull(commentConverter.convert(comment)));
-        fcmTokenService.commentSendNotification(saved.getVideo().getUser().getUserId(), saved.getVideo().getVideoTitle(), saved.getUser().getUsername());
+        fcmTokenService.commentSendNotification(saved.getVideo().getUser().getUserId(), saved.getVideo().getVideoTitle(), saved.getUser().getName());
     }
 
     public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {
