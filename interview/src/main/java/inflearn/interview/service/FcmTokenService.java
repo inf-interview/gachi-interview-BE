@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -20,11 +22,16 @@ public class FcmTokenService {
     private final FCMRepository fcmRepository;
     private final UserRepository userRepository;
 
-    public void registerToken(User user, String token) {
-        FCM fcm = new FCM();
-        fcm.setUser(user);
-        fcm.setFcmToken(token);
-        fcmRepository.save(fcm);
+    public boolean registerToken(User user, String token) {
+        Optional<FCM> getUser = fcmRepository.findByUser(user);
+        if (getUser.isEmpty()) {
+            FCM fcm = new FCM();
+            fcm.setUser(user);
+            fcm.setFcmToken(token);
+            fcmRepository.save(fcm);
+            return false; // 새로운 유저 생성
+        }
+        return true;
     }
 
     private String getTokenByUserId(Long userId) {

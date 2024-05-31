@@ -77,7 +77,13 @@ public class LoginController {
 
     //fcmToken
     @PostMapping("/user/fcm/token")
-    public void getFcmToken(@RequestBody FcmTokenDTO tokenDTO, @AuthenticationPrincipal User user) {
-        fcmTokenService.registerToken(user, tokenDTO.getFcmToken());
+    public ResponseEntity<?> getFcmToken(@RequestBody FcmTokenDTO tokenDTO, @AuthenticationPrincipal User user) {
+        boolean isAlreadyRegister = fcmTokenService.registerToken(user, tokenDTO.getFcmToken());
+        if (isAlreadyRegister) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+
     }
 }
