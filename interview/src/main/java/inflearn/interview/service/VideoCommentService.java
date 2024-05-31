@@ -2,9 +2,12 @@ package inflearn.interview.service;
 
 import inflearn.interview.converter.VideoCommentDAOToDTOConverter;
 import inflearn.interview.converter.VideoCommentDTOToDAOConverter;
+import inflearn.interview.domain.User;
+import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
+import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoCommentRepository;
 import inflearn.interview.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,8 @@ public class VideoCommentService {
     private final VideoCommentDTOToDAOConverter commentConverter;
     private final VideoCommentDAOToDTOConverter converter;
     private final FcmTokenService fcmTokenService;
+    private final UserRepository userRepository;
+    private final VideoRepository videoRepository;
 
     public List<PostCommentDTO> getComments(Long videoId) {
         List<VideoComment> commentList = commentRepository.findCommentList(videoId);
@@ -41,7 +46,15 @@ public class VideoCommentService {
     }
 
     public void addComment(VideoCommentDTO comment) {
-        VideoComment saved = commentRepository.save(Objects.requireNonNull(commentConverter.convert(comment)));
+        VideoComment videoComment = new VideoComment();
+        User user = userRepository.findById(comment.getUserId()).get();
+        Video video = videoRepository.findById(comment.getVideoId()).get();
+        videoComment.setUser(user);
+        videoComment.setVideo(video);
+        videoComment.setTime(LocalDateTime.now());
+        videoComment.setContent(comment.getContent());
+
+        VideoComment saved = commentRepository.save(videoComment);
         fcmTokenService.commentSendNotification(saved.getVideo().getUser().getUserId(), saved.getVideo().getVideoTitle(), saved.getUser().getName());
     }
 
