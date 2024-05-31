@@ -1,13 +1,14 @@
 package inflearn.interview.controller;
 
-import inflearn.interview.domain.Video;
-import inflearn.interview.repository.VideoRepository;
+import inflearn.interview.aop.ValidateUser;
+import inflearn.interview.domain.dto.VideoDTO2;
+import inflearn.interview.service.VideoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/interview")
@@ -16,11 +17,12 @@ public class InterviewController {
     /**
      * 영상 녹화 완료
      */
-    private final VideoRepository videoRepository;
-    @GetMapping
-    @Transactional
-    public Long complete(@RequestBody Video video){
-        Video saved = videoRepository.save(video);
-        return saved.getVideoId();
+    private final VideoService videoService;
+
+    @ValidateUser
+    @PostMapping("/complete")
+    public ResponseEntity<?> complete(@RequestBody VideoDTO2 video){
+        Long videoId = videoService.completeVideo(video);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("videoId", videoId));
     }
 }
