@@ -3,6 +3,7 @@ package inflearn.interview.controller;
 
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.VideoDTO;
+import inflearn.interview.domain.dto.VideoDTO2;
 import inflearn.interview.service.VideoLikeService;
 import inflearn.interview.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class VideoController {
     }
 
     @PostMapping("/{video_id}/like")
-    public Map<String, Integer> likeVideoController(@PathVariable Long video_id, @RequestBody User user){
+    public Map<String, Long> likeVideoController(@PathVariable Long video_id, @RequestBody User user){
         return Map.of("numOfLike", videoLikeService.addLike(video_id, user));
     }
 
@@ -44,10 +45,8 @@ public class VideoController {
      */
 
     @GetMapping("/list")
-    public Page<VideoDTO> videoListController(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "10") int size,
-                                              @RequestParam(defaultValue = "time") String sortType,
-                                              @RequestParam(defaultValue = "DESC") String sortDirection) {
-        return videoService.getVideoList(page, size, sortType, sortDirection);
+    public Page<VideoDTO2> videoListController(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "time") String sortType) {
+        return videoService.getVideoList(sortType, page);
     }
 }
