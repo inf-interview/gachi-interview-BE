@@ -35,7 +35,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + (30 * 60 * 100L))) //임시로 3분으로 바꿈 30분
+                .setExpiration(new Date(now.getTime() + (3 * 60 * 1000L))) //임시로 3분으로 바꿈 30분
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -10,16 +10,19 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class VideoCommentDTO {
-    @NotNull
+
+    public interface create{}
+    public interface patch{}
+
+    @NotNull(groups = patch.class)
     Long commentId;
-    @NotNull
+    @NotNull(groups = {create.class, patch.class})
     Long userId;
-    @NotNull
     Long videoId;
     String userName;
-    @NotNull
+    @NotNull(groups = {create.class, patch.class})
     String content;
-    @NotNull
+
     LocalDateTime time;
     LocalDateTime updatedTime;
     Long like;

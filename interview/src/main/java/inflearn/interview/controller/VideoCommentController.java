@@ -4,6 +4,7 @@ import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
 import inflearn.interview.service.VideoCommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,12 +34,12 @@ public class VideoCommentController {
     }
 
     @PostMapping("/submit")
-    public void addVideoCommentController(@PathVariable("video_id") Long videoId, @RequestBody VideoCommentDTO videoCommentDTO) {
+    public void addVideoCommentController(@PathVariable("video_id") Long videoId, @RequestBody @Validated(VideoCommentDTO.create.class) VideoCommentDTO videoCommentDTO) {
         commentService.addComment(videoCommentDTO);
     }
 
     @PatchMapping("/comments/{comment_id}")
-    public void updateVideoCommentController(@PathVariable("comment_id") Long commentId, @RequestBody VideoCommentDTO videoCommentDTO) {
+    public void updateVideoCommentController(@PathVariable("comment_id") Long commentId, @RequestBody @Validated(VideoCommentDTO.patch.class) VideoCommentDTO videoCommentDTO) {
         commentService.editComment(commentId, videoCommentDTO);
     }
 
