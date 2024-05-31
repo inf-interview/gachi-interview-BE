@@ -35,8 +35,7 @@ public class FcmTokenService {
     }
 
     private String getTokenByUserId(Long userId) {
-        User user = userRepository.findById(userId).get();
-        return fcmRepository.findByUser(user)
+        return fcmRepository.findByUserUserId(userId)
                 .map(FCM::getFcmToken)
                 .orElse(null);
     }
