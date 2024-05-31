@@ -45,10 +45,10 @@ public class VideoCommentService {
         return converter.convert(comment);
     }
 
-    public void addComment(VideoCommentDTO comment) {
+    public void addComment(Long videoId, VideoCommentDTO comment) {
         VideoComment videoComment = new VideoComment();
         User user = userRepository.findById(comment.getUserId()).get();
-        Video video = videoRepository.findById(comment.getVideoId()).get();
+        Video video = videoRepository.findById(videoId).get();
         videoComment.setUser(user);
         videoComment.setVideo(video);
         videoComment.setTime(LocalDateTime.now());

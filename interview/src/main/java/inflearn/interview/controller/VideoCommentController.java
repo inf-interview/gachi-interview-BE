@@ -35,7 +35,7 @@ public class VideoCommentController {
 
     @PostMapping("/submit")
     public void addVideoCommentController(@PathVariable("video_id") Long videoId, @RequestBody @Validated(VideoCommentDTO.create.class) VideoCommentDTO videoCommentDTO) {
-        commentService.addComment(videoCommentDTO);
+        commentService.addComment(videoId, videoCommentDTO);
     }
 
     @PatchMapping("/comments/{comment_id}")
