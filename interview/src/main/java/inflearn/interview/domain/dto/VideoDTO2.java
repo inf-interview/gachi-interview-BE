@@ -1,6 +1,7 @@
 package inflearn.interview.domain.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import inflearn.interview.domain.Video;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,9 +24,10 @@ public class VideoDTO2 implements BaseDTO{
     private LocalDateTime time;
     private LocalDateTime updateTime;
     private int numOfLike;
+    private String image;
 
     @QueryProjection
-    public VideoDTO2(Long userId, String userName, Long videoId, String videoLink, String videoTitle, LocalDateTime time, LocalDateTime updateTime, int numOfLike, String tag, String thumbnailLink) {
+    public VideoDTO2(Long userId, String userName, Long videoId, String videoLink, String videoTitle, LocalDateTime time, LocalDateTime updateTime, int numOfLike, String tag, String thumbnailLink, String image) {
         this.userId = userId;
         this.userName = userName;
         this.videoId = videoId;
@@ -38,8 +40,26 @@ public class VideoDTO2 implements BaseDTO{
             this.tags = entityToDtoTagConverter(tag);
         }
         this.thumbnailLink = thumbnailLink;
-
+        this.image = image;
     }
+
+    public VideoDTO2(Video video) {
+        userId = video.getUser().getUserId();
+        userName = video.getUser().getName();
+        videoId = video.getVideoId();
+        exposure = video.getExposure();
+        videoTitle = video.getVideoTitle();
+        time = video.getTime();
+        updateTime = video.getUpdatedTime();
+        numOfLike = video.getNumOfLike();
+        thumbnailLink = video.getThumbnailLink();
+        image = video.getUser().getImage();
+        if (video.getRawTags() != null) {
+            this.tags = entityToDtoTagConverter(video.getRawTags());
+        }
+    }
+
+
 
     private String[] entityToDtoTagConverter(String tag) {
         return tag.split("[.]");

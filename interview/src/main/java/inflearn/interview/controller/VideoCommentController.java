@@ -1,5 +1,6 @@
 package inflearn.interview.controller;
 
+import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
 import inflearn.interview.service.VideoCommentService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class VideoCommentController {
     private final VideoCommentService commentService;
 
     @GetMapping("/comments")
-    public List<VideoCommentDTO> getVideoCommentsController(@PathVariable("video_id") Long videoId) {
+    public List<PostCommentDTO> getVideoCommentsController(@PathVariable("video_id") Long videoId) {
         return commentService.getComments(videoId);
     }
 

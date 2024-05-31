@@ -3,6 +3,7 @@ package inflearn.interview.service;
 import inflearn.interview.converter.VideoCommentDAOToDTOConverter;
 import inflearn.interview.converter.VideoCommentDTOToDAOConverter;
 import inflearn.interview.domain.VideoComment;
+import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
 import inflearn.interview.repository.VideoCommentRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -19,17 +20,17 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional
 public class VideoCommentService {
-    private final VideoRepository videoRepository;
     private final VideoCommentRepository commentRepository;
     private final VideoCommentDTOToDAOConverter commentConverter;
     private final VideoCommentDAOToDTOConverter converter;
     private final FcmTokenService fcmTokenService;
 
-    public List<VideoCommentDTO> getComments(Long videoId) {
-        List<VideoComment> comments = videoRepository.findById(videoId).get().getComments();
-        List<VideoCommentDTO> results = new ArrayList<>();
-        for (VideoComment comment : comments) {
-            results.add(converter.convert(comment));
+    public List<PostCommentDTO> getComments(Long videoId) {
+        List<VideoComment> commentList = commentRepository.findCommentList(videoId);
+        List<PostCommentDTO> results = new ArrayList<>();
+        for (VideoComment videoComment : commentList) {
+            PostCommentDTO postCommentDTO = new PostCommentDTO(videoComment);
+            results.add(postCommentDTO);
         }
         return results;
     }

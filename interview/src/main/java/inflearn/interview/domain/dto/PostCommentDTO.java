@@ -1,6 +1,7 @@
 package inflearn.interview.domain.dto;
 
 import inflearn.interview.domain.PostComment;
+import inflearn.interview.domain.VideoComment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -29,6 +30,8 @@ public class PostCommentDTO implements BaseDTO{
 
     private LocalDateTime createdAt;
 
+    private String image;
+
     public PostCommentDTO() {
     }
 
@@ -37,5 +40,14 @@ public class PostCommentDTO implements BaseDTO{
         this.userId = postComment.getUser().getUserId();
         this.username = postComment.getUser().getName();
         this.content = postComment.getContent();
+    }
+
+    public PostCommentDTO(VideoComment videoComment) {
+        this.commentId = videoComment.getId();
+        this.userId = videoComment.getUser().getUserId();
+        this.username = videoComment.getUser().getName();
+        this.image = videoComment.getUser().getImage();
+        this.content = videoComment.getContent();
+        this.createdAt = videoComment.getTime();
     }
 }

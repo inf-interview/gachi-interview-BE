@@ -34,6 +34,8 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
+    private String image;
+
     private String refreshToken;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

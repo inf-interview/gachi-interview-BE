@@ -32,7 +32,8 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository{
                         video.updatedTime,
                         video.numOfLike,
                         video.rawTags,
-                        video.thumbnailLink
+                        video.thumbnailLink,
+                        video.user.image
                 ))
                 .from(video)
                 .where(video.exposure)

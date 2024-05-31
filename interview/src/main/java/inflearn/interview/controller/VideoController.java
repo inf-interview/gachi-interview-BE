@@ -21,7 +21,7 @@ public class VideoController {
     private final VideoLikeService videoLikeService;
 
     @GetMapping("/{video_id}")
-    public VideoDTO getVideoController(@PathVariable Long video_id){
+    public VideoDTO2 getVideoController(@PathVariable Long video_id){
         return videoService.getVideoById(video_id);
     }
 
