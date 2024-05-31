@@ -72,13 +72,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (ExpiredJwtException e) { //AccessToken 만료
             String rawRefreshToken = request.getHeader("RefreshToken");
-            if (rawRefreshToken != null) {
-                String refreshToken = rawRefreshToken.substring(7);
-                if (!jwtTokenProvider.isTokenExpired(refreshToken)) {
-                    recreateAccessToken(request, response, refreshToken);
-                    return;
+            try {
+                if (rawRefreshToken != null) {
+                    String refreshToken = rawRefreshToken.substring(7);
+                    if (!jwtTokenProvider.isTokenExpired(refreshToken)) {
+                        recreateAccessToken(request, response, refreshToken);
+                        return;
+                    }
                 }
-                throw new TokenNotValidateException("리프레시 토큰이 만료되어 재로그인이 필요합니다", e);
+            } catch (ExpiredJwtException expiredRefreshToken) {
+                throw new TokenNotValidateException("리프레시 토큰이 만료되어 재로그인이 필요합니다", expiredRefreshToken);
             }
             throw new TokenNotValidateException("만료된 AccessToken, RefreshToken이 필요합니다", e);
 
