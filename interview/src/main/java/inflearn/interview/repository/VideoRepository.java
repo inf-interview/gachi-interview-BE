@@ -1,9 +1,6 @@
 package inflearn.interview.repository;
 
 import inflearn.interview.domain.Video;
-import inflearn.interview.domain.dto.VideoDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
