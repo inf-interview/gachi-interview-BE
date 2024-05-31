@@ -32,6 +32,8 @@ public class Video {
     @Column(name = "img_link")
     String thumbnailLink;
 
+    int numOfLike;
+
     @NotNull
     @Column(name = "video_link")
     String videoLink;

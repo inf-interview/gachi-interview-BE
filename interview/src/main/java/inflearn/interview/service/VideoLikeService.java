@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,23 +21,26 @@ public class VideoLikeService {
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
 
-    public int addLike(Long video_id, User userDAO){
+    public Long addLike(Long video_id, User userDAO){
         Video video = videoRepository.findById(video_id).get();
         User user = userRepository.findById(userDAO.getUserId()).get();
-        VideoLike findResult = videoLikeRepository.findByUserAndVideo(user, video);
-        if(findResult == null){
+        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(user, video);
+        if(getLike.isEmpty()){
             VideoLike videoLike = new VideoLike();
             videoLike.setVideo(video);
             videoLike.setUser(user);
             videoLike.setTime(LocalDateTime.now());
+            video.setNumOfLike(video.getNumOfLike() + 1);
 
             videoLikeRepository.save(videoLike);
         }
         else{
-            videoLikeRepository.deleteByUserAndVideo(user, video);
+            VideoLike videoLike = getLike.get();
+            videoLikeRepository.delete(videoLike);
+            video.setNumOfLike(video.getNumOfLike() - 1);
         }
 
-        return videoRepository.findById(video_id).get().getLikes().size();
+        return videoLikeRepository.countByVideoId(video.getVideoId());
 
 
     }
