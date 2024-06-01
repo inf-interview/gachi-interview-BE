@@ -5,8 +5,10 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import inflearn.interview.domain.FCM;
+import inflearn.interview.domain.Notice;
 import inflearn.interview.domain.User;
 import inflearn.interview.repository.FCMRepository;
+import inflearn.interview.repository.NoticeRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class FcmTokenService {
 
     private final FCMRepository fcmRepository;
     private final UserRepository userRepository;
+    private final NoticeRepository noticeRepository;
 
     public boolean registerToken(User user, String token) {
         Optional<FCM> getUser = fcmRepository.findByUser(user);
@@ -47,6 +50,10 @@ public class FcmTokenService {
         String body = commentUser+"님이 "+titleName+"에 댓글을 작성했습니다.";
 
         sendNotification(token, title, body);
+
+        User user = userRepository.findById(userId).get();
+        Notice notice = new Notice(user, body);
+        noticeRepository.save(notice);
     }
 
     private void sendNotification(String token, String title, String body) {

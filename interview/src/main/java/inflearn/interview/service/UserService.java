@@ -2,11 +2,14 @@ package inflearn.interview.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import inflearn.interview.domain.Notice;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.domain.dto.MyPostDTO;
+import inflearn.interview.domain.dto.NoticeDTO;
 import inflearn.interview.domain.dto.PostCommentDTO;
+import inflearn.interview.repository.NoticeRepository;
 import inflearn.interview.repository.PostCommentRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
@@ -30,6 +33,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
+    private final NoticeRepository noticeRepository;
 
     public LoginResponse loginKakao(String code) { // 반환 값 User, RefreshToken
         String accessToken = kakaoProvider.getAccessToken(code);
@@ -113,5 +117,10 @@ public class UserService {
         loginResponse.setImage(image);
         loginResponse.setUserId(userId);
         return loginResponse;
+    }
+
+    public List<NoticeDTO> getMyNotice(Long userId) {
+        User user = userRepository.findById(userId).get();
+        return noticeRepository.findByUser(user).stream().map(NoticeDTO::new).toList();
     }
 }
