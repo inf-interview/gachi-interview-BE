@@ -64,7 +64,7 @@ public class VideoCommentService {
         target.setContent(videoCommentDTO.getContent());
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, VideoCommentDTO videoCommentDTO) {
         commentRepository.deleteById(commentId);
     }
 }

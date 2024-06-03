@@ -35,7 +35,7 @@ public class VideoService {
 
     }
 
-    public void updateVideo(Long videoId, VideoDTO updatedVideo){
+    public void updateVideo(Long videoId, VideoDTO2 updatedVideo){
         Optional<Video> result = videoRepository.findById(videoId);
         Video originalVideo = result.get();
         updateVideoInformation(updatedVideo, originalVideo);
@@ -68,9 +68,9 @@ public class VideoService {
 
 
 
-    private static void updateVideoInformation(VideoDTO updatedVideo, Video newVideo) {
+    private static void updateVideoInformation(VideoDTO2 updatedVideo, Video newVideo) {
         newVideo.setVideoLink(updatedVideo.getVideoLink());
-        newVideo.setExposure(updatedVideo.getExposure());
+        newVideo.setExposure(updatedVideo.isExposure());
         String[] tags = updatedVideo.getTags();
         StringBuilder rawTag = new StringBuilder();
         for (String tag : tags) {

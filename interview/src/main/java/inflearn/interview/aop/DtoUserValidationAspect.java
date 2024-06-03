@@ -3,7 +3,6 @@ package inflearn.interview.aop;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.BaseDTO;
 import inflearn.interview.domain.dto.ErrorResponse;
-import inflearn.interview.domain.dto.PostDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -21,7 +20,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Aspect
 @Component
 @Slf4j
-public class UserValidationAspect {
+public class DtoUserValidationAspect {
 
     @Pointcut("@annotation(ValidateUser) && (args(dto, ..) || args(.., dto))")
     public void validateUserPointcut(BaseDTO dto) {}
