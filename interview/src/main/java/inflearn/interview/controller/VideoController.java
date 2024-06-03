@@ -2,8 +2,6 @@ package inflearn.interview.controller;
 
 
 import inflearn.interview.aop.ValidateUser;
-import inflearn.interview.domain.User;
-import inflearn.interview.domain.dto.VideoDTO;
 import inflearn.interview.domain.dto.VideoDTO2;
 import inflearn.interview.service.VideoLikeService;
 import inflearn.interview.service.VideoService;

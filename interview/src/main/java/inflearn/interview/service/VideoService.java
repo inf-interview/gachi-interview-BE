@@ -4,7 +4,6 @@ import inflearn.interview.converter.VideoDAOToDTOConverter;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoQuestion;
-import inflearn.interview.domain.dto.VideoDTO;
 import inflearn.interview.domain.dto.VideoDTO2;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
