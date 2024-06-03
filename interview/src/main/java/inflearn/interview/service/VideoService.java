@@ -3,6 +3,7 @@ package inflearn.interview.service;
 import inflearn.interview.converter.VideoDAOToDTOConverter;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Video;
+import inflearn.interview.domain.VideoLike;
 import inflearn.interview.domain.VideoQuestion;
 import inflearn.interview.domain.dto.VideoDTO2;
 import inflearn.interview.repository.*;
@@ -26,10 +27,14 @@ public class VideoService {
     private final VideoQuestionRepository videoQuestionRepository;
     private final QuestionRepository questionRepository;
 
-    public VideoDTO2 getVideoById(Long videoId){
+    public VideoDTO2 getVideoById(Long videoId, User user){
 
         Video video = videoRepository.findById(videoId).get();
-        return new VideoDTO2(video);
+        VideoDTO2 videoDTO = new VideoDTO2(video);
+
+        Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(user, video);
+        videoDTO.setLiked(vl.isPresent());
+        return videoDTO;
 
     }
 

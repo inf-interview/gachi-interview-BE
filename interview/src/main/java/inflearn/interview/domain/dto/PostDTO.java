@@ -44,6 +44,8 @@ public class PostDTO implements BaseDTO{
 
     private String image;
 
+    private boolean isLiked;
+
 
     public PostDTO(Post post, Long commentCount) {
         this.userId = post.getUser().getUserId();

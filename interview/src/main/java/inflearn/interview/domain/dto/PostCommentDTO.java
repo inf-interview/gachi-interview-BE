@@ -32,6 +32,9 @@ public class PostCommentDTO implements BaseDTO{
 
     private String image;
 
+    private Long postId;
+    private String category;
+
     public PostCommentDTO() {
     }
 
@@ -40,6 +43,8 @@ public class PostCommentDTO implements BaseDTO{
         this.userId = postComment.getUser().getUserId();
         this.username = postComment.getUser().getName();
         this.content = postComment.getContent();
+        this.postId = postComment.getPost().getPostId();
+        this.category = postComment.getPost().getCategory();
     }
 
     public PostCommentDTO(VideoComment videoComment) {

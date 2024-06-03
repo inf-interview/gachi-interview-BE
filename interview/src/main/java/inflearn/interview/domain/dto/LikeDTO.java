@@ -5,10 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LikeNumDTO {
+public class LikeDTO {
     private int numOfLike;
+    private boolean isLiked;
 
-    public LikeNumDTO(int numOfLike) {
+    public LikeDTO(int numOfLike, boolean isLiked) {
         this.numOfLike = numOfLike;
+        this.isLiked = isLiked;
     }
 }

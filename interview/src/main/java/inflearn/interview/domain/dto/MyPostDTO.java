@@ -12,17 +12,19 @@ public class MyPostDTO {
 
     private Long postId;
 
-    private String title;
+    private String postTitle;
 
     private int numOfLike;
 
     private String content;
 
-    private String[] tags;
+    private String[] tag;
 
     private LocalDateTime time;
 
-    private int commentCount;
+    private int numOfComment;
+
+    private String category;
 
     private String[] entityToDtoTagConverter(String tag) {
         return tag.split("[.]");
@@ -30,12 +32,13 @@ public class MyPostDTO {
 
     public MyPostDTO(Post post, Long commentCount) {
         this.postId = post.getPostId();
-        this.title = post.getTitle();
+        this.postTitle = post.getTitle();
         this.numOfLike = post.getNumOfLike();
         this.content = post.getContent();
-        this.tags = entityToDtoTagConverter(post.getTag());
+        this.tag = entityToDtoTagConverter(post.getTag());
         this.time = post.getCreatedAt();
-        this.commentCount = commentCount.intValue();
+        this.numOfComment = commentCount.intValue();
+        this.category = post.getCategory();
     }
 
     public MyPostDTO() {

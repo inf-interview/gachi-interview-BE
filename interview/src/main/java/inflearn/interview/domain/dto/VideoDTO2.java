@@ -19,23 +19,22 @@ public class VideoDTO2 implements BaseDTO{
 
     @NotNull(groups = {patch.class, delete.class, like.class})
     private Long userId;
-    @NotNull(groups = patch.class)
     private boolean exposure = true;
     private String videoLink;
-    @NotNull(groups = patch.class)
     private String videoTitle;
     private Long[] questions;
     private String[] tags;
-    @NotNull(groups = patch.class)
     private String thumbnailLink;
 
     private String userName;
-    @NotNull(groups = {patch.class, delete.class, like.class})
+    @NotNull(groups = {delete.class, like.class})
     private Long videoId;
     private LocalDateTime time;
     private LocalDateTime updateTime;
     private int numOfLike;
     private String image;
+
+    private boolean isLiked;
 
     @QueryProjection
     public VideoDTO2(Long userId, String userName, Long videoId, String videoLink, String videoTitle, LocalDateTime time, LocalDateTime updateTime, int numOfLike, String tag, String thumbnailLink, String image) {
