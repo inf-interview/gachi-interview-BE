@@ -3,7 +3,7 @@ package inflearn.interview.service;
 import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostLike;
 import inflearn.interview.domain.User;
-import inflearn.interview.domain.dto.LikeNumDTO;
+import inflearn.interview.domain.dto.LikeDTO;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostLikeRepository;
@@ -34,8 +34,15 @@ public class PostService {
         return postRepository.findAllPostByPageInfo(sortType, category, pageRequest);
     }
 
-    public PostDTO getPostById(Long postId) {
-        return postRepository.findPostByPostId(postId);
+    public PostDTO getPostById(Long postId, Long userId) {
+        PostDTO postDTO = postRepository.findPostByPostId(postId);
+        Optional<PostLike> postLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId);
+        if (postLike.isEmpty()) {
+            postDTO.setLiked(false);
+        } else {
+            postDTO.setLiked(true);
+        }
+        return postDTO;
     }
     //게시글 생성
 
@@ -74,7 +81,7 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public LikeNumDTO likePost(Long postId, Long userId) {
+    public LikeDTO likePost(Long postId, Long userId) {
         Post findPost = postRepository.findById(postId).get();
         User user = userRepository.findById(userId).get();
 
@@ -85,13 +92,14 @@ public class PostService {
             PostLike postLike = new PostLike(findPost, user);
             postLikeRepository.save(postLike);
             findPost.setNumOfLike(findPost.getNumOfLike() + 1);
+            return new LikeDTO(findPost.getNumOfLike(), true);
         } else {
             //있던것 삭제
             postLikeRepository.delete(findPostLike.get());
             findPost.setNumOfLike(findPost.getNumOfLike() - 1);
+            return new LikeDTO(findPost.getNumOfLike(), false);
         }
 
-        return new LikeNumDTO(findPost.getNumOfLike());
 
 
         //유저 정보, postId를 이용하여 이미 like가 있는지 확인

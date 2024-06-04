@@ -2,6 +2,7 @@ package inflearn.interview.domain.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import inflearn.interview.domain.Video;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,12 @@ import java.time.LocalDateTime;
 @Setter
 public class VideoDTO2 implements BaseDTO{
 
+    public interface patch{}
+    public interface delete{}
+
+    public interface like{}
+
+    @NotNull(groups = {patch.class, delete.class, like.class})
     private Long userId;
     private boolean exposure = true;
     private String videoLink;
@@ -20,11 +27,14 @@ public class VideoDTO2 implements BaseDTO{
     private String thumbnailLink;
 
     private String userName;
+    @NotNull(groups = {delete.class, like.class})
     private Long videoId;
     private LocalDateTime time;
     private LocalDateTime updateTime;
     private int numOfLike;
     private String image;
+
+    private boolean isLiked;
 
     @QueryProjection
     public VideoDTO2(Long userId, String userName, Long videoId, String videoLink, String videoTitle, LocalDateTime time, LocalDateTime updateTime, int numOfLike, String tag, String thumbnailLink, String image) {

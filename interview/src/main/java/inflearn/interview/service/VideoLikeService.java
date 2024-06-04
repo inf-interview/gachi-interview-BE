@@ -3,6 +3,8 @@ package inflearn.interview.service;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoLike;
+import inflearn.interview.domain.dto.LikeDTO;
+import inflearn.interview.domain.dto.VideoDTO2;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoLikeRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -21,9 +23,9 @@ public class VideoLikeService {
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
 
-    public Long addLike(Long video_id, User userDAO){
+    public LikeDTO addLike(Long video_id, VideoDTO2 videoDTO2){
         Video video = videoRepository.findById(video_id).get();
-        User user = userRepository.findById(userDAO.getUserId()).get();
+        User user = userRepository.findById(videoDTO2.getUserId()).get();
         Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(user, video);
         if(getLike.isEmpty()){
             VideoLike videoLike = new VideoLike();
@@ -33,15 +35,14 @@ public class VideoLikeService {
             video.setNumOfLike(video.getNumOfLike() + 1);
 
             videoLikeRepository.save(videoLike);
+            return new LikeDTO(video.getNumOfLike(), true);
         }
         else{
             VideoLike videoLike = getLike.get();
             videoLikeRepository.delete(videoLike);
             video.setNumOfLike(video.getNumOfLike() - 1);
+            return new LikeDTO(video.getNumOfLike(), false);
         }
-
-        return videoLikeRepository.countByVideoId(video.getVideoId());
-
 
     }
 }

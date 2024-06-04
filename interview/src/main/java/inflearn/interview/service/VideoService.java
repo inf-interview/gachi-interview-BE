@@ -3,8 +3,8 @@ package inflearn.interview.service;
 import inflearn.interview.converter.VideoDAOToDTOConverter;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Video;
+import inflearn.interview.domain.VideoLike;
 import inflearn.interview.domain.VideoQuestion;
-import inflearn.interview.domain.dto.VideoDTO;
 import inflearn.interview.domain.dto.VideoDTO2;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -28,17 +27,22 @@ public class VideoService {
     private final VideoQuestionRepository videoQuestionRepository;
     private final QuestionRepository questionRepository;
 
-    public VideoDTO2 getVideoById(Long videoId){
+    public VideoDTO2 getVideoById(Long videoId, User user){
 
         Video video = videoRepository.findById(videoId).get();
-        return new VideoDTO2(video);
+        VideoDTO2 videoDTO = new VideoDTO2(video);
+
+        Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(user, video);
+        videoDTO.setLiked(vl.isPresent());
+        return videoDTO;
 
     }
 
-    public void updateVideo(Long videoId, VideoDTO updatedVideo){
-        Optional<Video> result = videoRepository.findById(videoId);
-        Video originalVideo = result.get();
-        updateVideoInformation(updatedVideo, originalVideo);
+    public void updateVideo(Long videoId, VideoDTO2 updatedVideo){
+        Video originalVideo = videoRepository.findById(videoId).get();
+        originalVideo.setExposure(updatedVideo.isExposure());
+        originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
+        originalVideo.setTag(dtoToEntityConverter(updatedVideo.getTags()));
     }
 
     public void deleteVideo(Long videoId){
@@ -68,16 +72,12 @@ public class VideoService {
 
 
 
-    private static void updateVideoInformation(VideoDTO updatedVideo, Video newVideo) {
-        newVideo.setVideoLink(updatedVideo.getVideoLink());
-        newVideo.setExposure(updatedVideo.getExposure());
-        String[] tags = updatedVideo.getTags();
+    private String dtoToEntityConverter(String[] tags) {
         StringBuilder rawTag = new StringBuilder();
         for (String tag : tags) {
             rawTag.append(tag).append(".");
         }
-        newVideo.setTag(rawTag.toString());
-        newVideo.setUpdatedTime(LocalDateTime.now());
+        return rawTag.toString();
     }
 
 

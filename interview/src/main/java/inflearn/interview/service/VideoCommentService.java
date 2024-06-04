@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,7 @@ public class VideoCommentService {
         target.setContent(videoCommentDTO.getContent());
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, VideoCommentDTO videoCommentDTO) {
         commentRepository.deleteById(commentId);
     }
 }
