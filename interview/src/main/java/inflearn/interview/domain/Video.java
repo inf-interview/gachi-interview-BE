@@ -43,10 +43,6 @@ public class Video {
     @Transient
     List<String> tags;
 
-    @OneToMany
-    @JoinColumn
-    List<Question> questions = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -56,4 +52,7 @@ public class Video {
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
     List<VideoLike> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
+    List<VideoQuestion> videoQuestions = new ArrayList<>();
 }

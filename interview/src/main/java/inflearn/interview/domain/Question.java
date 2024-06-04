@@ -24,11 +24,6 @@ public class Question {
 
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "video_id")
-    Video video;
-
-
     public Question() {
     }
 

@@ -39,9 +39,10 @@ public class VideoService {
     }
 
     public void updateVideo(Long videoId, VideoDTO2 updatedVideo){
-        Optional<Video> result = videoRepository.findById(videoId);
-        Video originalVideo = result.get();
-        updateVideoInformation(updatedVideo, originalVideo);
+        Video originalVideo = videoRepository.findById(videoId).get();
+        originalVideo.setExposure(updatedVideo.isExposure());
+        originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
+        originalVideo.setTag(dtoToEntityConverter(updatedVideo.getTags()));
     }
 
     public void deleteVideo(Long videoId){
@@ -71,16 +72,12 @@ public class VideoService {
 
 
 
-    private static void updateVideoInformation(VideoDTO2 updatedVideo, Video newVideo) {
-        newVideo.setVideoLink(updatedVideo.getVideoLink());
-        newVideo.setExposure(updatedVideo.isExposure());
-        String[] tags = updatedVideo.getTags();
+    private String dtoToEntityConverter(String[] tags) {
         StringBuilder rawTag = new StringBuilder();
         for (String tag : tags) {
             rawTag.append(tag).append(".");
         }
-        newVideo.setTag(rawTag.toString());
-        newVideo.setUpdatedTime(LocalDateTime.now());
+        return rawTag.toString();
     }
 
 
