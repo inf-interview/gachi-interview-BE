@@ -2,16 +2,15 @@ package inflearn.interview.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.domain.dto.MyPostDTO;
 import inflearn.interview.domain.dto.NoticeDTO;
 import inflearn.interview.domain.dto.PostCommentDTO;
-import inflearn.interview.repository.NoticeRepository;
-import inflearn.interview.repository.PostCommentRepository;
-import inflearn.interview.repository.PostRepository;
-import inflearn.interview.repository.UserRepository;
+import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
+    private final VideoCommentRepository videoCommentRepository;
     private final NoticeRepository noticeRepository;
 
     public LoginResponse loginKakao(String code) { // 반환 값 User, RefreshToken
@@ -106,8 +106,13 @@ public class UserService {
 
 
     public List<PostCommentDTO> getMyComment(Long userId) {
-        List<PostComment> comments = postCommentRepository.findCommentByUserId(userId);
-        return comments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+        List<PostComment> postComments = postCommentRepository.findCommentByUserId(userId);
+        return postComments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+    }
+
+    public List<PostCommentDTO> getMyVideoComment(Long userId) {
+        List<VideoComment> videoComments = videoCommentRepository.findCommentByUserId(userId);
+        return videoComments.stream().map(comment -> new PostCommentDTO(comment)).toList();
     }
 
     private LoginResponse createLoginResponse(String username, String image, Long userId) {
