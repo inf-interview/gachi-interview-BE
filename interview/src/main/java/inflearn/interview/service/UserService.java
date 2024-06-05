@@ -60,6 +60,7 @@ public class UserService {
             user.setSocial("KAKAO");
             user.setCreatedAt(LocalDateTime.now());
             user.setImage(image);
+            user.setRole("USER");
             userRepository.save(user);
 
             return createLoginResponse(nickname, image, user.getUserId());
