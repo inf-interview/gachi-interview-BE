@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import inflearn.interview.domain.*;
+import inflearn.interview.domain.dto.FeedbackDTO;
+import inflearn.interview.domain.dto.VideoCommentDTO;
 import inflearn.interview.repository.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +33,9 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
-    private final FcmTokenService fcmTokenService;
     private final VideoQuestionRepository videoQuestionRepository;
     private final QuestionRepository questionRepository;
+    private final VideoCommentService videoCommentService;
 
 
     @Value("${python.server.url}")
@@ -47,52 +49,61 @@ public class FeedbackService {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Async
-    public void GPTFeedback(Long videoId, User user) throws JsonProcessingException {
+    public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
+
         Video video = videoRepository.findById(videoId).get();
-
-        RequestBody requestBody = new RequestBody();
-        requestBody.setVideo_url(video.getVideoLink());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<RequestBody> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        String response = restTemplate.postForObject(pythonServerURL, requestEntity, String.class);
-
-        JsonNode jsonNode;
-        try {
-            jsonNode = objectMapper.readTree(response);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        String answer = jsonNode.get("result").asText();
-
         List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
-
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < videoQuestions.size(); i++) {
             Question question = questionRepository.findById(videoQuestions.get(i).getQuestion().getId()).get();
-            sb.append("question").append(i).append(i+1).append(": ").append(question.getContent());
+            sb.append("question").append(i + 1).append(": ").append(question.getContent());
         }
 
         String question = sb.toString();
 
-        //db에 유저정보랑 질문, 답변 gpt 답변담아두고
-        Feedback target = new Feedback();
+        if (dto.getContent().isEmpty()) {
 
-        target.setContent(sendGPT(question, answer));
-        target.setUser(user);
-        target.setTime(LocalDateTime.now());
-        target.setVideo(video);
-        target.setQuestion(question);
-        feedbackRepository.save(target);
+            RequestBody requestBody = new RequestBody();
+            requestBody.setVideo_url(video.getVideoLink());
 
-//        fcmTokenService.feedbackSendNotification(video.getUser().getUserId(), video.getVideoTitle());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<RequestBody> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            String response = restTemplate.postForObject(pythonServerURL, requestEntity, String.class);
+
+            JsonNode jsonNode;
+            try {
+                jsonNode = objectMapper.readTree(response);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
+            String answer = jsonNode.get("result").asText();
+
+
+            //db에 유저정보랑 질문, 답변 gpt 답변담아두고
+            Feedback target = new Feedback();
+            String result = sendGPT(question, answer);
+
+            target.setContent(result);
+            target.setUser(user);
+            target.setTime(LocalDateTime.now());
+            target.setVideo(video);
+            target.setQuestion(question);
+            feedbackRepository.save(target);
+
+            sendCompleteComment(result, videoId);
+        } else {
+            String result = sendGPT(question, dto.getContent());
+            sendCompleteComment(result, videoId);
+        }
+
+
     }
 
-    public String sendGPT(String question, String answer) throws JsonProcessingException {
+    private String sendGPT(String question, String answer) throws JsonProcessingException {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
 
         Map<String, Object> bodyMap = new HashMap<>();
@@ -144,6 +155,14 @@ public class FeedbackService {
 
         log.info("result{}", result);
         return result;
+    }
+
+    private void sendCompleteComment(String result, Long videoId) {
+        VideoCommentDTO videoCommentDTO = new VideoCommentDTO();
+        User admin = userRepository.findAdmin("ADMIN");
+        videoCommentDTO.setUserId(admin.getUserId());
+        videoCommentDTO.setContent(result);
+        videoCommentService.addComment(videoId, videoCommentDTO);
     }
 
 
