@@ -26,6 +26,7 @@ public class AdminUserInitializer {
             admin.setEmail("thstkddnr20@naver.com");
             admin.setCreatedAt(LocalDateTime.now());
             admin.setRole("ADMIN");
+            admin.setImage("https://inf-video.s3.ap-northeast-2.amazonaws.com/KakaoTalk_Photo_2024-06-06-13-54-05.png");
             userRepository.save(admin);
         };
     }
