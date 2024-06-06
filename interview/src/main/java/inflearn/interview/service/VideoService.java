@@ -6,6 +6,7 @@ import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoLike;
 import inflearn.interview.domain.VideoQuestion;
 import inflearn.interview.domain.dto.VideoDTO2;
+import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,12 +31,22 @@ public class VideoService {
     public VideoDTO2 getVideoById(Long videoId, User user){
 
         Video video = videoRepository.findById(videoId).get();
-        VideoDTO2 videoDTO = new VideoDTO2(video);
+        if (video.getExposure()) {
+            VideoDTO2 videoDTO = new VideoDTO2(video);
 
-        Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(user, video);
-        videoDTO.setLiked(vl.isPresent());
-        return videoDTO;
+            Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(user, video);
+            videoDTO.setLiked(vl.isPresent());
+            return videoDTO;
+        } else {
+            if (user.getUserId().equals(video.getUser().getUserId())) {
+                VideoDTO2 videoDTO = new VideoDTO2(video);
 
+                Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(user, video);
+                videoDTO.setLiked(vl.isPresent());
+                return videoDTO;
+            }
+            throw new RequestDeniedException();
+        }
     }
 
     public void updateVideo(Long videoId, VideoDTO2 updatedVideo){

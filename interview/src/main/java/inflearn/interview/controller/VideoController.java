@@ -3,8 +3,10 @@ package inflearn.interview.controller;
 
 import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.ErrorResponse;
 import inflearn.interview.domain.dto.LikeDTO;
 import inflearn.interview.domain.dto.VideoDTO2;
+import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.service.VideoLikeService;
 import inflearn.interview.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +28,14 @@ public class VideoController {
     private final VideoLikeService videoLikeService;
 
     @GetMapping("/{video_id}")
-    public VideoDTO2 getVideoController(@PathVariable Long video_id, @AuthenticationPrincipal User user){
-        return videoService.getVideoById(video_id, user);
+    public ResponseEntity<?> getVideoController(@PathVariable Long video_id, @AuthenticationPrincipal User user){
+        try {
+            VideoDTO2 videoDTO = videoService.getVideoById(video_id, user);
+            return ResponseEntity.ok(videoDTO);
+        } catch (RequestDeniedException e) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
     }
 
     @ValidateUser
