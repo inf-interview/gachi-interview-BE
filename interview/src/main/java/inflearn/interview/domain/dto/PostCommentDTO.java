@@ -44,7 +44,6 @@ public class PostCommentDTO implements BaseDTO{
         this.username = postComment.getUser().getName();
         this.content = postComment.getContent();
         this.postId = postComment.getPost().getPostId();
-        this.category = postComment.getPost().getCategory();
     }
 
     public PostCommentDTO(VideoComment videoComment) {

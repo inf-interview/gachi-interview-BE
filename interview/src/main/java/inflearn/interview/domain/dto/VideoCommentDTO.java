@@ -1,5 +1,6 @@
 package inflearn.interview.domain.dto;
 
+import inflearn.interview.domain.VideoComment;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +29,15 @@ public class VideoCommentDTO implements BaseDTO{
     LocalDateTime time;
     LocalDateTime updatedTime;
     Long like;
+
+    public VideoCommentDTO(VideoComment videoComment) {
+        this.commentId = videoComment.getId();
+        this.userId = videoComment.getUser().getUserId();
+        this.videoId = videoComment.getVideo().getVideoId();
+        this.userName = videoComment.getUser().getName();
+        this.content = videoComment.getContent();
+    }
+
+    public VideoCommentDTO() {
+    }
 }

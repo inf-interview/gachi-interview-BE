@@ -4,14 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
-import inflearn.interview.domain.dto.LoginResponse;
-import inflearn.interview.domain.dto.MyPostDTO;
-import inflearn.interview.domain.dto.NoticeDTO;
-import inflearn.interview.domain.dto.PostCommentDTO;
-import inflearn.interview.repository.NoticeRepository;
-import inflearn.interview.repository.PostCommentRepository;
-import inflearn.interview.repository.PostRepository;
-import inflearn.interview.repository.UserRepository;
+import inflearn.interview.domain.VideoComment;
+import inflearn.interview.domain.dto.*;
+import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +27,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
+    private final VideoCommentRepository videoCommentRepository;
     private final NoticeRepository noticeRepository;
+    private final VideoRepository videoRepository;
 
     public LoginResponse loginKakao(String code) { // 반환 값 User, RefreshToken
         String accessToken = kakaoProvider.getAccessToken(code);
@@ -60,6 +57,7 @@ public class UserService {
             user.setSocial("KAKAO");
             user.setCreatedAt(LocalDateTime.now());
             user.setImage(image);
+            user.setRole("USER");
             userRepository.save(user);
 
             return createLoginResponse(nickname, image, user.getUserId());
@@ -104,10 +102,19 @@ public class UserService {
         return postRepository.findPostByUserId(userId, category);
     }
 
+    public List<MyVideoDTO> getMyVideo(Long userId) {
+        return videoRepository.findVideoByUserId(userId);
+    }
+
 
     public List<PostCommentDTO> getMyComment(Long userId) {
-        List<PostComment> comments = postCommentRepository.findCommentByUserId(userId);
-        return comments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+        List<PostComment> postComments = postCommentRepository.findCommentByUserId(userId);
+        return postComments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+    }
+
+    public List<VideoCommentDTO> getMyVideoComment(Long userId) {
+        List<VideoComment> videoComments = videoCommentRepository.findCommentByUserId(userId);
+        return videoComments.stream().map(comment -> new VideoCommentDTO(comment)).toList();
     }
 
     private LoginResponse createLoginResponse(String username, String image, Long userId) {

@@ -23,7 +23,6 @@ import java.util.List;
 @Transactional
 public class VideoCommentService {
     private final VideoCommentRepository commentRepository;
-    private final VideoCommentDTOToDAOConverter commentConverter;
     private final VideoCommentDAOToDTOConverter converter;
     private final FcmTokenService fcmTokenService;
     private final UserRepository userRepository;
