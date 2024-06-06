@@ -53,9 +53,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<VideoLike> likes = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    FCM fcm = new FCM();
-
     private String role;
 
     @Override
