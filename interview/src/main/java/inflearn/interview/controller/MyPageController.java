@@ -42,8 +42,8 @@ public class MyPageController {
 
     @ValidateUserParam
     @GetMapping("/{user_id}/videos")
-    public void myVideo(@PathVariable(name = "user_id") Long userId) {
-
+    public ResponseEntity<?> myVideo(@PathVariable(name = "user_id") Long userId) {
+        return ResponseEntity.ok(userService.getMyVideo(userId));
     }
 
     @ValidateUserParam

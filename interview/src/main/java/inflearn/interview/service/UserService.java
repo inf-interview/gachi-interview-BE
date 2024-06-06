@@ -2,7 +2,6 @@ package inflearn.interview.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.VideoComment;

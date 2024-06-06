@@ -1,7 +1,6 @@
 package inflearn.interview.repository;
 
 import inflearn.interview.domain.Video;
-import inflearn.interview.domain.dto.MyPostDTO;
 import inflearn.interview.domain.dto.MyVideoDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

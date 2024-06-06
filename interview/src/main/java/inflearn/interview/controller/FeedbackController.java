@@ -5,7 +5,6 @@ import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.Feedback;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.FeedbackDTO;
-import inflearn.interview.domain.dto.TempDTO;
 import inflearn.interview.service.FeedbackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
