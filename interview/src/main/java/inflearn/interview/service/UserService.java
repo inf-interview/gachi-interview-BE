@@ -6,10 +6,7 @@ import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.VideoComment;
-import inflearn.interview.domain.dto.LoginResponse;
-import inflearn.interview.domain.dto.MyPostDTO;
-import inflearn.interview.domain.dto.NoticeDTO;
-import inflearn.interview.domain.dto.PostCommentDTO;
+import inflearn.interview.domain.dto.*;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +30,7 @@ public class UserService {
     private final PostCommentRepository postCommentRepository;
     private final VideoCommentRepository videoCommentRepository;
     private final NoticeRepository noticeRepository;
+    private final VideoRepository videoRepository;
 
     public LoginResponse loginKakao(String code) { // 반환 값 User, RefreshToken
         String accessToken = kakaoProvider.getAccessToken(code);
@@ -105,15 +103,19 @@ public class UserService {
         return postRepository.findPostByUserId(userId, category);
     }
 
+    public List<MyVideoDTO> getMyVideo(Long userId) {
+        return videoRepository.findVideoByUserId(userId);
+    }
+
 
     public List<PostCommentDTO> getMyComment(Long userId) {
         List<PostComment> postComments = postCommentRepository.findCommentByUserId(userId);
         return postComments.stream().map(comment -> new PostCommentDTO(comment)).toList();
     }
 
-    public List<PostCommentDTO> getMyVideoComment(Long userId) {
+    public List<VideoCommentDTO> getMyVideoComment(Long userId) {
         List<VideoComment> videoComments = videoCommentRepository.findCommentByUserId(userId);
-        return videoComments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+        return videoComments.stream().map(comment -> new VideoCommentDTO(comment)).toList();
     }
 
     private LoginResponse createLoginResponse(String username, String image, Long userId) {
