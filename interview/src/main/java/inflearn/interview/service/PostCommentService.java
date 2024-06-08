@@ -60,7 +60,9 @@ public class PostCommentService {
         PostComment postComment = new PostComment(findUser, findPost, postCommentDTO.getContent());
         PostComment saved = postCommentRepository.save(postComment);
 
-        fcmTokenService.commentSendNotification(saved.getPost().getUser().getUserId(), saved.getPost().getTitle(), saved.getUser().getName());
+        if (!(findPost.getUser().getUserId().equals(postCommentDTO.getUserId()))) {
+            fcmTokenService.commentSendNotification(saved.getPost().getUser().getUserId(), saved.getPost().getTitle(), saved.getUser().getName());
+        }
 
         PostCommentDTO returnDto = new PostCommentDTO();
         returnDto.setCommentId(postComment.getPostCommentId());
