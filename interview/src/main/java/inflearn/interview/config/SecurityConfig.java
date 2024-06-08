@@ -48,7 +48,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Allow all origins
+        configuration.setAllowedOrigins(List.of("https://gachi-myeonjeob.vercel.app", "http://localhost:3000")); // Allow all origins
         configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "PATCH")); // Allow all HTTP methods
         configuration.setAllowedHeaders(List.of("*")); // Allow all headers
         configuration.setAllowCredentials(true); // Allow credentials
