@@ -1,9 +1,7 @@
 package inflearn.interview.controller;
 
 import inflearn.interview.aop.ValidateUser;
-import inflearn.interview.domain.Question;
 import inflearn.interview.domain.User;
-import inflearn.interview.domain.Workbook;
 import inflearn.interview.domain.dto.QuestionRequestDTO;
 import inflearn.interview.domain.dto.QuestionResponseDTO;
 import inflearn.interview.domain.dto.WorkbookRequestDTO;

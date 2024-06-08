@@ -31,7 +31,7 @@ public class KakaoProvider {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        params.add("redirect_uri", "http://localhost:3000/user/kakao/login"); // 리다이렉트 URL
+        params.add("redirect_uri", "https://gachi-myeonjeob.vercel.app/user/kakao/login"); // 리다이렉트 URL
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
