@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,6 +128,6 @@ public class UserService {
 
     public List<NoticeDTO> getMyNotice(Long userId) {
         User user = userRepository.findById(userId).get();
-        return noticeRepository.findByUser(user).stream().map(NoticeDTO::new).toList();
+        return noticeRepository.findByUser(user).stream().map(NoticeDTO::new).sorted(Comparator.comparing(NoticeDTO::getCreatedAt).reversed()).toList();
     }
 }
