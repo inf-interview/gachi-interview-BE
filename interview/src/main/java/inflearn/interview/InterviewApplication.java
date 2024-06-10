@@ -6,13 +6,11 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
 @SpringBootApplication
-@EnableAsync
 public class InterviewApplication {
 
 	public static void main(String[] args) {

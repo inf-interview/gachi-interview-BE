@@ -15,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,7 +47,6 @@ public class FeedbackService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @Async
     public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
 
         Video video = videoRepository.findById(videoId).get();
