@@ -37,6 +37,7 @@ public class GoogleProvider {
         } else if (isLocal.equals("PUBLISH")){
             params.add("redirect_uri", PUBLISH_REDIRECT);
         }
+        params.add("redirect_uri", BE_LOCAL_REDIRECT);
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity1 = new HttpEntity<>(params, headers);
