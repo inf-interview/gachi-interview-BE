@@ -8,7 +8,6 @@ import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.*;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ import java.util.Optional;
 
 @Service
 @Transactional
-@Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
@@ -35,8 +33,6 @@ public class UserService {
     public LoginResponse loginKakao(String code, String isLocal) { // 반환 값 User, RefreshToken
         String accessToken = kakaoProvider.getAccessToken(code, isLocal);
         String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
-
-        log.info("kakaoInfo={}", kakaoInfo);
 
         JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
 
@@ -72,8 +68,6 @@ public class UserService {
 
         String accessToken = googleProvider.getAccessToken(code, isLocal);
         String googleInfo = googleProvider.getGoogleInfo(accessToken);
-
-        log.info("info={}", googleInfo);
 
         JsonObject jsonObject = JsonParser.parseString(googleInfo).getAsJsonObject();
 
