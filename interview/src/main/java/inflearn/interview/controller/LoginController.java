@@ -6,6 +6,7 @@ import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.service.AuthenticationService;
 import inflearn.interview.service.FcmTokenService;
 import inflearn.interview.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,11 @@ public class LoginController {
     }
 
     @GetMapping("/user/kakao/login")
-    public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code) {
-        LoginResponse loginResponse = userService.loginKakao(code);
-  
+    public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code, HttpServletRequest request) {
+        String isLocal = checkLocal(request);
+
+        LoginResponse loginResponse = userService.loginKakao(code, isLocal);
+
         String[] tokens = authenticationService.register(loginResponse.getUserId());
         log.info("accessToken = {}", tokens[0]);
 
@@ -64,8 +67,10 @@ public class LoginController {
     }
 
     @GetMapping("/user/google/login")
-    public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code) {
-        LoginResponse loginResponse = userService.loginGoogle(code);
+    public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code, HttpServletRequest request) {
+        String isLocal = checkLocal(request);
+
+        LoginResponse loginResponse = userService.loginGoogle(code, isLocal);
 
         String[] tokens = authenticationService.register(loginResponse.getUserId());
 
@@ -85,5 +90,18 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }
 
+    }
+    private String checkLocal(HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        String isLocal = "PUBLISH";
+
+        if (referer == null) {
+            isLocal = "BE";
+            log.info("BE 로컬 접속");
+        } else if (referer.contains("localhost:3000")) {
+            isLocal = "FE";
+            log.info("FE 로컬 접속");
+        }
+        return isLocal;
     }
 }
