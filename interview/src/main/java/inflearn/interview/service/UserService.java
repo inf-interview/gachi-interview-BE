@@ -32,8 +32,8 @@ public class UserService {
     private final NoticeRepository noticeRepository;
     private final VideoRepository videoRepository;
 
-    public LoginResponse loginKakao(String code) { // 반환 값 User, RefreshToken
-        String accessToken = kakaoProvider.getAccessToken(code);
+    public LoginResponse loginKakao(String code, String isLocal) { // 반환 값 User, RefreshToken
+        String accessToken = kakaoProvider.getAccessToken(code, isLocal);
         String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
 
         log.info("kakaoInfo={}", kakaoInfo);
@@ -68,9 +68,9 @@ public class UserService {
         return createLoginResponse(nickname, image, findUser.get().getUserId());
     }
 
-    public LoginResponse loginGoogle(String code) {
+    public LoginResponse loginGoogle(String code, String isLocal) {
 
-        String accessToken = googleProvider.getAccessToken(code);
+        String accessToken = googleProvider.getAccessToken(code, isLocal);
         String googleInfo = googleProvider.getGoogleInfo(accessToken);
 
         log.info("info={}", googleInfo);
