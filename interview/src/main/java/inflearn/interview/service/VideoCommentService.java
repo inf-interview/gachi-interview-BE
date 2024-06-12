@@ -7,6 +7,7 @@ import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
+import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoCommentRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -62,11 +63,20 @@ public class VideoCommentService {
 
     public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {
         VideoComment target = commentRepository.findById(commentId).get();
-        target.setUpdatedTime(LocalDateTime.now());
-        target.setContent(videoCommentDTO.getContent());
+        if (target.getUser().getUserId().equals(videoCommentDTO.getUserId())) {
+            target.setUpdatedTime(LocalDateTime.now());
+            target.setContent(videoCommentDTO.getContent());
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 
     public void deleteComment(Long commentId, VideoCommentDTO videoCommentDTO) {
-        commentRepository.deleteById(commentId);
+        VideoComment target = commentRepository.findById(commentId).get();
+        if (target.getUser().getUserId().equals(videoCommentDTO.getUserId())) {
+            commentRepository.deleteById(commentId);
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 }

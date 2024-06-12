@@ -51,13 +51,22 @@ public class VideoService {
 
     public void updateVideo(Long videoId, VideoDTO2 updatedVideo){
         Video originalVideo = videoRepository.findById(videoId).get();
-        originalVideo.setExposure(updatedVideo.isExposure());
-        originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
-        originalVideo.setTag(dtoToEntityConverter(updatedVideo.getTags()));
+        if (originalVideo.getUser().getUserId().equals(updatedVideo.getUserId())) {
+            originalVideo.setExposure(updatedVideo.isExposure());
+            originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
+            originalVideo.setTag(dtoToEntityConverter(updatedVideo.getTags()));
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 
-    public void deleteVideo(Long videoId){
-        videoRepository.deleteById(videoId);
+    public void deleteVideo(Long videoId, VideoDTO2 video){
+        Video originalVideo = videoRepository.findById(videoId).get();
+        if (originalVideo.getUser().getUserId().equals(video.getUserId())) {
+            videoRepository.deleteById(videoId);
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 
     //정렬 : 최신순, 좋아요순, 댓글순
@@ -65,23 +74,7 @@ public class VideoService {
     public Page<VideoDTO2> getVideoList(String sortType, int page) {
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
         return videoRepository.findAllVideoByPageInfo(sortType, pageRequest);
-//        Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-//
-//        Sort sort = switch (sortType) {
-//            case "like" -> Sort.by(direction, "like");
-//            case "comment" -> Sort.by(direction, "commentCount");
-//            default -> Sort.by(direction, "time");
-//        };
-//        PageRequest pageable = PageRequest.of(page, size, sort);
-//
-//        Page<Video> videoPage = videoRepository.findAll(pageable);
-//
-//        return videoPage.map(DAOToDTOConverter::convert);
     }
-
-
-
-
 
     private String dtoToEntityConverter(String[] tags) {
         StringBuilder rawTag = new StringBuilder();

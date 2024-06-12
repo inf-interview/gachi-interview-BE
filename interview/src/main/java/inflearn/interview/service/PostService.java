@@ -56,7 +56,7 @@ public class PostService {
         return postDTO;
     }
 
-    public PostDTO updatePost(Long postId, PostDTO postDTO) throws RequestDeniedException{
+    public PostDTO updatePost(Long postId, PostDTO postDTO) {
         Post findPost = postRepository.findById(postId).get();
         if (postDTO.getUserId().equals(findPost.getUser().getUserId())) {
             findPost.setTitle(postDTO.getPostTitle());
@@ -70,7 +70,7 @@ public class PostService {
         }
     }
 
-    public void deletePost(Long postId, Long userId) throws RequestDeniedException{
+    public void deletePost(Long postId, Long userId) {
         //유저가 작성한 포스트인지 체크
         Post post = postRepository.findById(postId).get();
         log.info("userId {}", post.getUser().getUserId());

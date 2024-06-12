@@ -3,14 +3,18 @@ package inflearn.interview.service;
 import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.ErrorResponse;
 import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostCommentRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
