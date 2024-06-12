@@ -1,6 +1,7 @@
 package inflearn.interview.service;
 
 import inflearn.interview.domain.dto.SocialTokenResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@Slf4j
 public class GoogleProvider {
 
     @Value("${spring.google.client_id}")
@@ -30,15 +32,12 @@ public class GoogleProvider {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        if (isLocal.equals("BE")) {
-            params.add("redirect_uri", BE_LOCAL_REDIRECT);
-        } else if (isLocal.equals("FE")) {
-            params.add("redirect_uri", FE_LOCAL_REDIRECT);
-        } else if (isLocal.equals("PUBLISH")){
-            params.add("redirect_uri", PUBLISH_REDIRECT);
-        }
-        params.add("redirect_uri", BE_LOCAL_REDIRECT);
         params.add("code", code);
+        switch (isLocal) {
+            case "BE" -> params.add("redirect_uri", BE_LOCAL_REDIRECT);
+            case "FE" -> params.add("redirect_uri", FE_LOCAL_REDIRECT);
+            case "PUBLISH" -> params.add("redirect_uri", PUBLISH_REDIRECT);
+        }
 
         HttpEntity<MultiValueMap<String, String>> requestEntity1 = new HttpEntity<>(params, headers);
 
