@@ -6,6 +6,7 @@ import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.*;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -122,7 +123,7 @@ public class UserService {
     }
 
     public List<NoticeDTO> getMyNotice(Long userId) {
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         return noticeRepository.findByUser(user).stream().map(NoticeDTO::new).sorted(Comparator.comparing(NoticeDTO::getCreatedAt).reversed()).toList();
     }
 }

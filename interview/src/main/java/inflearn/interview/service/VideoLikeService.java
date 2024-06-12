@@ -5,6 +5,7 @@ import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoLike;
 import inflearn.interview.domain.dto.LikeDTO;
 import inflearn.interview.domain.dto.VideoDTO2;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoLikeRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -24,8 +25,8 @@ public class VideoLikeService {
     private final VideoRepository videoRepository;
 
     public LikeDTO addLike(Long video_id, VideoDTO2 videoDTO2){
-        Video video = videoRepository.findById(video_id).get();
-        User user = userRepository.findById(videoDTO2.getUserId()).get();
+        Video video = videoRepository.findById(video_id).orElseThrow(OptionalNotFoundException::new);
+        User user = userRepository.findById(videoDTO2.getUserId()).orElseThrow(OptionalNotFoundException::new);
         Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(user, video);
         if(getLike.isEmpty()){
             VideoLike videoLike = new VideoLike();

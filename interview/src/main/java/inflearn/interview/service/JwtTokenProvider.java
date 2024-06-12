@@ -1,6 +1,7 @@
 package inflearn.interview.service;
 
 import inflearn.interview.domain.User;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.exception.TokenNotValidateException;
 import inflearn.interview.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -94,7 +95,7 @@ public class JwtTokenProvider {
 
         try {
             Long id = Long.parseLong(extractUsername(refreshToken));
-            User findUser = userRepository.findById(id).get();
+            User findUser = userRepository.findById(id).orElseThrow(OptionalNotFoundException::new);
 
             if (refreshToken.equals(findUser.getRefreshToken())) {
                 if (isTokenValid(refreshToken, findUser)) {

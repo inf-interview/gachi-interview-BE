@@ -3,18 +3,15 @@ package inflearn.interview.service;
 import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
-import inflearn.interview.domain.dto.ErrorResponse;
 import inflearn.interview.domain.dto.PostCommentDTO;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostCommentRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +28,7 @@ public class PostCommentService {
     private final FcmTokenService fcmTokenService;
 
     public PostCommentDTO getComment(Long commentId) {
-        PostComment postComment = postCommentRepository.findById(commentId).get();
+        PostComment postComment = postCommentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
 
         PostCommentDTO returnDto = new PostCommentDTO();
         returnDto.setCommentId(postComment.getPostCommentId());
@@ -59,8 +56,8 @@ public class PostCommentService {
     }
 
     public PostCommentDTO createComment(PostCommentDTO postCommentDTO, Long postId) {
-        Post findPost = postRepository.findById(postId).get();
-        User findUser = userRepository.findById(postCommentDTO.getUserId()).get();
+        Post findPost = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
+        User findUser = userRepository.findById(postCommentDTO.getUserId()).orElseThrow(OptionalNotFoundException::new);
         PostComment postComment = new PostComment(findUser, findPost, postCommentDTO.getContent());
         PostComment saved = postCommentRepository.save(postComment);
 
@@ -78,7 +75,7 @@ public class PostCommentService {
     }
 
     public void updateComment(Long postId, Long commentId, PostCommentDTO postCommentDTO) {
-        PostComment findComment = postCommentRepository.findById(commentId).get();
+        PostComment findComment = postCommentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
 
         if (!(findComment.getUser().getUserId()).equals(postCommentDTO.getUserId())) {
             throw new RequestDeniedException();
@@ -89,7 +86,7 @@ public class PostCommentService {
     }
 
     public void deleteComment(Long postId, Long commentId, PostCommentDTO postCommentDTO) {
-        PostComment findComment = postCommentRepository.findById(commentId).get();
+        PostComment findComment = postCommentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
 
         if (!(findComment.getUser().getUserId()).equals(postCommentDTO.getUserId())) {
             throw new RequestDeniedException();

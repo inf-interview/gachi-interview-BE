@@ -23,4 +23,9 @@ public class GlobalExceptionAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    @ExceptionHandler(OptionalNotFoundException.class)
+    public ResponseEntity<ErrorResponse> optionalNotFound(OptionalNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Data Not Found", "데이터가 없습니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 }

@@ -6,6 +6,7 @@ import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoLike;
 import inflearn.interview.domain.VideoQuestion;
 import inflearn.interview.domain.dto.VideoDTO2;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class VideoService {
 
     public VideoDTO2 getVideoById(Long videoId, User user){
 
-        Video video = videoRepository.findById(videoId).get();
+        Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         if (video.getExposure()) {
             VideoDTO2 videoDTO = new VideoDTO2(video);
 
@@ -50,7 +51,7 @@ public class VideoService {
     }
 
     public void updateVideo(Long videoId, VideoDTO2 updatedVideo){
-        Video originalVideo = videoRepository.findById(videoId).get();
+        Video originalVideo = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         if (originalVideo.getUser().getUserId().equals(updatedVideo.getUserId())) {
             originalVideo.setExposure(updatedVideo.isExposure());
             originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
@@ -61,7 +62,7 @@ public class VideoService {
     }
 
     public void deleteVideo(Long videoId, VideoDTO2 video){
-        Video originalVideo = videoRepository.findById(videoId).get();
+        Video originalVideo = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         if (originalVideo.getUser().getUserId().equals(video.getUserId())) {
             videoRepository.deleteById(videoId);
         } else {
@@ -86,7 +87,7 @@ public class VideoService {
 
 
     public Long completeVideo(VideoDTO2 videoDTO) {
-        User user = userRepository.findById(videoDTO.getUserId()).get();
+        User user = userRepository.findById(videoDTO.getUserId()).orElseThrow(OptionalNotFoundException::new);
         Video video = new Video();
         video.setUser(user);
         video.setExposure(videoDTO.isExposure());
@@ -104,7 +105,7 @@ public class VideoService {
 
         Long[] questions = videoDTO.getQuestions();
         for (Long question : questions) {
-            VideoQuestion videoQuestion = new VideoQuestion(video, questionRepository.findById(question).get());
+            VideoQuestion videoQuestion = new VideoQuestion(video, questionRepository.findById(question).orElseThrow(OptionalNotFoundException::new));
             videoQuestionRepository.save(videoQuestion);
         }
 

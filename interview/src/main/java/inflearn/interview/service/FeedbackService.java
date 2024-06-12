@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import inflearn.interview.domain.*;
 import inflearn.interview.domain.dto.FeedbackDTO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -49,11 +50,11 @@ public class FeedbackService {
 
     public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
 
-        Video video = videoRepository.findById(videoId).get();
+        Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < videoQuestions.size(); i++) {
-            Question question = questionRepository.findById(videoQuestions.get(i).getQuestion().getId()).get();
+            Question question = questionRepository.findById(videoQuestions.get(i).getQuestion().getId()).orElseThrow(OptionalNotFoundException::new);
             sb.append("question").append(i + 1).append(": ").append(question.getContent());
         }
 
@@ -169,17 +170,17 @@ public class FeedbackService {
     }
 
     public List<Feedback> getFeedbacks(Long userId) {
-        User findUser = userRepository.findById(userId).get();
+        User findUser = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         List<Video> findVideos = videoRepository.findByUser_UserId(findUser.getUserId());
         List<Feedback> feedbacks = new ArrayList<>();
         for (Video video : findVideos) {
-            feedbacks.addAll(feedbackRepository.findByVideo(videoRepository.findById(video.getVideoId()).get()));
+            feedbacks.addAll(feedbackRepository.findByVideo(videoRepository.findById(video.getVideoId()).orElseThrow(OptionalNotFoundException::new)));
         }
         return feedbacks;
     }
 
     public Feedback getFeedback(Long feedbackId) {
-        return feedbackRepository.findById(feedbackId).get();
+        return feedbackRepository.findById(feedbackId).orElseThrow(OptionalNotFoundException::new);
     }
 
 
