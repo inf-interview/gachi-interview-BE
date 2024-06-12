@@ -45,26 +45,15 @@ public class PostCommentController {
     @ValidateUser
     @PatchMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.update.class) PostCommentDTO postCommentDTO) {
-
-        try {
-            postCommentService.updateComment(postId, commentId, postCommentDTO);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (RequestDeniedException e) {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        }
+        postCommentService.updateComment(postId, commentId, postCommentDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     //댓글 삭제
     @ValidateUser
     @DeleteMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.delete.class) PostCommentDTO postCommentDTO) {
-        try {
-            postCommentService.deleteComment(postId, commentId, postCommentDTO);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (RequestDeniedException e) {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        }
+        postCommentService.deleteComment(postId, commentId, postCommentDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

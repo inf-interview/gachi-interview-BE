@@ -7,6 +7,7 @@ import com.google.firebase.messaging.Notification;
 import inflearn.interview.domain.FCM;
 import inflearn.interview.domain.Notice;
 import inflearn.interview.domain.User;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.FCMRepository;
 import inflearn.interview.repository.NoticeRepository;
 import inflearn.interview.repository.UserRepository;
@@ -51,7 +52,7 @@ public class FcmTokenService {
 
         sendNotification(token, title, body);
 
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         Notice notice = new Notice(user, body);
         noticeRepository.save(notice);
     }

@@ -5,6 +5,7 @@ import inflearn.interview.domain.PostLike;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.LikeDTO;
 import inflearn.interview.domain.dto.PostDTO;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.PostLikeRepository;
 import inflearn.interview.repository.PostRepository;
@@ -47,7 +48,7 @@ public class PostService {
     //게시글 생성
 
     public PostDTO createPost(PostDTO postDTO) {
-        User findUser = userRepository.findById(postDTO.getUserId()).get();
+        User findUser = userRepository.findById(postDTO.getUserId()).orElseThrow(OptionalNotFoundException::new);
         Post post = new Post(findUser, postDTO.getPostTitle(), postDTO.getContent(), DtoToEntityTagConverter(postDTO.getTag()), postDTO.getCategory());
         postRepository.save(post);
         postDTO.setUserId(findUser.getUserId());
@@ -56,8 +57,8 @@ public class PostService {
         return postDTO;
     }
 
-    public PostDTO updatePost(Long postId, PostDTO postDTO) throws RequestDeniedException{
-        Post findPost = postRepository.findById(postId).get();
+    public PostDTO updatePost(Long postId, PostDTO postDTO) {
+        Post findPost = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
         if (postDTO.getUserId().equals(findPost.getUser().getUserId())) {
             findPost.setTitle(postDTO.getPostTitle());
             findPost.setCategory(postDTO.getCategory());
@@ -70,9 +71,9 @@ public class PostService {
         }
     }
 
-    public void deletePost(Long postId, Long userId) throws RequestDeniedException{
+    public void deletePost(Long postId, Long userId) {
         //유저가 작성한 포스트인지 체크
-        Post post = postRepository.findById(postId).get();
+        Post post = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
         log.info("userId {}", post.getUser().getUserId());
 
         if (!(post.getUser().getUserId()).equals(userId)) {
@@ -82,8 +83,8 @@ public class PostService {
     }
 
     public LikeDTO likePost(Long postId, Long userId) {
-        Post findPost = postRepository.findById(postId).get();
-        User user = userRepository.findById(userId).get();
+        Post findPost = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
 
         Optional<PostLike> findPostLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId);
 

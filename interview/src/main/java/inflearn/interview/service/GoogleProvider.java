@@ -32,15 +32,12 @@ public class GoogleProvider {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        if (isLocal.equals("BE")) {
-            params.add("redirect_uri", BE_LOCAL_REDIRECT);
-        } else if (isLocal.equals("FE")) {
-            params.add("redirect_uri", FE_LOCAL_REDIRECT);
-        } else {
-            params.add("redirect_uri", PUBLISH_REDIRECT);
-        }
-        params.add("redirect_uri", "http://localhost:8080/user/google/login");
         params.add("code", code);
+        switch (isLocal) {
+            case "BE" -> params.add("redirect_uri", BE_LOCAL_REDIRECT);
+            case "FE" -> params.add("redirect_uri", FE_LOCAL_REDIRECT);
+            case "PUBLISH" -> params.add("redirect_uri", PUBLISH_REDIRECT);
+        }
 
         HttpEntity<MultiValueMap<String, String>> requestEntity1 = new HttpEntity<>(params, headers);
 
@@ -49,7 +46,6 @@ public class GoogleProvider {
         ResponseEntity<SocialTokenResponse> tokenResponse = restTemplate.postForEntity(GET_TOKEN_URL, requestEntity1, SocialTokenResponse.class);
 
         if (tokenResponse.getStatusCode() == HttpStatus.OK && tokenResponse.getBody() != null) {
-            log.info("accessToken={}", tokenResponse.getBody().getAccessToken());
             return tokenResponse.getBody().getAccessToken();
         } else {
             return null;

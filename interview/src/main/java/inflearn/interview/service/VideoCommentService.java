@@ -7,6 +7,8 @@ import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.PostCommentDTO;
 import inflearn.interview.domain.dto.VideoCommentDTO;
+import inflearn.interview.exception.OptionalNotFoundException;
+import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoCommentRepository;
 import inflearn.interview.repository.VideoRepository;
@@ -39,14 +41,14 @@ public class VideoCommentService {
     }
 
     public VideoCommentDTO getComment(Long commentId) {
-        VideoComment comment = commentRepository.findById(commentId).get();
+        VideoComment comment = commentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
         return converter.convert(comment);
     }
 
     public void addComment(Long videoId, VideoCommentDTO comment) {
         VideoComment videoComment = new VideoComment();
-        User user = userRepository.findById(comment.getUserId()).get();
-        Video video = videoRepository.findById(videoId).get();
+        User user = userRepository.findById(comment.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         videoComment.setUser(user);
         videoComment.setVideo(video);
         videoComment.setTime(LocalDateTime.now());
@@ -61,12 +63,21 @@ public class VideoCommentService {
     }
 
     public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {
-        VideoComment target = commentRepository.findById(commentId).get();
-        target.setUpdatedTime(LocalDateTime.now());
-        target.setContent(videoCommentDTO.getContent());
+        VideoComment target = commentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
+        if (target.getUser().getUserId().equals(videoCommentDTO.getUserId())) {
+            target.setUpdatedTime(LocalDateTime.now());
+            target.setContent(videoCommentDTO.getContent());
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 
     public void deleteComment(Long commentId, VideoCommentDTO videoCommentDTO) {
-        commentRepository.deleteById(commentId);
+        VideoComment target = commentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
+        if (target.getUser().getUserId().equals(videoCommentDTO.getUserId())) {
+            commentRepository.deleteById(commentId);
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 }

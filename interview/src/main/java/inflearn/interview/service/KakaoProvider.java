@@ -1,7 +1,6 @@
 package inflearn.interview.service;
 
 import inflearn.interview.domain.dto.SocialTokenResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-@Slf4j
 public class KakaoProvider {
 
     @Value("${spring.kakao.client_id}")
@@ -38,7 +36,7 @@ public class KakaoProvider {
             params.add("redirect_uri", BE_LOCAL_REDIRECT);
         } else if (isLocal.equals("FE")) {
             params.add("redirect_uri", FE_LOCAL_REDIRECT);
-        } else {
+        } else if (isLocal.equals("PUBLISH")){
             params.add("redirect_uri", PUBLISH_REDIRECT);
         }
         params.add("code", code);
@@ -50,7 +48,6 @@ public class KakaoProvider {
         ResponseEntity<SocialTokenResponse> tokenResponse = restTemplate.postForEntity(GET_TOKEN_URL, requestEntity, SocialTokenResponse.class);
 
         if (tokenResponse.getStatusCode() == HttpStatus.OK && tokenResponse.getBody() != null) {
-            log.info("accessToken={}",tokenResponse.getBody().getAccessToken());
             return tokenResponse.getBody().getAccessToken();
         } else {
             return null;

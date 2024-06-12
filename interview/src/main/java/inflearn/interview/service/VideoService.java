@@ -6,6 +6,7 @@ import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoLike;
 import inflearn.interview.domain.VideoQuestion;
 import inflearn.interview.domain.dto.VideoDTO2;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class VideoService {
 
     public VideoDTO2 getVideoById(Long videoId, User user){
 
-        Video video = videoRepository.findById(videoId).get();
+        Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         if (video.getExposure()) {
             VideoDTO2 videoDTO = new VideoDTO2(video);
 
@@ -50,14 +51,23 @@ public class VideoService {
     }
 
     public void updateVideo(Long videoId, VideoDTO2 updatedVideo){
-        Video originalVideo = videoRepository.findById(videoId).get();
-        originalVideo.setExposure(updatedVideo.isExposure());
-        originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
-        originalVideo.setTag(dtoToEntityConverter(updatedVideo.getTags()));
+        Video originalVideo = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
+        if (originalVideo.getUser().getUserId().equals(updatedVideo.getUserId())) {
+            originalVideo.setExposure(updatedVideo.isExposure());
+            originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
+            originalVideo.setTag(dtoToEntityConverter(updatedVideo.getTags()));
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 
-    public void deleteVideo(Long videoId){
-        videoRepository.deleteById(videoId);
+    public void deleteVideo(Long videoId, VideoDTO2 video){
+        Video originalVideo = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
+        if (originalVideo.getUser().getUserId().equals(video.getUserId())) {
+            videoRepository.deleteById(videoId);
+        } else {
+            throw new RequestDeniedException();
+        }
     }
 
     //정렬 : 최신순, 좋아요순, 댓글순
@@ -65,23 +75,7 @@ public class VideoService {
     public Page<VideoDTO2> getVideoList(String sortType, int page) {
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
         return videoRepository.findAllVideoByPageInfo(sortType, pageRequest);
-//        Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-//
-//        Sort sort = switch (sortType) {
-//            case "like" -> Sort.by(direction, "like");
-//            case "comment" -> Sort.by(direction, "commentCount");
-//            default -> Sort.by(direction, "time");
-//        };
-//        PageRequest pageable = PageRequest.of(page, size, sort);
-//
-//        Page<Video> videoPage = videoRepository.findAll(pageable);
-//
-//        return videoPage.map(DAOToDTOConverter::convert);
     }
-
-
-
-
 
     private String dtoToEntityConverter(String[] tags) {
         StringBuilder rawTag = new StringBuilder();
@@ -93,7 +87,7 @@ public class VideoService {
 
 
     public Long completeVideo(VideoDTO2 videoDTO) {
-        User user = userRepository.findById(videoDTO.getUserId()).get();
+        User user = userRepository.findById(videoDTO.getUserId()).orElseThrow(OptionalNotFoundException::new);
         Video video = new Video();
         video.setUser(user);
         video.setExposure(videoDTO.isExposure());
@@ -111,7 +105,7 @@ public class VideoService {
 
         Long[] questions = videoDTO.getQuestions();
         for (Long question : questions) {
-            VideoQuestion videoQuestion = new VideoQuestion(video, questionRepository.findById(question).get());
+            VideoQuestion videoQuestion = new VideoQuestion(video, questionRepository.findById(question).orElseThrow(OptionalNotFoundException::new));
             videoQuestionRepository.save(videoQuestion);
         }
 

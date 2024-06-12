@@ -6,9 +6,9 @@ import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.VideoComment;
 import inflearn.interview.domain.dto.*;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +19,6 @@ import java.util.Optional;
 
 @Service
 @Transactional
-@Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
@@ -35,8 +34,6 @@ public class UserService {
     public LoginResponse loginKakao(String code, String isLocal) { // 반환 값 User, RefreshToken
         String accessToken = kakaoProvider.getAccessToken(code, isLocal);
         String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
-
-        log.info("kakaoInfo={}", kakaoInfo);
 
         JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
 
@@ -73,8 +70,6 @@ public class UserService {
         String accessToken = googleProvider.getAccessToken(code, isLocal);
         String googleInfo = googleProvider.getGoogleInfo(accessToken);
 
-        log.info("info={}", googleInfo);
-
         JsonObject jsonObject = JsonParser.parseString(googleInfo).getAsJsonObject();
 
         String name = jsonObject.get("name").getAsString();
@@ -90,6 +85,7 @@ public class UserService {
             user.setSocial("GOOGLE");
             user.setCreatedAt(LocalDateTime.now());
             user.setImage(image);
+            user.setRole("USER");
             userRepository.save(user);
 
             return createLoginResponse(name, image, user.getUserId());
@@ -127,7 +123,7 @@ public class UserService {
     }
 
     public List<NoticeDTO> getMyNotice(Long userId) {
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         return noticeRepository.findByUser(user).stream().map(NoticeDTO::new).sorted(Comparator.comparing(NoticeDTO::getCreatedAt).reversed()).toList();
     }
 }

@@ -44,7 +44,7 @@ public class LoginController {
 
     @GetMapping("/user/kakao/login")
     public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code, HttpServletRequest request) {
-        String isLocal = checkLocal(request);
+        String isLocal = kakaoCheckLocal(request);
 
         LoginResponse loginResponse = userService.loginKakao(code, isLocal);
 
@@ -68,7 +68,7 @@ public class LoginController {
 
     @GetMapping("/user/google/login")
     public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code, HttpServletRequest request) {
-        String isLocal = checkLocal(request);
+        String isLocal = googleCheckLocal(request);
 
         LoginResponse loginResponse = userService.loginGoogle(code, isLocal);
 
@@ -91,11 +91,23 @@ public class LoginController {
         }
 
     }
-    private String checkLocal(HttpServletRequest request) {
+    private String kakaoCheckLocal(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         String isLocal = "PUBLISH";
-
         if (referer == null) {
+            isLocal = "BE";
+            log.info("BE 로컬 접속");
+        } else if (referer.contains("localhost:3000")) {
+            isLocal = "FE";
+            log.info("FE 로컬 접속");
+        }
+        return isLocal;
+    }
+
+    private String googleCheckLocal(HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        String isLocal = "PUBLISH";
+        if (referer.contains("accounts.google.com")) {
             isLocal = "BE";
             log.info("BE 로컬 접속");
         } else if (referer.contains("localhost:3000")) {

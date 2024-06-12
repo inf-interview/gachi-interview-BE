@@ -47,7 +47,7 @@ public class VideoController {
     @ValidateUser
     @DeleteMapping("/{video_id}")
     public void deleteController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.delete.class) VideoDTO2 video){
-        videoService.deleteVideo(video_id);
+        videoService.deleteVideo(video_id, video);
     }
 
     @ValidateUser

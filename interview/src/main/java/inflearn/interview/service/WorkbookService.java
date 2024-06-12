@@ -5,6 +5,7 @@ import inflearn.interview.domain.User;
 import inflearn.interview.domain.Workbook;
 import inflearn.interview.domain.dto.QuestionRequestDTO;
 import inflearn.interview.domain.dto.WorkbookRequestDTO;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.QuestionRepository;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.WorkbookRepository;
@@ -29,7 +30,7 @@ public class WorkbookService {
     }
 
     public void createWorkbook(WorkbookRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId()).get();
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(OptionalNotFoundException::new);
         Workbook workbook = new Workbook(user, dto.getTitle());
         workbookRepository.save(workbook);
     }
@@ -46,7 +47,7 @@ public class WorkbookService {
     }
 
     public void deleteWorkbook(Long workbookId) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         workbookRepository.delete(workbook);
     }
 
@@ -54,7 +55,7 @@ public class WorkbookService {
      *  질문 세트
      */
     public void createQuestion(Long workbookId, QuestionRequestDTO dto) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         workbook.increaseNumOfQuestion();
 
         Question question = new Question(workbook, dto.getQuestionContent(), dto.getAnswerContent());
@@ -62,14 +63,14 @@ public class WorkbookService {
     }
 
     public void deleteQuestion(Long workbookId, Long questionId) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         workbook.decreaseNumOfQuestion();
 
         questionRepository.deleteById(questionId);
     }
 
     public List<Question> findQuestion(Long workbookId) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         return questionRepository.findByWorkbook(workbook);
     }
 }
