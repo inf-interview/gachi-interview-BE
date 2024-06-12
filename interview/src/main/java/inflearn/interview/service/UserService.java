@@ -84,6 +84,7 @@ public class UserService {
             user.setSocial("GOOGLE");
             user.setCreatedAt(LocalDateTime.now());
             user.setImage(image);
+            user.setRole("USER");
             userRepository.save(user);
 
             return createLoginResponse(name, image, user.getUserId());
