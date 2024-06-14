@@ -12,30 +12,34 @@ import inflearn.interview.repository.FCMRepository;
 import inflearn.interview.repository.NoticeRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class FcmTokenService {
 
     private final FCMRepository fcmRepository;
     private final UserRepository userRepository;
     private final NoticeRepository noticeRepository;
 
-    public boolean registerToken(User user, String token) {
+    public void registerToken(User user, String token) {
         Optional<FCM> getUser = fcmRepository.findByUser(user);
         if (getUser.isEmpty()) {
             FCM fcm = new FCM();
             fcm.setUser(user);
             fcm.setFcmToken(token);
             fcmRepository.save(fcm);
-            return false; // 새로운 유저 생성
+        } else {
+            FCM fcm = getUser.get();
+            fcm.setFcmToken(token);
         }
-        return true;
     }
 
     private String getTokenByUserId(Long userId) {
@@ -49,8 +53,9 @@ public class FcmTokenService {
 
         String title = titleName+"에 새로운 댓글이 작성되었습니다.";
         String body = commentUser+"님이 "+titleName+"에 댓글을 작성했습니다.";
+        String sendBody = body +"("+userId+")";
 
-        sendNotification(token, title, body);
+        sendNotification(token, title, sendBody);
 
         User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         Notice notice = new Notice(user, body);
@@ -83,5 +88,4 @@ public class FcmTokenService {
 
         sendNotification(token, title, body);
     }
-
 }
