@@ -1,5 +1,7 @@
 package inflearn.interview.service;
 
+import com.google.firebase.FirebaseException;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import inflearn.interview.domain.Post;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
@@ -10,6 +12,7 @@ import inflearn.interview.repository.PostCommentRepository;
 import inflearn.interview.repository.PostRepository;
 import inflearn.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class PostCommentService {
 
     private final PostCommentRepository postCommentRepository;
@@ -61,18 +65,26 @@ public class PostCommentService {
         PostComment postComment = new PostComment(findUser, findPost, postCommentDTO.getContent());
         PostComment saved = postCommentRepository.save(postComment);
 
-        if (!(findPost.getUser().getUserId().equals(postCommentDTO.getUserId()))) {
-            fcmTokenService.commentSendNotification(saved.getPost().getUser().getUserId(), saved.getPost().getTitle(), saved.getUser().getName());
-        }
-
         PostCommentDTO returnDto = new PostCommentDTO();
         returnDto.setCommentId(postComment.getPostCommentId());
         returnDto.setUserId(postComment.getUser().getUserId());
         returnDto.setUsername(postComment.getUser().getName());
         returnDto.setContent(postComment.getContent());
         returnDto.setCreatedAt(postComment.getCreatedAt());
+
+        if (!(findPost.getUser().getUserId().equals(postCommentDTO.getUserId()))) {
+            try {
+                fcmTokenService.commentSendNotification(saved.getPost().getUser().getUserId(), saved.getPost().getTitle(), saved.getUser().getName());
+            } catch (Exception e) {
+                log.error("PostComment 알림 전송 실패 = {}", e.getMessage());
+            }
+        }
+
         return returnDto;
+
     }
+
+
 
     public void updateComment(Long postId, Long commentId, PostCommentDTO postCommentDTO) {
         PostComment findComment = postCommentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
