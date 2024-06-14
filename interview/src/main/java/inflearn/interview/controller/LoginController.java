@@ -83,14 +83,10 @@ public class LoginController {
     //fcmToken
     @PostMapping("/user/fcm/token")
     public ResponseEntity<?> getFcmToken(@RequestBody FcmTokenDTO tokenDTO, @AuthenticationPrincipal User user) {
-        boolean isAlreadyRegister = fcmTokenService.registerToken(user, tokenDTO.getFcmToken());
-        if (isAlreadyRegister) {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        }
-
+        fcmTokenService.registerToken(user, tokenDTO.getFcmToken());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
     private String kakaoCheckLocal(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         String isLocal = "PUBLISH";
