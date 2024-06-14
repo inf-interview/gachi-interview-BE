@@ -21,6 +21,7 @@ public class MyVideoDTO {
     private String thumbnailLink;
     private boolean exposure;
     private int numOfComment;
+    private String image;
 
     private String[] entityToDtoTagConverter(String tag) {
         return tag.split("[.]");
@@ -38,5 +39,6 @@ public class MyVideoDTO {
         this.thumbnailLink = video.getThumbnailLink();
         this.exposure = video.getExposure();
         this.numOfComment = count.intValue();
+        this.image = video.getUser().getImage();
     }
 }
