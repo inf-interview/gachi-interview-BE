@@ -1,7 +1,6 @@
 package inflearn.interview.service;
 
 import inflearn.interview.converter.VideoCommentDAOToDTOConverter;
-import inflearn.interview.converter.VideoCommentDTOToDAOConverter;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Video;
 import inflearn.interview.domain.VideoComment;
@@ -13,6 +12,7 @@ import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.VideoCommentRepository;
 import inflearn.interview.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class VideoCommentService {
     private final VideoCommentRepository commentRepository;
     private final VideoCommentDAOToDTOConverter converter;
@@ -57,7 +58,11 @@ public class VideoCommentService {
         VideoComment saved = commentRepository.save(videoComment);
 
         if (!(video.getUser().getUserId().equals(comment.getUserId()))) {
-            fcmTokenService.commentSendNotification(saved.getVideo().getUser().getUserId(), saved.getVideo().getVideoTitle(), saved.getUser().getName());
+            try {
+                fcmTokenService.commentSendNotification(saved.getVideo().getUser().getUserId(), saved.getVideo().getVideoTitle(), saved.getUser().getName());
+            } catch (Exception e) {
+                log.error("VideoComment 알림 전송 실패 = {}", e.getMessage());
+            }
         }
 
     }
