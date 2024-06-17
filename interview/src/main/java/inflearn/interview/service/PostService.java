@@ -36,7 +36,7 @@ public class PostService {
     }
 
     public PostDTO getPostById(Long postId, Long userId) {
-        PostDTO postDTO = postRepository.findPostByPostId(postId);
+        PostDTO postDTO = postRepository.findPostByPostId(postId).orElseThrow(OptionalNotFoundException::new);
         Optional<PostLike> postLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId);
         if (postLike.isEmpty()) {
             postDTO.setLiked(false);
