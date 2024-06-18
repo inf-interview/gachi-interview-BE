@@ -30,9 +30,9 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
 
 
-    public Page<PostDTO> getAllPost(String sortType, String category, int page) {
-        PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        return postRepository.findAllPostByPageInfo(sortType, category, pageRequest);
+    public Page<PostDTO> getAllPost(String sortType, String category, String keyword, int page) {
+        PageRequest pageRequest = PageRequest.of(page - 1, 12);
+        return postRepository.findAllPostByPageInfo(sortType, category, keyword, pageRequest);
     }
 
     public PostDTO getPostById(Long postId, Long userId) {

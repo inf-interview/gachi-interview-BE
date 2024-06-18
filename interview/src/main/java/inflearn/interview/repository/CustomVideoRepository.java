@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CustomVideoRepository {
 
-    Page<VideoDTO2> findAllVideoByPageInfo(String sortType, Pageable pageable);
+    Page<VideoDTO2> findAllVideoByPageInfo(String sortType, String keyword, Pageable pageable);
 }

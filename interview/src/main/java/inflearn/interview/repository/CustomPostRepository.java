@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CustomPostRepository {
 
-    Page<PostDTO> findAllPostByPageInfo(String sortType, String category, Pageable pageable);
+    Page<PostDTO> findAllPostByPageInfo(String sortType, String category, String keyword, Pageable pageable);
 }

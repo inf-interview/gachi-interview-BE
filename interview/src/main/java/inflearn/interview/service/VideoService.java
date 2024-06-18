@@ -72,9 +72,9 @@ public class VideoService {
 
     //정렬 : 최신순, 좋아요순, 댓글순
 
-    public Page<VideoDTO2> getVideoList(String sortType, int page) {
-        PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        return videoRepository.findAllVideoByPageInfo(sortType, pageRequest);
+    public Page<VideoDTO2> getVideoList(String sortType, String keyword, int page) {
+        PageRequest pageRequest = PageRequest.of(page - 1, 6);
+        return videoRepository.findAllVideoByPageInfo(sortType, keyword, pageRequest);
     }
 
     private String dtoToEntityConverter(String[] tags) {

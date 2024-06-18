@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.domain.dto.QPostDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +20,12 @@ import static inflearn.interview.domain.QPostComment.postComment;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class CustomPostRepositoryImpl implements CustomPostRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
     @Override
-    public Page<PostDTO> findAllPostByPageInfo(String sortType, String category, Pageable pageable) {
+    public Page<PostDTO> findAllPostByPageInfo(String sortType, String category, String keyword, Pageable pageable) {
 
         List<PostDTO> result = jpaQueryFactory
                 .select(new QPostDTO(
@@ -41,18 +43,20 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                         post.user.image))
                 .from(post)
                 .where(categoryEq(category))
+                .where(keywordEq(keyword))
                 .orderBy(sortTypeEq(sortType))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        int total = jpaQueryFactory
+        Long total = jpaQueryFactory
                 .select(post.count())
                 .from(post)
                 .where(categoryEq(category))
-                .fetch()
-                .size();
+                .where(keywordEq(keyword))
+                .fetchOne();
 
+        total = (total != null) ? total : 0L;
 
         return new PageImpl<>(result, pageable, total);
     }
@@ -70,6 +74,13 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                 return null;
             }
         }
+    }
+
+    private BooleanExpression keywordEq(String keyword) {
+        if (!keyword.isEmpty()) {
+            return post.title.toLowerCase().contains(keyword).or(post.tag.toLowerCase().contains(keyword));
+        }
+        return null;
     }
 
     private OrderSpecifier<?> sortTypeEq(String sortType) { //동적 sortType
