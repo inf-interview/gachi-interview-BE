@@ -62,8 +62,9 @@ public class VideoController {
      */
 
     @GetMapping("/list")
-    public Page<VideoDTO2> videoListController(@RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "time") String sortType) {
-        return videoService.getVideoList(sortType, page);
+    public Page<VideoDTO2> videoListController(@RequestParam(defaultValue = "1") int page,
+                                               @RequestParam(defaultValue = "new") String sortType,
+                                               @RequestParam(defaultValue = "") String keyword) {
+        return videoService.getVideoList(sortType, keyword, page);
     }
 }

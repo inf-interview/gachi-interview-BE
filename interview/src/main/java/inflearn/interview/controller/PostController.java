@@ -23,8 +23,11 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/list")
-    public Page<PostDTO> postList(@RequestParam int page, @RequestParam String sortType, @RequestParam String category) {
-        return postService.getAllPost(sortType, category, page);
+    public Page<PostDTO> postList(@RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "new") String sortType,
+                                  @RequestParam String category,
+                                  @RequestParam(defaultValue = "") String keyword) {
+        return postService.getAllPost(sortType, category, keyword, page);
     }
 
     @GetMapping("/{postId}")

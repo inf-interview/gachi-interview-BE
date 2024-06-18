@@ -1,6 +1,7 @@
 package inflearn.interview.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import inflearn.interview.domain.dto.QVideoDTO2;
 import inflearn.interview.domain.dto.VideoDTO2;
@@ -19,7 +20,7 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
     @Override
-    public Page<VideoDTO2> findAllVideoByPageInfo(String sortType, Pageable pageable) {
+    public Page<VideoDTO2> findAllVideoByPageInfo(String sortType, String keyword, Pageable pageable) {
 
         List<VideoDTO2> result = jpaQueryFactory
                 .select(new QVideoDTO2(
@@ -37,20 +38,32 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository{
                 ))
                 .from(video)
                 .where(video.exposure)
+                .where(keywordEq(keyword))
                 .orderBy(sortTypeEq(sortType))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
 
-        int total = jpaQueryFactory
+        Long total = jpaQueryFactory
                 .select(video.count())
                 .from(video)
-                .fetch()
-                .size();
+                .where(video.exposure)
+                .where(keywordEq(keyword))
+                .fetchOne();
+
+        total = (total != null) ? total : 0L;
 
         return new PageImpl<>(result, pageable, total);
     }
+
+    private BooleanExpression keywordEq(String keyword) {
+        if (!keyword.isEmpty()) {
+            return video.videoTitle.toLowerCase().contains(keyword).or(video.tag.toLowerCase().contains(keyword));
+        }
+        return null;
+    }
+
     private OrderSpecifier<?> sortTypeEq(String sortType) {
 
         OrderSpecifier<?> orderSpecifier =

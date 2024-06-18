@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -56,6 +57,7 @@ public class PostCommentService {
             postCommentDTO.setCreatedAt(postComment.getCreatedAt());
             commentDTOS.add(postCommentDTO);
         }
+        commentDTOS.sort(Comparator.comparing(PostCommentDTO::getCreatedAt).reversed());
         return commentDTOS;
     }
 

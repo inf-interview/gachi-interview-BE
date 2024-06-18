@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> , CustomPostRepository {
 
@@ -23,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long> , CustomPostRe
             "from Post p " +
             "left join PostComment c on p.postId = c.post.postId " +
             "where p.postId=:postId group by p.postId")
-    PostDTO findPostByPostId(@Param("postId") Long postId);
+    Optional<PostDTO> findPostByPostId(@Param("postId") Long postId);
 
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }
