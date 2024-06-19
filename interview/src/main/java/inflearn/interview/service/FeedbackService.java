@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -61,7 +58,7 @@ public class FeedbackService {
         String question = sb.toString();
 
         if (dto.getContent().isEmpty()) {
-
+            /** 기존 Python 서버로 음성추출 보내던 부분
             RequestBody requestBody = new RequestBody();
             requestBody.setVideo_url(video.getVideoLink());
 
@@ -94,6 +91,8 @@ public class FeedbackService {
             feedbackRepository.save(target);
 
             sendCompleteComment(result, videoId);
+             **/
+            sendFailComment(videoId);
         } else {
             String result = sendGPT(question, dto.getContent());
             sendCompleteComment(result, videoId);
@@ -161,6 +160,24 @@ public class FeedbackService {
         User admin = userRepository.findAdmin("ADMIN");
         videoCommentDTO.setUserId(admin.getUserId());
         videoCommentDTO.setContent(result);
+        videoCommentService.addComment(videoId, videoCommentDTO);
+    }
+
+    private void sendFailComment(Long videoId) {
+        VideoCommentDTO videoCommentDTO = new VideoCommentDTO();
+        User admin = userRepository.findAdmin("ADMIN");
+        videoCommentDTO.setUserId(admin.getUserId());
+        String failMessage1 = "올바른 영상이 제공되지 않았습니다. 피드백을 받기 위해 더 긴 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
+        String failMessage2 = "음성 입력이 제대로 되지 않았습니다. 음성이 명확하게 들리는 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
+        String failMessage3 = "피드백을 받기 위해 영상의 음질과 길이를 확인해주세요. 명확한 음성과 충분한 길이의 영상을 업로드해 주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
+
+        Random random = new Random();
+        int i = random.nextInt(3);
+        switch (i) {
+            case 0 -> videoCommentDTO.setContent(failMessage1);
+            case 1 -> videoCommentDTO.setContent(failMessage2);
+            case 2 -> videoCommentDTO.setContent(failMessage3);
+        }
         videoCommentService.addComment(videoId, videoCommentDTO);
     }
 
