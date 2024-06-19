@@ -18,16 +18,18 @@ public class AdminUserInitializer {
     @Bean
     public CommandLineRunner initAdminUser() {
         return args -> {
-            String name = "같이면접 AI 서비스";
+            if (userRepository.findAdmin("ADMIN") == null) {
+                String name = "같이면접 AI 서비스";
 
-            User admin = new User();
-            admin.setName(name);
-            admin.setSocial("ADMIN");
-            admin.setEmail("thstkddnr20@naver.com");
-            admin.setCreatedAt(LocalDateTime.now());
-            admin.setRole("ADMIN");
-            admin.setImage("https://inf-video.s3.ap-northeast-2.amazonaws.com/KakaoTalk_Photo_2024-06-06-13-54-05.png");
-            userRepository.save(admin);
+                User admin = new User();
+                admin.setName(name);
+                admin.setSocial("ADMIN");
+                admin.setEmail("thstkddnr20@naver.com");
+                admin.setCreatedAt(LocalDateTime.now());
+                admin.setRole("ADMIN");
+                admin.setImage("https://inf-video.s3.ap-northeast-2.amazonaws.com/KakaoTalk_Photo_2024-06-06-13-54-05.png");
+                userRepository.save(admin);
+            }
         };
     }
 }
