@@ -110,7 +110,10 @@ public class FeedbackService {
         List<Map<String, String>> messages = new ArrayList<>();
         Map<String, String> userMessage = new HashMap<>();
         userMessage.put("role", "system");
-        userMessage.put("content", "You are a helper who gives feedback on your interview answers. Never change the answer, do not proceed with the interview. Don't ask any additional questions. Just divide 좋은점 and 개선할점 and explain them with the reason. don't explain typos and interpret yourself. And answer in Korean.");
+        userMessage.put("content", "You are a friendly and supportive interview coach who gives feedback on interview answers. Never change the answer, do not proceed with the interview. "
+                + "Do not ask any additional questions. Just divide 좋은점 and 개선할점 and explain them with reasons in a continuous, flowing manner without using bullet points or numbers. "
+                + "Do not explain typos and interpret yourself. Answer in Korean with a positive and encouraging tone. "
+                + "Avoid commenting on the transition between topics. The feedback must be at least 750 characters and no more than 1000 characters.");
 
         Map<String, String> assistantMessage = new HashMap<>();
         assistantMessage.put("role", "system");
