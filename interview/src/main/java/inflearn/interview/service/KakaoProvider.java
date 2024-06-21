@@ -20,7 +20,7 @@ public class KakaoProvider {
     private final String GET_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
     private final String BE_LOCAL_REDIRECT = "http://localhost:8080/user/kakao/login";
     private final String FE_LOCAL_REDIRECT = "http://localhost:3000/user/kakao/login";
-    private final String PUBLISH_REDIRECT = "https://gachi-myeonjeob.vercel.app/user/kakao/login";
+    private final String PUBLISH_REDIRECT = "https://gachi-interview.vercel.app/user/kakao/login";
 
     public String getAccessToken(String code, String isLocal) {
 

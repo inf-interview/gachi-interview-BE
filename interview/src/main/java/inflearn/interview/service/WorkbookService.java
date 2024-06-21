@@ -1,5 +1,6 @@
 package inflearn.interview.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.domain.Question;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Workbook;
@@ -24,15 +25,25 @@ public class WorkbookService {
     private final WorkbookRepository workbookRepository;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
+    private final GptService gptService;
 
     public List<Workbook> getWorkbooks(User user) {
         return workbookRepository.findAllByUser(user);
     }
 
-    public void createWorkbook(WorkbookRequestDTO dto) {
+    public void createWorkbook(WorkbookRequestDTO dto) throws JsonProcessingException {
         User user = userRepository.findById(dto.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        Workbook workbook = new Workbook(user, dto.getTitle());
-        workbookRepository.save(workbook);
+        if (dto.getJob().isEmpty()) {
+            Workbook workbook = new Workbook(user, dto.getTitle());
+            workbookRepository.save(workbook);
+            return;
+        }
+        Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
+        String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
+        log.info("question {}", questionAndAnswer[0]);
+        log.info("answer {}",questionAndAnswer[1]);
+        QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
+        createQuestion(saved.getId(), questionDto);
     }
 
     public Workbook findWorkbook(Long workbookId) {

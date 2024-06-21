@@ -22,7 +22,7 @@ public class GoogleProvider {
     private final String GET_TOKEN_URL = "https://oauth2.googleapis.com/token";
     private final String BE_LOCAL_REDIRECT = "http://localhost:8080/user/google/login";
     private final String FE_LOCAL_REDIRECT = "http://localhost:3000/user/google/login";
-    private final String PUBLISH_REDIRECT = "https://gachi-myeonjeob.vercel.app/user/google/login";
+    private final String PUBLISH_REDIRECT = "https://gachi-interview.vercel.app/user/google/login";
 
     public String getAccessToken(String code, String isLocal) {
         HttpHeaders headers = new HttpHeaders();

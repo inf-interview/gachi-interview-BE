@@ -5,7 +5,7 @@ import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.Feedback;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.FeedbackDTO;
-import inflearn.interview.service.FeedbackService;
+import inflearn.interview.service.GptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,26 +17,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FeedbackController {
 
-    private final FeedbackService feedbackService;
+    private final GptService gptService;
 
     @ValidateUser
     @PostMapping("/{video_Id}")
     public void submit(@AuthenticationPrincipal User user, @PathVariable Long video_Id, @RequestBody FeedbackDTO dto) throws JsonProcessingException {
-        feedbackService.GPTFeedback(video_Id, user, dto);
+        gptService.GPTFeedback(video_Id, user, dto);
     }
 
     @DeleteMapping("/{feedbackId}")
     public void delete(@PathVariable Long feedbackId){
-        feedbackService.deleteFeedback(feedbackId);
+        gptService.deleteFeedback(feedbackId);
     }
 
     @GetMapping("/{userId}")
     public List<Feedback> getFeedbacks(@RequestParam Long userId){
-        return feedbackService.getFeedbacks(userId);
+        return gptService.getFeedbacks(userId);
     }
 
     @GetMapping("/{feedbackId}")
     public Feedback getFeedback(@PathVariable Long feedbackId){
-        return feedbackService.getFeedback(feedbackId);
+        return gptService.getFeedback(feedbackId);
     }
 }

@@ -1,6 +1,5 @@
 package inflearn.interview.controller;
 
-
 import inflearn.interview.aop.ValidateUser;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.ErrorResponse;
@@ -17,8 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/video")
 @RequiredArgsConstructor
@@ -28,7 +25,7 @@ public class VideoController {
     private final VideoLikeService videoLikeService;
 
     @GetMapping("/{video_id}")
-    public ResponseEntity<?> getVideoController(@PathVariable Long video_id, @AuthenticationPrincipal User user){
+    public ResponseEntity<?> getVideoController(@PathVariable Long video_id, @AuthenticationPrincipal User user) {
         try {
             VideoDTO2 videoDTO = videoService.getVideoById(video_id, user);
             return ResponseEntity.ok(videoDTO);
@@ -40,19 +37,19 @@ public class VideoController {
 
     @ValidateUser
     @PatchMapping("/{video_id}")
-    public void editController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.patch.class) VideoDTO2 video){
+    public void editController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.patch.class) VideoDTO2 video) {
         videoService.updateVideo(video_id, video);
     }
 
     @ValidateUser
     @DeleteMapping("/{video_id}")
-    public void deleteController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.delete.class) VideoDTO2 video){
+    public void deleteController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.delete.class) VideoDTO2 video) {
         videoService.deleteVideo(video_id, video);
     }
 
     @ValidateUser
     @PostMapping("/{video_id}/like")
-    public ResponseEntity<LikeDTO> likeVideoController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.like.class) VideoDTO2 video){
+    public ResponseEntity<LikeDTO> likeVideoController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.like.class) VideoDTO2 video) {
         LikeDTO likeDTO = videoLikeService.addLike(video_id, video);
         return ResponseEntity.status(HttpStatus.CREATED).body(likeDTO);
     }
@@ -67,4 +64,5 @@ public class VideoController {
                                                @RequestParam(defaultValue = "") String keyword) {
         return videoService.getVideoList(sortType, keyword, page);
     }
+
 }
