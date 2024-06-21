@@ -49,7 +49,6 @@ public class LoginController {
         LoginResponse loginResponse = userService.loginKakao(code, isLocal);
 
         String[] tokens = authenticationService.register(loginResponse.getUserId());
-        log.info("accessToken = {}", tokens[0]);
 
         loginResponse.setAccessToken(tokens[0]);
         loginResponse.setRefreshToken(tokens[1]);

@@ -40,8 +40,6 @@ public class WorkbookService {
         }
         Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
         String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
-        log.info("question {}", questionAndAnswer[0]);
-        log.info("answer {}",questionAndAnswer[1]);
         QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
         createQuestion(saved.getId(), questionDto);
     }

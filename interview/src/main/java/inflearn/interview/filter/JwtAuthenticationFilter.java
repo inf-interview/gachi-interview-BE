@@ -96,7 +96,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void recreateAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
 
-        log.info("기존 Access 토큰 만료");
         UserDetails getUser = jwtTokenProvider.validateRefreshToken(refreshToken);//refreshToken 검증 후 유저정보 가져옴
 
         try {
@@ -104,8 +103,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String id = jwtTokenProvider.extractUsername(accessToken);
             UserDetails userDetails = userDetailsService.loadUserById(Long.parseLong(id));
-
-            log.info("newAccessToken={}", accessToken);
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,
@@ -123,7 +120,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setHeader("userId", id);
 
         } catch (Exception e) {
-            log.info("exception {}", e.getMessage());
             throw new TokenNotValidateException("엑세스 토큰 재생성중 오류 발생", e);
         }
 

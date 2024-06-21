@@ -103,7 +103,6 @@ public class GptService {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
 
         Map<String, Object> bodyMap = writeWorkbookPrompt(job);
-        log.info(bodyMap.toString());
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
