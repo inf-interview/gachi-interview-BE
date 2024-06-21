@@ -5,6 +5,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import inflearn.interview.domain.dto.UrlReturnDTO;
 import inflearn.interview.domain.dto.VideoNameDTO;
@@ -56,5 +57,16 @@ public class S3Service {
                 CannedAccessControlList.PublicRead.toString());
 
         return generatePresignedUrlRequest;
+    }
+
+    public void deleteVideo(String videoLink, String thumbnailLink) {
+        try {
+            String[] videoSplit = videoLink.split("amazonaws[.]com/");
+            String[] thumbnailSplit = thumbnailLink.split("amazonaws[.]com/");
+            DeleteObjectsRequest multiRequest = new DeleteObjectsRequest(bucket).withKeys(videoSplit[1], thumbnailSplit[1]);
+            amazonS3.deleteObjects(multiRequest);
+        } catch (SdkClientException e) {
+            throw new S3Exception();
+        }
     }
 }

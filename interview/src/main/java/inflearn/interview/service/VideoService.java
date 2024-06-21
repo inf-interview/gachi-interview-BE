@@ -28,6 +28,7 @@ public class VideoService {
     private final UserRepository userRepository;
     private final VideoQuestionRepository videoQuestionRepository;
     private final QuestionRepository questionRepository;
+    private final S3Service s3Service;
 
     public VideoDTO2 getVideoById(Long videoId, User user){
 
@@ -64,6 +65,7 @@ public class VideoService {
     public void deleteVideo(Long videoId, VideoDTO2 video){
         Video originalVideo = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         if (originalVideo.getUser().getUserId().equals(video.getUserId())) {
+            s3Service.deleteVideo(originalVideo.getVideoLink(), originalVideo.getThumbnailLink());
             videoRepository.deleteById(videoId);
         } else {
             throw new RequestDeniedException();
