@@ -11,4 +11,6 @@ public class WorkbookRequestDTO implements BaseDTO{
 
     private String title;
 
+    private String job;
+
 }

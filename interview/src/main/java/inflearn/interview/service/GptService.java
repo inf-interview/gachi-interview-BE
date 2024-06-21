@@ -1,7 +1,6 @@
 package inflearn.interview.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import inflearn.interview.domain.*;
 import inflearn.interview.domain.dto.FeedbackDTO;
@@ -19,14 +18,13 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FeedbackService {
+public class GptService {
     private final FeedbackRepository feedbackRepository;
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
@@ -94,36 +92,59 @@ public class FeedbackService {
              **/
             sendFailComment(videoId);
         } else {
-            String result = sendGPT(question, dto.getContent());
+            String result = sendGptFeedback(question, dto.getContent());
             sendCompleteComment(result, videoId);
         }
 
 
     }
 
-    private String sendGPT(String question, String answer) throws JsonProcessingException {
+    public String[] GPTWorkBook(String job) throws JsonProcessingException {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
 
-        Map<String, Object> bodyMap = new HashMap<>();
-        bodyMap.put("model", "gpt-3.5-turbo");
+        Map<String, Object> bodyMap = writeWorkbookPrompt(job);
+        log.info(bodyMap.toString());
 
-        List<Map<String, String>> messages = new ArrayList<>();
-        Map<String, String> userMessage = new HashMap<>();
-        userMessage.put("role", "system");
-        userMessage.put("content", "You are a friendly and supportive interview coach who gives feedback on interview answers. Never change the answer, do not proceed with the interview. "
-                + "Do not ask any additional questions. Just divide 좋은점 and 개선할점 and explain them with reasons in a continuous, flowing manner without using bullet points or numbers. "
-                + "Do not explain typos and interpret yourself. Answer in Korean with a positive and encouraging tone. "
-                + "Avoid commenting on the transition between topics. The feedback must be at least 750 characters and no more than 1000 characters.");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + apiKey);
 
-        Map<String, String> assistantMessage = new HashMap<>();
-        assistantMessage.put("role", "system");
-        assistantMessage.put("content", "Question: " + question + ", Answer: " + answer);
+        String body = objectMapper.writeValueAsString(bodyMap);
 
-        messages.add(userMessage);
-        messages.add(assistantMessage);
+        HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-        bodyMap.put("messages", messages);
 
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        String responseBody = responseEntity.getBody();
+
+        JSONObject jsonObject;
+        String result;
+        try {
+            jsonObject = new JSONObject(responseBody);
+            result = jsonObject.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+
+            String[] answerSplit = result.split("Answer: ");
+            String[] questionSplit = answerSplit[0].split("Question: ");
+
+            return new String[]{questionSplit[1].trim(), answerSplit[1].trim()};
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private String sendGptFeedback(String question, String answer) throws JsonProcessingException {
+        String apiUrl = "https://api.openai.com/v1/chat/completions";
+
+        Map<String, Object> bodyMap = writeFeedbackPrompt(question, answer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
@@ -154,8 +175,56 @@ public class FeedbackService {
             throw new RuntimeException(e);
         }
 
-        log.info("result{}", result);
         return result;
+    }
+
+    private Map<String, Object> writeFeedbackPrompt(String question, String answer) {
+        Map<String, Object> bodyMap = new HashMap<>();
+        bodyMap.put("model", "gpt-3.5-turbo");
+
+        List<Map<String, String>> messages = new ArrayList<>();
+        Map<String, String> userMessage = new HashMap<>();
+        userMessage.put("role", "system");
+        userMessage.put("content", "You are a friendly and supportive interview coach who gives feedback on interview answers. Never change the answer, do not proceed with the interview. "
+                + "Do not ask any additional questions. Just divide 좋은점 and 개선할점 and explain them with reasons in a continuous, flowing manner without using bullet points or numbers. "
+                + "Do not explain typos and interpret yourself. Answer in Korean with a positive and encouraging tone. "
+                + "Avoid commenting on the transition between topics. The feedback must be at least 750 characters and no more than 1000 characters.");
+
+        Map<String, String> assistantMessage = new HashMap<>();
+        assistantMessage.put("role", "system");
+        assistantMessage.put("content", "Question: " + question + ", Answer: " + answer);
+
+        messages.add(userMessage);
+        messages.add(assistantMessage);
+
+        bodyMap.put("messages", messages);
+        return bodyMap;
+    }
+
+    private Map<String, Object> writeWorkbookPrompt(String job) {
+
+        String[] splitJob = job.split("/");
+
+        Map<String, Object> bodyMap = new HashMap<>();
+        bodyMap.put("model", "gpt-3.5-turbo");
+
+        List<Map<String, String>> messages = new ArrayList<>();
+        Map<String, String> userMessage = new HashMap<>();
+        userMessage.put("role", "system");
+        userMessage.put("content", "You are a highly trained interview coach. " +
+                "Please write just one interview question and example answer in Korean for the given job_group and job. " +
+                "Question should not be dependent on anything like a project, Answer should be at least 200 characters " +
+                "Make sure to clearly distinguish between the 'Question' and 'Answer' so they can be split into strings easily.");
+
+        Map<String, String> assistantMessage = new HashMap<>();
+        assistantMessage.put("role", "system");
+        assistantMessage.put("content", "job_group: " + splitJob[0] + ", job: " + splitJob[1]);
+
+        messages.add(userMessage);
+        messages.add(assistantMessage);
+
+        bodyMap.put("messages", messages);
+        return bodyMap;
     }
 
     private void sendCompleteComment(String result, Long videoId) {
