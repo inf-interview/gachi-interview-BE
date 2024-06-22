@@ -34,4 +34,10 @@ public class GlobalExceptionAdvice extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "S3 Error", "S3 사용중 오류가 발생하였습니다.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
+    @ExceptionHandler(GptCallCountExceededException.class)
+    public ResponseEntity<ErrorResponse> gptCallCountExceeded(GptCallCountExceededException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.TOO_MANY_REQUESTS.value(), "AI Call Count Exceeded", "AI 호출 횟수를 초과하였습니다. AI 질문 작성은 5회로 제한됩니다.");
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+    }
 }

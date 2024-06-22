@@ -6,6 +6,7 @@ import inflearn.interview.domain.User;
 import inflearn.interview.domain.Workbook;
 import inflearn.interview.domain.dto.QuestionRequestDTO;
 import inflearn.interview.domain.dto.WorkbookRequestDTO;
+import inflearn.interview.exception.GptCallCountExceededException;
 import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.QuestionRepository;
 import inflearn.interview.repository.UserRepository;
@@ -26,6 +27,7 @@ public class WorkbookService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final GptService gptService;
+    private final GptCallCountService callCountService;
 
     public List<Workbook> getWorkbooks(User user) {
         return workbookRepository.findAllByUser(user);
@@ -38,10 +40,14 @@ public class WorkbookService {
             workbookRepository.save(workbook);
             return;
         }
-        Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
-        String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
-        QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
-        createQuestion(saved.getId(), questionDto);
+        if (callCountService.checkQuestionCallCount(user)) {
+            Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
+            String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
+            QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
+            createQuestion(saved.getId(), questionDto);
+        } else {
+            throw new GptCallCountExceededException();
+        }
     }
 
     public Workbook findWorkbook(Long workbookId) {

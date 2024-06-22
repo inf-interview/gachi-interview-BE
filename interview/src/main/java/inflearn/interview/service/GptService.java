@@ -31,6 +31,7 @@ public class GptService {
     private final VideoQuestionRepository videoQuestionRepository;
     private final QuestionRepository questionRepository;
     private final VideoCommentService videoCommentService;
+    private final GptCallCountService callCountService;
 
 
     @Value("${python.server.url}")
@@ -44,6 +45,11 @@ public class GptService {
     ObjectMapper objectMapper = new ObjectMapper();
 
     public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
+
+        boolean check = callCountService.checkInterviewCallCount(user);
+        if (!check) {
+            return;
+        }
 
         Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
