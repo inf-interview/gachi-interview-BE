@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -24,6 +25,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class GptService {
     private final FeedbackRepository feedbackRepository;
     private final VideoRepository videoRepository;
@@ -46,7 +48,7 @@ public class GptService {
 
     public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
 
-        boolean check = callCountService.checkInterviewCallCount(user);
+        boolean check = callCountService.checkInterviewCallCount(user.getUserId());
         if (!check) {
             return;
         }
@@ -193,7 +195,7 @@ public class GptService {
         userMessage.put("content", "You are a friendly and supportive interview coach who gives feedback on interview answers. Never change the answer, do not proceed with the interview. "
                 + "Do not ask any additional questions. Just divide 좋은점 and 개선할점 and explain them with reasons in a continuous, flowing manner without using bullet points or numbers. "
                 + "Do not explain typos and interpret yourself. Answer in Korean with a positive and encouraging tone. "
-                + "Avoid commenting on the transition between topics. The feedback must be at least 750 characters and no more than 1000 characters.");
+                + "Avoid commenting on the transition between topics. The feedback must be less than 200 characters"); //임시 수정 at least 750 characters and no more than 1000 characters.
 
         Map<String, String> assistantMessage = new HashMap<>();
         assistantMessage.put("role", "system");

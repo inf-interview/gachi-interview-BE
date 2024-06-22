@@ -2,6 +2,9 @@ package inflearn.interview.service;
 
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.GptCountDTO;
+import inflearn.interview.exception.OptionalNotFoundException;
+import inflearn.interview.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +14,16 @@ import java.time.LocalDateTime;
 @Service
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class GptCallCountService {
 
     private static final Integer INTERVIEW_MAX_COUNT = 3;
 
-    public boolean checkQuestionCallCount(User user) {
+    private final UserRepository userRepository;
+
+    public boolean checkQuestionCallCount(Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         //유저의 questionCall이 0인 경우
         //LocalDateTime을 지금 시간으로 초기화
         //count++;
@@ -41,7 +49,8 @@ public class GptCallCountService {
 
     }
 
-    public boolean checkInterviewCallCount(User user) {
+    public boolean checkInterviewCallCount(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
 
         if (user.getInterviewGptCallCount() == null || user.getInterviewGptCallCount() == 0) {
             user.setInterviewGptCallTime(LocalDateTime.now());

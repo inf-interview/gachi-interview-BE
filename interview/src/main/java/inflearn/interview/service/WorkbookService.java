@@ -40,7 +40,7 @@ public class WorkbookService {
             workbookRepository.save(workbook);
             return;
         }
-        if (callCountService.checkQuestionCallCount(user)) {
+        if (callCountService.checkQuestionCallCount(user.getUserId())) {
             Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
             String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
             QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
