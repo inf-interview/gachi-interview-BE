@@ -27,7 +27,7 @@ public class GptCallCountService {
         //유저의 questionCall이 0인 경우
         //LocalDateTime을 지금 시간으로 초기화
         //count++;
-        if (user.getQuestionGptCallCount() == null || user.getQuestionGptCallCount() == 0) {
+        if (user.getQuestionGptCallCount() == 0) {
             user.setQuestionGptCallTime(LocalDateTime.now());
             user.setQuestionGptCallCount(1);
             //유저의 questionCall이 1~4 인 경우
@@ -52,7 +52,7 @@ public class GptCallCountService {
     public boolean checkInterviewCallCount(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
 
-        if (user.getInterviewGptCallCount() == null || user.getInterviewGptCallCount() == 0) {
+        if (user.getInterviewGptCallCount() == 0) {
             user.setInterviewGptCallTime(LocalDateTime.now());
             user.setInterviewGptCallCount(1);
 
