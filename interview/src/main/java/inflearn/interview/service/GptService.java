@@ -56,10 +56,16 @@ public class GptService {
         Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < videoQuestions.size(); i++) {
-            Question question = questionRepository.findById(videoQuestions.get(i).getQuestion().getId()).orElseThrow(OptionalNotFoundException::new);
-            sb.append("question").append(i + 1).append(": ").append(question.getContent());
+
+//        for (int i = 0; i < videoQuestions.size(); i++) {
+//            Question question = questionRepository.findById(videoQuestions.get(i).getQuestionId()).orElseThrow(OptionalNotFoundException::new);
+//            sb.append("question").append(i + 1).append(": ").append(question.getContent());
+//        }
+
+        for (VideoQuestion videoQuestion : videoQuestions) {
+            sb.append("question").append(": ").append(videoQuestion.getQuestion());
         }
+
 
         String question = sb.toString();
 
@@ -195,7 +201,7 @@ public class GptService {
         userMessage.put("content", "You are a friendly and supportive interview coach who gives feedback on interview answers. Never change the answer, do not proceed with the interview. "
                 + "Do not ask any additional questions. Just divide 좋은점 and 개선할점 and explain them with reasons in a continuous, flowing manner without using bullet points or numbers. "
                 + "Do not explain typos and interpret yourself. Answer in Korean with a positive and encouraging tone. "
-                + "Avoid commenting on the transition between topics. The feedback must be less than 200 characters"); //임시 수정 at least 750 characters and no more than 1000 characters.
+                + "Avoid commenting on the transition between topics. The feedback must be at least 750 characters and no more than 1000 characters.");
 
         Map<String, String> assistantMessage = new HashMap<>();
         assistantMessage.put("role", "system");

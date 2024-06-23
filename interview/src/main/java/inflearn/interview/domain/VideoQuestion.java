@@ -14,13 +14,18 @@ public class VideoQuestion {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
     private Video video;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Question question;
+    //GPT에 전달할 Question의 id를 찾기 위해 저장
+    private Long questionId;
 
-    public VideoQuestion(Video video, Question question) {
+    //GPT에 전달할 질문 내용
+    private String question;
+
+    public VideoQuestion(Video video, Long questionId, String question) {
         this.video = video;
+        this.questionId = questionId;
         this.question = question;
     }
 
