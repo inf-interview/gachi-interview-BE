@@ -48,6 +48,11 @@ public class GptService {
 
     public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
 
+        if (dto.getContent().isEmpty()) {
+            sendFailComment(videoId);
+            return;
+        }
+
         boolean check = callCountService.checkInterviewCallCount(user.getUserId());
         if (!check) {
             return;
@@ -57,59 +62,14 @@ public class GptService {
         List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
         StringBuilder sb = new StringBuilder();
 
-//        for (int i = 0; i < videoQuestions.size(); i++) {
-//            Question question = questionRepository.findById(videoQuestions.get(i).getQuestionId()).orElseThrow(OptionalNotFoundException::new);
-//            sb.append("question").append(i + 1).append(": ").append(question.getContent());
-//        }
-
         for (VideoQuestion videoQuestion : videoQuestions) {
             sb.append("question").append(": ").append(videoQuestion.getQuestion());
         }
 
-
         String question = sb.toString();
 
-        if (dto.getContent().isEmpty()) {
-            /** 기존 Python 서버로 음성추출 보내던 부분
-            RequestBody requestBody = new RequestBody();
-            requestBody.setVideo_url(video.getVideoLink());
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<RequestBody> requestEntity = new HttpEntity<>(requestBody, headers);
-
-            String response = restTemplate.postForObject(pythonServerURL, requestEntity, String.class);
-
-            JsonNode jsonNode;
-            try {
-                jsonNode = objectMapper.readTree(response);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-
-            String answer = jsonNode.get("result").asText();
-
-
-            //db에 유저정보랑 질문, 답변 gpt 답변담아두고
-            Feedback target = new Feedback();
-            String result = sendGPT(question, answer);
-
-            target.setContent(result);
-            target.setUser(user);
-            target.setTime(LocalDateTime.now());
-            target.setVideo(video);
-            target.setQuestion(question);
-            feedbackRepository.save(target);
-
-            sendCompleteComment(result, videoId);
-             **/
-            sendFailComment(videoId);
-        } else {
-            String result = sendGptFeedback(question, dto.getContent());
-            sendCompleteComment(result, videoId);
-        }
-
+        String result = sendGptFeedback(question, dto.getContent());
+        sendCompleteComment(result, videoId);
 
     }
 
@@ -291,5 +251,40 @@ public class GptService {
     static class RequestBody {
         private String video_url;
     }
+
+    /** 기존 Python 서버로 음성추출 보내던 부분
+     RequestBody requestBody = new RequestBody();
+     requestBody.setVideo_url(video.getVideoLink());
+
+     HttpHeaders headers = new HttpHeaders();
+     headers.setContentType(MediaType.APPLICATION_JSON);
+
+     HttpEntity<RequestBody> requestEntity = new HttpEntity<>(requestBody, headers);
+
+     String response = restTemplate.postForObject(pythonServerURL, requestEntity, String.class);
+
+     JsonNode jsonNode;
+     try {
+     jsonNode = objectMapper.readTree(response);
+     } catch (JsonProcessingException e) {
+     throw new RuntimeException(e);
+     }
+
+     String answer = jsonNode.get("result").asText();
+
+
+     //db에 유저정보랑 질문, 답변 gpt 답변담아두고
+     Feedback target = new Feedback();
+     String result = sendGPT(question, answer);
+
+     target.setContent(result);
+     target.setUser(user);
+     target.setTime(LocalDateTime.now());
+     target.setVideo(video);
+     target.setQuestion(question);
+     feedbackRepository.save(target);
+
+     sendCompleteComment(result, videoId);
+     **/
 
 }
