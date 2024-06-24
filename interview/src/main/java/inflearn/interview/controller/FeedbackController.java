@@ -8,7 +8,9 @@ import inflearn.interview.domain.dto.FeedbackDTO;
 import inflearn.interview.domain.dto.GptCountDTO;
 import inflearn.interview.service.GptCallCountService;
 import inflearn.interview.service.GptService;
+import inflearn.interview.service.GptServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,18 +38,18 @@ public class FeedbackController {
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/{feedbackId}")
-    public void delete(@PathVariable Long feedbackId) {
-        gptService.deleteFeedback(feedbackId);
-    }
-
-    @GetMapping("/{userId}")
-    public List<Feedback> getFeedbacks(@RequestParam Long userId){
-        return gptService.getFeedbacks(userId);
-    }
-
-    @GetMapping("/{feedbackId}")
-    public Feedback getFeedback(@PathVariable Long feedbackId){
-        return gptService.getFeedback(feedbackId);
-    }
+//    @DeleteMapping("/{feedbackId}")
+//    public void delete(@PathVariable Long feedbackId) {
+//        gptServiceImpl.deleteFeedback(feedbackId);
+//    }
+//
+//    @GetMapping("/{userId}")
+//    public List<Feedback> getFeedbacks(@RequestParam Long userId){
+//        return gptServiceImpl.getFeedbacks(userId);
+//    }
+//
+//    @GetMapping("/{feedbackId}")
+//    public Feedback getFeedback(@PathVariable Long feedbackId){
+//        return gptServiceImpl.getFeedback(feedbackId);
+//    }
 }
