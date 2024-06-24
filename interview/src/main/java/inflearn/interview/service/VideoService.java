@@ -1,10 +1,7 @@
 package inflearn.interview.service;
 
 import inflearn.interview.converter.VideoDAOToDTOConverter;
-import inflearn.interview.domain.User;
-import inflearn.interview.domain.Video;
-import inflearn.interview.domain.VideoLike;
-import inflearn.interview.domain.VideoQuestion;
+import inflearn.interview.domain.*;
 import inflearn.interview.domain.dto.VideoDTO2;
 import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.exception.RequestDeniedException;
@@ -107,7 +104,8 @@ public class VideoService {
 
         Long[] questions = videoDTO.getQuestions();
         for (Long question : questions) {
-            VideoQuestion videoQuestion = new VideoQuestion(video, questionRepository.findById(question).orElseThrow(OptionalNotFoundException::new));
+            Question questionObject = questionRepository.findById(question).orElseThrow(OptionalNotFoundException::new);
+            VideoQuestion videoQuestion = new VideoQuestion(video, questionObject.getId(), questionObject.getContent());
             videoQuestionRepository.save(videoQuestion);
         }
 

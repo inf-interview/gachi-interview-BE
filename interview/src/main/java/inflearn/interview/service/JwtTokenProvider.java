@@ -104,7 +104,6 @@ public class JwtTokenProvider {
             }
 
         } catch (Exception e) {
-            log.info("exception {}", e.getMessage());
             throw new TokenNotValidateException("리프레시 토큰 검증에 실패했습니다", e);
         }
 

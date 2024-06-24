@@ -55,6 +55,14 @@ public class User implements UserDetails {
 
     private String role;
 
+    private Integer questionGptCallCount = 0;
+
+    private Integer interviewGptCallCount = 0;
+
+    private LocalDateTime questionGptCallTime;
+
+    private LocalDateTime interviewGptCallTime;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));

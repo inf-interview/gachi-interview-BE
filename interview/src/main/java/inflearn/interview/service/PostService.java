@@ -74,7 +74,6 @@ public class PostService {
     public void deletePost(Long postId, Long userId) {
         //유저가 작성한 포스트인지 체크
         Post post = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
-        log.info("userId {}", post.getUser().getUserId());
 
         if (!(post.getUser().getUserId()).equals(userId)) {
             throw new RequestDeniedException();
