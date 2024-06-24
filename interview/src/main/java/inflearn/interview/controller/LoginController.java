@@ -1,14 +1,19 @@
 package inflearn.interview.controller;
 
 import inflearn.interview.domain.User;
+import inflearn.interview.domain.dto.FcmTokenDTO;
+import inflearn.interview.domain.dto.LoginResponse;
 import inflearn.interview.service.AuthenticationService;
+import inflearn.interview.service.FcmTokenService;
 import inflearn.interview.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -20,6 +25,7 @@ public class LoginController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final FcmTokenService fcmTokenService;
 
     @Value("${spring.kakao.client_id}")
     private String kakaoClientId;
@@ -32,17 +38,22 @@ public class LoginController {
      */
     @GetMapping("/user/kakao")
     public void kakaoLogin(HttpServletResponse response) throws IOException {
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+ kakaoClientId + "&redirect_uri=http://localhost:8080/user/kakao/login";
+        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + kakaoClientId + "&redirect_uri=http://localhost:8080/user/kakao/login";
         response.sendRedirect(url);
     }
 
     @GetMapping("/user/kakao/login")
-    public ResponseEntity<String[]> kakaoGetInfo(@RequestParam String code) {
-        User user = userService.loginKakao(code);
+    public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code, HttpServletRequest request) {
+        String isLocal = kakaoCheckLocal(request);
 
-        String[] tokens = authenticationService.register(user);
-        log.info("accessToken = {}", tokens[0]);
-        return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken 반환
+        LoginResponse loginResponse = userService.loginKakao(code, isLocal);
+
+        String[] tokens = authenticationService.register(loginResponse.getUserId());
+
+        loginResponse.setAccessToken(tokens[0]);
+        loginResponse.setRefreshToken(tokens[1]);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(loginResponse);
     }
 
     /**
@@ -55,12 +66,49 @@ public class LoginController {
     }
 
     @GetMapping("/user/google/login")
-    public ResponseEntity<String[]> googleGetInfo(@RequestParam String code) {
-        User user = userService.loginGoogle(code);
+    public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code, HttpServletRequest request) {
+        String isLocal = googleCheckLocal(request);
 
-        String[] tokens = authenticationService.register(user);
-        log.info("accessToken = {}", tokens[0]);
-        return ResponseEntity.status(HttpStatus.OK).body(tokens); // accessToken, refreshToken 반환
+        LoginResponse loginResponse = userService.loginGoogle(code, isLocal);
+
+        String[] tokens = authenticationService.register(loginResponse.getUserId());
+
+        loginResponse.setAccessToken(tokens[0]);
+        loginResponse.setRefreshToken(tokens[1]);
+
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse); // accessToken, refreshToken 반환
     }
 
+    //fcmToken
+    @PostMapping("/user/fcm/token")
+    public ResponseEntity<?> getFcmToken(@RequestBody FcmTokenDTO tokenDTO, @AuthenticationPrincipal User user) {
+        fcmTokenService.registerToken(user, tokenDTO.getFcmToken());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private String kakaoCheckLocal(HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        String isLocal = "PUBLISH";
+        if (referer == null) {
+            isLocal = "BE";
+            log.info("BE 로컬 접속");
+        } else if (referer.contains("localhost:3000")) {
+            isLocal = "FE";
+            log.info("FE 로컬 접속");
+        }
+        return isLocal;
+    }
+
+    private String googleCheckLocal(HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        String isLocal = "PUBLISH";
+        if (referer.contains("accounts.google.com")) {
+            isLocal = "BE";
+            log.info("BE 로컬 접속");
+        } else if (referer.contains("localhost:3000")) {
+            isLocal = "FE";
+            log.info("FE 로컬 접속");
+        }
+        return isLocal;
+    }
 }

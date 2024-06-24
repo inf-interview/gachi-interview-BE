@@ -27,7 +27,7 @@ public class VideoDTOToDAOConverter implements Converter<VideoDTO, Video>{
         for (String tag : tags) {
             rawTag.append(tag).append(".");
         }
-        DAO.setRawTags(rawTag.toString());
+        DAO.setTag(rawTag.toString());
         return DAO;
     }
 }

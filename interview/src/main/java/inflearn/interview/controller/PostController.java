@@ -1,8 +1,9 @@
 package inflearn.interview.controller;
 
 import inflearn.interview.aop.ValidateUser;
+import inflearn.interview.domain.User;
 import inflearn.interview.domain.dto.ErrorResponse;
-import inflearn.interview.domain.dto.PageInfo;
+import inflearn.interview.domain.dto.LikeDTO;
 import inflearn.interview.domain.dto.PostDTO;
 import inflearn.interview.exception.RequestDeniedException;
 import inflearn.interview.service.PostService;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +23,16 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/list")
-    public Page<PostDTO> postList(@RequestParam int page, @RequestBody PageInfo pageInfo) {
-        return postService.getAllPost(pageInfo, page);
+    public Page<PostDTO> postList(@RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "new") String sortType,
+                                  @RequestParam String category,
+                                  @RequestParam(defaultValue = "") String keyword) {
+        return postService.getAllPost(sortType, category, keyword, page);
     }
 
     @GetMapping("/{postId}")
-    public PostDTO postDetail(@PathVariable Long postId) {
-        return postService.getPostById(postId);
+    public PostDTO postDetail(@PathVariable Long postId, @AuthenticationPrincipal User user) {
+        return postService.getPostById(postId, user.getUserId());
     }
 
     @ValidateUser
@@ -43,7 +48,7 @@ public class PostController {
 
     @ValidateUser
     @PatchMapping("/{postId}/edit")
-    public ResponseEntity<?> postEdit(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
+    public ResponseEntity<?> postEdit(@PathVariable Long postId, @RequestBody PostDTO postDTO) {
         try {
             PostDTO getDTO = postService.updatePost(postId, postDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(getDTO);
@@ -69,10 +74,10 @@ public class PostController {
 
     @ValidateUser
     @PostMapping("/{postId}/like")
-    public ResponseEntity<String> postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
+    public ResponseEntity<?> postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
         Long userId = postDTO.getUserId();
-        postService.likePost(postId, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        LikeDTO numOfLike = postService.likePost(postId, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(numOfLike);
     }
 
 }

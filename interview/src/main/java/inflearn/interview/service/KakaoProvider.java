@@ -1,7 +1,6 @@
 package inflearn.interview.service;
 
 import inflearn.interview.domain.dto.SocialTokenResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-@Slf4j
 public class KakaoProvider {
 
     @Value("${spring.kakao.client_id}")
@@ -20,8 +18,11 @@ public class KakaoProvider {
     String clientSecret;
 
     private final String GET_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
+    private final String BE_LOCAL_REDIRECT = "http://localhost:8080/user/kakao/login";
+    private final String FE_LOCAL_REDIRECT = "http://localhost:3000/user/kakao/login";
+    private final String PUBLISH_REDIRECT = "https://gachi-interview.vercel.app/user/kakao/login";
 
-    public String getAccessToken(String code) {
+    public String getAccessToken(String code, String isLocal) {
 
         //엑세스 토큰 폼타입으로 요청
         HttpHeaders headers = new HttpHeaders();
@@ -31,7 +32,13 @@ public class KakaoProvider {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        params.add("redirect_uri", "http://localhost:8080/user/kakao/login"); // 리다이렉트 URL
+        if (isLocal.equals("BE")) {
+            params.add("redirect_uri", BE_LOCAL_REDIRECT);
+        } else if (isLocal.equals("FE")) {
+            params.add("redirect_uri", FE_LOCAL_REDIRECT);
+        } else if (isLocal.equals("PUBLISH")){
+            params.add("redirect_uri", PUBLISH_REDIRECT);
+        }
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
@@ -41,7 +48,6 @@ public class KakaoProvider {
         ResponseEntity<SocialTokenResponse> tokenResponse = restTemplate.postForEntity(GET_TOKEN_URL, requestEntity, SocialTokenResponse.class);
 
         if (tokenResponse.getStatusCode() == HttpStatus.OK && tokenResponse.getBody() != null) {
-            log.info("accessToken={}",tokenResponse.getBody().getAccessToken());
             return tokenResponse.getBody().getAccessToken();
         } else {
             return null;

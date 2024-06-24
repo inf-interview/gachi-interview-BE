@@ -24,7 +24,6 @@ public class Question {
 
     private LocalDateTime updatedAt;
 
-
     public Question() {
     }
 

@@ -1,6 +1,7 @@
 package inflearn.interview.service;
 
 import inflearn.interview.domain.User;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.exception.TokenNotValidateException;
 import inflearn.interview.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -35,7 +36,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + (30 * 60 * 1000L))) // 30분
+                .setExpiration(new Date(now.getTime() + (30 * 60 * 1000L))) //30분
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -46,7 +47,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + (60 * 60 * 24 * 7 * 1000L))) //일주일
+                .setExpiration(new Date(now.getTime() + (60 * 60 * 24 * 7 * 1000L))) //일주일 (60 * 60 * 24 * 7 * 1000L)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -94,7 +95,7 @@ public class JwtTokenProvider {
 
         try {
             Long id = Long.parseLong(extractUsername(refreshToken));
-            User findUser = userRepository.findById(id).get();
+            User findUser = userRepository.findById(id).orElseThrow(OptionalNotFoundException::new);
 
             if (refreshToken.equals(findUser.getRefreshToken())) {
                 if (isTokenValid(refreshToken, findUser)) {
@@ -103,7 +104,6 @@ public class JwtTokenProvider {
             }
 
         } catch (Exception e) {
-            log.info("exception {}", e.getMessage());
             throw new TokenNotValidateException("리프레시 토큰 검증에 실패했습니다", e);
         }
 

@@ -4,23 +4,21 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import inflearn.interview.domain.PostComment;
 import inflearn.interview.domain.User;
-import inflearn.interview.domain.dto.MyPostDTO;
-import inflearn.interview.domain.dto.PostCommentDTO;
-import inflearn.interview.repository.PostCommentRepository;
-import inflearn.interview.repository.PostRepository;
-import inflearn.interview.repository.UserRepository;
+import inflearn.interview.domain.VideoComment;
+import inflearn.interview.domain.dto.*;
+import inflearn.interview.exception.OptionalNotFoundException;
+import inflearn.interview.repository.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
-@Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
@@ -29,9 +27,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
+    private final VideoCommentRepository videoCommentRepository;
+    private final NoticeRepository noticeRepository;
+    private final VideoRepository videoRepository;
 
-    public User loginKakao(String code) { // 반환 값 User, RefreshToken
-        String accessToken = kakaoProvider.getAccessToken(code);
+    public LoginResponse loginKakao(String code, String isLocal) { // 반환 값 User, RefreshToken
+        String accessToken = kakaoProvider.getAccessToken(code, isLocal);
         String kakaoInfo = kakaoProvider.getKakaoInfo(accessToken);
 
         JsonObject jsonObject = JsonParser.parseString(kakaoInfo).getAsJsonObject();
@@ -42,6 +43,9 @@ public class UserService {
         //닉네임 추출
         String nickname = jsonObject.getAsJsonObject("properties").get("nickname").getAsString();
 
+        //이미지 추출
+        String image = jsonObject.getAsJsonObject("properties").get("thumbnail_image").getAsString();
+
         //유저 정보가 DB에 있는지 체크
         Optional<User> findUser = userRepository.findUserByEmailAndSocial(email, "KAKAO");
         if (findUser.isEmpty()) {
@@ -50,24 +54,28 @@ public class UserService {
             user.setEmail(email);
             user.setSocial("KAKAO");
             user.setCreatedAt(LocalDateTime.now());
+            user.setImage(image);
+            user.setRole("USER");
             userRepository.save(user);
-            return user;
-        }
-        return findUser.get(); // User 반환
 
+            return createLoginResponse(nickname, image, user.getUserId());
+
+        }
+
+        return createLoginResponse(nickname, image, findUser.get().getUserId());
     }
 
-    public User loginGoogle(String code) {
+    public LoginResponse loginGoogle(String code, String isLocal) {
 
-        String accessToken = googleProvider.getAccessToken(code);
+        String accessToken = googleProvider.getAccessToken(code, isLocal);
         String googleInfo = googleProvider.getGoogleInfo(accessToken);
-
-        log.info("info={}", googleInfo);
 
         JsonObject jsonObject = JsonParser.parseString(googleInfo).getAsJsonObject();
 
         String name = jsonObject.get("name").getAsString();
         String email = jsonObject.get("email").getAsString();
+        String image = jsonObject.get("picture").getAsString();
+
 
         Optional<User> findUser = userRepository.findUserByEmailAndSocial(email, "GOOGLE");
         if (findUser.isEmpty()) {
@@ -76,18 +84,46 @@ public class UserService {
             user.setEmail(email);
             user.setSocial("GOOGLE");
             user.setCreatedAt(LocalDateTime.now());
+            user.setImage(image);
+            user.setRole("USER");
             userRepository.save(user);
-            return user;
+
+            return createLoginResponse(name, image, user.getUserId());
         }
-        return findUser.get();
+
+        return createLoginResponse(name, image, findUser.get().getUserId());
+
     }
 
-    public List<MyPostDTO> getMyPost(Long userId) {
-        return postRepository.findPostByUserId(userId);
+    public List<MyPostDTO> getMyPost(Long userId, String category) {
+        return postRepository.findPostByUserId(userId, category);
     }
+
+    public List<MyVideoDTO> getMyVideo(Long userId) {
+        return videoRepository.findVideoByUserId(userId);
+    }
+
 
     public List<PostCommentDTO> getMyComment(Long userId) {
-        List<PostComment> comments = postCommentRepository.findCommentByUserId(userId);
-        return comments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+        List<PostComment> postComments = postCommentRepository.findCommentByUserId(userId);
+        return postComments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+    }
+
+    public List<VideoCommentDTO> getMyVideoComment(Long userId) {
+        List<VideoComment> videoComments = videoCommentRepository.findCommentByUserId(userId);
+        return videoComments.stream().map(comment -> new VideoCommentDTO(comment)).toList();
+    }
+
+    private LoginResponse createLoginResponse(String username, String image, Long userId) {
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setUsername(username);
+        loginResponse.setImage(image);
+        loginResponse.setUserId(userId);
+        return loginResponse;
+    }
+
+    public List<NoticeDTO> getMyNotice(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        return noticeRepository.findByUser(user).stream().map(NoticeDTO::new).sorted(Comparator.comparing(NoticeDTO::getCreatedAt).reversed()).toList();
     }
 }

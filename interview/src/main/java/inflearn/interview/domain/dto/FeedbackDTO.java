@@ -5,11 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PageInfo {
+public class FeedbackDTO{
 
-    private String sortType;
-
-    private String category;
-
-
+    private String content;
 }

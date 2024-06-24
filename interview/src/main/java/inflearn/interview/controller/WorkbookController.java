@@ -1,9 +1,8 @@
 package inflearn.interview.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.aop.ValidateUser;
-import inflearn.interview.domain.Question;
 import inflearn.interview.domain.User;
-import inflearn.interview.domain.Workbook;
 import inflearn.interview.domain.dto.QuestionRequestDTO;
 import inflearn.interview.domain.dto.QuestionResponseDTO;
 import inflearn.interview.domain.dto.WorkbookRequestDTO;
@@ -36,7 +35,7 @@ public class WorkbookController {
 
     @ValidateUser
     @PostMapping
-    public ResponseEntity<String> createWorkbook(@RequestBody WorkbookRequestDTO dto) {
+    public ResponseEntity<String> createWorkbook(@RequestBody WorkbookRequestDTO dto) throws JsonProcessingException {
         workbookService.createWorkbook(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

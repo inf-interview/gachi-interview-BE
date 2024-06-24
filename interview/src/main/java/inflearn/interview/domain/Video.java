@@ -32,11 +32,16 @@ public class Video {
     @Column(name = "img_link")
     String thumbnailLink;
 
+    int numOfLike;
+
     @NotNull
     @Column(name = "video_link")
     String videoLink;
     @Column(name = "tag")
-    String rawTags;
+    String tag;
+
+    @Transient
+    List<String> tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -47,4 +52,7 @@ public class Video {
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
     List<VideoLike> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
+    List<VideoQuestion> videoQuestions = new ArrayList<>();
 }

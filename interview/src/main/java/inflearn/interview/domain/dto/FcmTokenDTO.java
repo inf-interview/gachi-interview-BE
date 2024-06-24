@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JwtTokenResponse {
+public class FcmTokenDTO {
 
-    private String jwtToken;
+    private String fcmToken;
 }

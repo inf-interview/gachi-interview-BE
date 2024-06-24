@@ -1,10 +1,13 @@
 package inflearn.interview.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.domain.Question;
 import inflearn.interview.domain.User;
 import inflearn.interview.domain.Workbook;
 import inflearn.interview.domain.dto.QuestionRequestDTO;
 import inflearn.interview.domain.dto.WorkbookRequestDTO;
+import inflearn.interview.exception.GptCallCountExceededException;
+import inflearn.interview.exception.OptionalNotFoundException;
 import inflearn.interview.repository.QuestionRepository;
 import inflearn.interview.repository.UserRepository;
 import inflearn.interview.repository.WorkbookRepository;
@@ -23,15 +26,28 @@ public class WorkbookService {
     private final WorkbookRepository workbookRepository;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
+    private final GptService gptService;
+    private final GptCallCountService callCountService;
 
     public List<Workbook> getWorkbooks(User user) {
         return workbookRepository.findAllByUser(user);
     }
 
-    public void createWorkbook(WorkbookRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId()).get();
-        Workbook workbook = new Workbook(user, dto.getTitle());
-        workbookRepository.save(workbook);
+    public void createWorkbook(WorkbookRequestDTO dto) throws JsonProcessingException {
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        if (dto.getJob().isEmpty()) {
+            Workbook workbook = new Workbook(user, dto.getTitle());
+            workbookRepository.save(workbook);
+            return;
+        }
+        if (callCountService.checkQuestionCallCount(user.getUserId())) {
+            Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
+            String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
+            QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
+            createQuestion(saved.getId(), questionDto);
+        } else {
+            throw new GptCallCountExceededException();
+        }
     }
 
     public Workbook findWorkbook(Long workbookId) {
@@ -46,7 +62,7 @@ public class WorkbookService {
     }
 
     public void deleteWorkbook(Long workbookId) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         workbookRepository.delete(workbook);
     }
 
@@ -54,7 +70,7 @@ public class WorkbookService {
      *  질문 세트
      */
     public void createQuestion(Long workbookId, QuestionRequestDTO dto) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         workbook.increaseNumOfQuestion();
 
         Question question = new Question(workbook, dto.getQuestionContent(), dto.getAnswerContent());
@@ -62,14 +78,14 @@ public class WorkbookService {
     }
 
     public void deleteQuestion(Long workbookId, Long questionId) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         workbook.decreaseNumOfQuestion();
 
         questionRepository.deleteById(questionId);
     }
 
     public List<Question> findQuestion(Long workbookId) {
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
         return questionRepository.findByWorkbook(workbook);
     }
 }

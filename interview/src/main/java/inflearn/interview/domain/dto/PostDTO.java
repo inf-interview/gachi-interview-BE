@@ -42,7 +42,12 @@ public class PostDTO implements BaseDTO{
     private int numOfLike;
     private int numOfComment;
 
-    public PostDTO(Post post) {
+    private String image;
+
+    private boolean isLiked;
+
+
+    public PostDTO(Post post, Long commentCount) {
         this.userId = post.getUser().getUserId();
         this.userName = post.getUser().getName();
         this.postId = post.getPostId();
@@ -55,10 +60,12 @@ public class PostDTO implements BaseDTO{
         this.content = post.getContent();
         this.time = post.getCreatedAt();
         this.updateTime = post.getUpdatedAt();
+        this.numOfComment = Math.toIntExact(commentCount);
+        this.image = post.getUser().getImage();
     }
 
     @QueryProjection
-    public PostDTO(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, Long numOfComment, String tag) {
+    public PostDTO(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, Long numOfComment, String tag, String image) {
         this.userId = userId;
         this.userName = userName;
         this.postId = postId;
@@ -72,6 +79,7 @@ public class PostDTO implements BaseDTO{
         if (tag != null) {
             this.tag = entityToDtoTagConverter(tag);
         }
+        this.image = image;
     }
 
     public PostDTO() {
