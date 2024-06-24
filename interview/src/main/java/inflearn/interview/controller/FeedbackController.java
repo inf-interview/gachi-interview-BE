@@ -31,7 +31,8 @@ public class FeedbackController {
 
     @GetMapping("/limits")
     public ResponseEntity<?> checkLimits(@AuthenticationPrincipal User user) {
-        GptCountDTO dto = callCountService.getInterviewCount(user);
+        Integer count = callCountService.interviewCountToClient(user.getUserId());
+        GptCountDTO dto = new GptCountDTO(3, count);
         return ResponseEntity.ok(dto);
     }
 

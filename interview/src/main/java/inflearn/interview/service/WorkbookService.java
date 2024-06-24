@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static inflearn.interview.constant.GptCount.QUESTION_MAX_COUNT;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -40,7 +42,8 @@ public class WorkbookService {
             workbookRepository.save(workbook);
             return;
         }
-        if (callCountService.checkQuestionCallCount(user.getUserId())) {
+        if (callCountService.getQuestionCount(user.getUserId()) < QUESTION_MAX_COUNT) {
+            callCountService.plusQuestionCallCount(user.getUserId());
             Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
             String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
             QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);

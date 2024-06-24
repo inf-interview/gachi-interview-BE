@@ -21,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
+import static inflearn.interview.constant.GptCount.INTERVIEW_MAX_COUNT;
+
 
 @Service
 @RequiredArgsConstructor
@@ -53,23 +55,24 @@ public class GptService {
             return;
         }
 
-        boolean check = callCountService.checkInterviewCallCount(user.getUserId());
-        if (!check) {
-            return;
+        if (callCountService.getInterviewCount(user.getUserId()) < INTERVIEW_MAX_COUNT) {
+
+            callCountService.plusInterviewCallCount(user.getUserId());
+
+            Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
+            List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
+            StringBuilder sb = new StringBuilder();
+
+            for (VideoQuestion videoQuestion : videoQuestions) {
+                sb.append("question").append(": ").append(videoQuestion.getQuestion());
+            }
+
+            String question = sb.toString();
+
+            String result = sendGptFeedback(question, dto.getContent());
+            sendCompleteComment(result, videoId);
+
         }
-
-        Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
-        List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
-        StringBuilder sb = new StringBuilder();
-
-        for (VideoQuestion videoQuestion : videoQuestions) {
-            sb.append("question").append(": ").append(videoQuestion.getQuestion());
-        }
-
-        String question = sb.toString();
-
-        String result = sendGptFeedback(question, dto.getContent());
-        sendCompleteComment(result, videoId);
 
     }
 
