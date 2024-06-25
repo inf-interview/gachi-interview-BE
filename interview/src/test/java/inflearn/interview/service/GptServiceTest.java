@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -23,10 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class GptServiceTest {
-
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Autowired
     private TestRepository testRepository;
@@ -41,7 +38,7 @@ public class GptServiceTest {
     private VideoQuestionRepository videoQuestionRepository;
 
     @Test
-    @Commit
+    @Transactional
     void 사용자는_AI_피드백_서비스를_이용할_수_있고_이용시_gptCallCount가_1올라간다() throws JsonProcessingException {
         // given
         GptServiceTestImpl gptService = new GptServiceTestImpl(gptCallCountService, videoRepository, videoQuestionRepository);
@@ -68,6 +65,7 @@ public class GptServiceTest {
 
         // when
         gptService.GPTFeedback(video.getVideoId(), user, feedbackDTO);
+
 
         // then
         assertThat(video.getUser().getInterviewGptCallCount()).isEqualTo(1);
