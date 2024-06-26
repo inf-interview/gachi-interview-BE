@@ -1,8 +1,7 @@
 package inflearn.interview.common.service;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.exception.OptionalNotFoundException;
-import inflearn.interview.user.service.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,53 +25,53 @@ public class GptCallCountService {
     @Transactional(propagation = Propagation.REQUIRES_NEW) //GPT의 대답을 기다리기보다 카운팅을 먼저 올리도록 설정
     public void plusQuestionCallCount(Long userId) {
 
-        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         //유저의 questionCall이 0인 경우
         //LocalDateTime을 지금 시간으로 초기화
         //count++;
-        if (user.getQuestionGptCallCount().equals(0)) {
-            user.setQuestionGptCallTime(LocalDateTime.now());
-            user.setQuestionGptCallCount(1);
+        if (userEntity.getQuestionGptCallCount().equals(0)) {
+            userEntity.setQuestionGptCallTime(LocalDateTime.now());
+            userEntity.setQuestionGptCallCount(1);
             //유저의 questionCall이 1~4 인 경우
             //시간 체크 후 24시간이 지났으면 카운트를 다시 1로 변경
             //이외에는 count만 1씩 계속 늘리기
-        } else if (user.getQuestionGptCallCount() < QUESTION_MAX_COUNT) {
-            if (isQuestionTimeAfter(user)) {
-                user.setQuestionGptCallCount(1);
-                user.setQuestionGptCallTime(LocalDateTime.now());
+        } else if (userEntity.getQuestionGptCallCount() < QUESTION_MAX_COUNT) {
+            if (isQuestionTimeAfter(userEntity)) {
+                userEntity.setQuestionGptCallCount(1);
+                userEntity.setQuestionGptCallTime(LocalDateTime.now());
             } else {
-                user.setQuestionGptCallCount(user.getQuestionGptCallCount() + 1);
+                userEntity.setQuestionGptCallCount(userEntity.getQuestionGptCallCount() + 1);
             }
             //유저의 questionCall이 5인경우
             //1. 5인 경우인데 LocalDateTime이 24시간이 안 지난 경우 -> 막고 예외 처리
             //2. 5인 경우인데 LocalDateTime이 24시간이 지난 경우 -> 새로 1로 할당하고 LocalDateTime 현재시간으로 초기화
-        } else if (user.getQuestionGptCallCount().equals(QUESTION_MAX_COUNT)) {
-            if (isQuestionTimeAfter(user)) {
-                user.setQuestionGptCallCount(1);
-                user.setQuestionGptCallTime(LocalDateTime.now());
+        } else if (userEntity.getQuestionGptCallCount().equals(QUESTION_MAX_COUNT)) {
+            if (isQuestionTimeAfter(userEntity)) {
+                userEntity.setQuestionGptCallCount(1);
+                userEntity.setQuestionGptCallTime(LocalDateTime.now());
             }
         }
 
     }
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void plusInterviewCallCount(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
 
-        if (user.getInterviewGptCallCount().equals(0)) {
-            user.setInterviewGptCallTime(LocalDateTime.now());
-            user.setInterviewGptCallCount(1);
+        if (userEntity.getInterviewGptCallCount().equals(0)) {
+            userEntity.setInterviewGptCallTime(LocalDateTime.now());
+            userEntity.setInterviewGptCallCount(1);
 
-        } else if (user.getInterviewGptCallCount() < INTERVIEW_MAX_COUNT) {
-            if (isInterviewTimeAfter(user)) {
-                user.setInterviewGptCallCount(1);
-                user.setInterviewGptCallTime(LocalDateTime.now());
+        } else if (userEntity.getInterviewGptCallCount() < INTERVIEW_MAX_COUNT) {
+            if (isInterviewTimeAfter(userEntity)) {
+                userEntity.setInterviewGptCallCount(1);
+                userEntity.setInterviewGptCallTime(LocalDateTime.now());
             } else {
-                user.setInterviewGptCallCount(user.getInterviewGptCallCount() + 1);
+                userEntity.setInterviewGptCallCount(userEntity.getInterviewGptCallCount() + 1);
             }
-        } else if (user.getInterviewGptCallCount().equals(INTERVIEW_MAX_COUNT)) {
-            if (isInterviewTimeAfter(user)) {
-                user.setInterviewGptCallCount(1);
-                user.setInterviewGptCallTime(LocalDateTime.now());
+        } else if (userEntity.getInterviewGptCallCount().equals(INTERVIEW_MAX_COUNT)) {
+            if (isInterviewTimeAfter(userEntity)) {
+                userEntity.setInterviewGptCallCount(1);
+                userEntity.setInterviewGptCallTime(LocalDateTime.now());
             }
         }
     }
@@ -80,38 +79,38 @@ public class GptCallCountService {
     // 인터뷰 완료 후 클라이언트로 보내줄 메서드
     @Transactional(readOnly = true)
     public Integer interviewCountToClient(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        return user.getInterviewGptCallCount();
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        return userEntity.getInterviewGptCallCount();
     }
 
     // 서버에서 유저의 카운트 체크하는 메서드
     public Integer getInterviewCount(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        if (isInterviewTimeAfter(user)) {
-            user.setInterviewGptCallCount(0);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        if (isInterviewTimeAfter(userEntity)) {
+            userEntity.setInterviewGptCallCount(0);
         }
-        return user.getInterviewGptCallCount();
+        return userEntity.getInterviewGptCallCount();
     }
 
     public Integer getQuestionCount(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        if (isQuestionTimeAfter(user)) {
-            user.setQuestionGptCallCount(0);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        if (isQuestionTimeAfter(userEntity)) {
+            userEntity.setQuestionGptCallCount(0);
         }
-        return user.getQuestionGptCallCount();
+        return userEntity.getQuestionGptCallCount();
     }
 
-    private boolean isInterviewTimeAfter(User user) {
-        if (user.getInterviewGptCallTime() == null) {
+    private boolean isInterviewTimeAfter(UserEntity userEntity) {
+        if (userEntity.getInterviewGptCallTime() == null) {
             return true;
         }
-        return user.getInterviewGptCallTime().isAfter(user.getInterviewGptCallTime().plusDays(1));
+        return userEntity.getInterviewGptCallTime().isAfter(userEntity.getInterviewGptCallTime().plusDays(1));
     }
 
-    private boolean isQuestionTimeAfter(User user) {
-        if (user.getQuestionGptCallTime() == null) {
+    private boolean isQuestionTimeAfter(UserEntity userEntity) {
+        if (userEntity.getQuestionGptCallTime() == null) {
             return true;
         }
-        return user.getQuestionGptCallTime().isAfter(user.getQuestionGptCallTime().plusDays(1));
+        return userEntity.getQuestionGptCallTime().isAfter(userEntity.getQuestionGptCallTime().plusDays(1));
     }
 }

@@ -54,8 +54,8 @@ public class VideoDTO2 implements BaseDTO {
     }
 
     public VideoDTO2(Video video) {
-        userId = video.getUser().getUserId();
-        userName = video.getUser().getName();
+        userId = video.getUserEntity().getUserId();
+        userName = video.getUserEntity().getName();
         videoId = video.getVideoId();
         exposure = video.getExposure();
         videoTitle = video.getVideoTitle();
@@ -63,7 +63,7 @@ public class VideoDTO2 implements BaseDTO {
         updateTime = video.getUpdatedTime();
         numOfLike = video.getNumOfLike();
         thumbnailLink = video.getThumbnailLink();
-        image = video.getUser().getImage();
+        image = video.getUserEntity().getImage();
         if (video.getTag() != null) {
             this.tags = entityToDtoTagConverter(video.getTag());
         }

@@ -1,6 +1,5 @@
 package inflearn.interview.video.domain;
 
-import inflearn.interview.video.domain.Video;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,8 +26,8 @@ public class MyVideoDTO {
         return tag.split("[.]");
     }
     public MyVideoDTO(Video video, Long count) {
-        this.userId = video.getUser().getUserId();
-        this.userName = video.getUser().getName();
+        this.userId = video.getUserEntity().getUserId();
+        this.userName = video.getUserEntity().getName();
         this.videoId = video.getVideoId();
         this.videoLink = video.getVideoLink();
         this.videoTitle = video.getVideoTitle();
@@ -39,6 +38,6 @@ public class MyVideoDTO {
         this.thumbnailLink = video.getThumbnailLink();
         this.exposure = video.getExposure();
         this.numOfComment = count.intValue();
-        this.image = video.getUser().getImage();
+        this.image = video.getUserEntity().getImage();
     }
 }

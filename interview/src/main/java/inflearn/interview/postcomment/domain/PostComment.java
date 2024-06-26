@@ -1,6 +1,6 @@
 package inflearn.interview.postcomment.domain;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class PostComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity userEntity;
 
     private String content;
 
@@ -32,8 +32,8 @@ public class PostComment {
 
     private LocalDateTime updatedAt;
 
-    public PostComment(User user, Post post, String content) {
-        this.user = user;
+    public PostComment(UserEntity userEntity, Post post, String content) {
+        this.userEntity = userEntity;
         this.post = post;
         this.content = content;
         this.createdAt = LocalDateTime.now();

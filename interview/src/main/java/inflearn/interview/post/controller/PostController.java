@@ -1,10 +1,18 @@
 package inflearn.interview.post.controller;
 
 import inflearn.interview.common.aop.ValidateUser;
-import inflearn.interview.user.domain.User;
+import inflearn.interview.post.controller.response.PostCreateResponse;
+import inflearn.interview.post.controller.response.PostResponse;
+import inflearn.interview.post.controller.response.PostUpdateResponse;
+import inflearn.interview.post.domain.Post;
+import inflearn.interview.post.domain.PostCreate;
+import inflearn.interview.post.domain.PostDelete;
+import inflearn.interview.post.domain.PostUpdate;
+import inflearn.interview.postlike.controller.response.LikeResponse;
+import inflearn.interview.postlike.domain.PostLikeRequest;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.domain.ErrorResponse;
 import inflearn.interview.common.domain.LikeDTO;
-import inflearn.interview.post.domain.PostDTO;
 import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -23,61 +31,54 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/list")
-    public Page<PostDTO> postList(@RequestParam(defaultValue = "1") int page,
-                                  @RequestParam(defaultValue = "new") String sortType,
-                                  @RequestParam String category,
-                                  @RequestParam(defaultValue = "") String keyword) {
+    public Page<PostResponse> postList(@RequestParam(defaultValue = "1") int page,
+                                       @RequestParam(defaultValue = "new") String sortType,
+                                       @RequestParam String category,
+                                       @RequestParam(defaultValue = "") String keyword) {
         return postService.getAllPost(sortType, category, keyword, page);
     }
 
     @GetMapping("/{postId}")
-    public PostDTO postDetail(@PathVariable Long postId, @AuthenticationPrincipal User user) {
-        return postService.getPostById(postId, user.getUserId());
+    public PostResponse postDetail(@PathVariable Long postId, @AuthenticationPrincipal UserEntity userEntity) {
+        return postService.getPostDetail(postId, userEntity.getUserId());
     }
 
     @ValidateUser
     @PostMapping("/write")
-    public ResponseEntity<PostDTO> postWrite(@RequestBody @Validated(PostDTO.valid1.class) PostDTO postDTO) {
+    public ResponseEntity<PostCreateResponse> postWrite(@RequestBody @Validated(PostResponse.valid1.class) PostCreate postCreate) {
 
         //PostDto를 서비스로 넘기기
-        PostDTO post = postService.createPost(postDTO);
+        Post post = postService.create(postCreate);
+
+        PostCreateResponse response = PostCreateResponse.from(post);
 
         //저장
-        return ResponseEntity.status(HttpStatus.CREATED).body(post);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @ValidateUser
     @PatchMapping("/{postId}/edit")
-    public ResponseEntity<?> postEdit(@PathVariable Long postId, @RequestBody PostDTO postDTO) {
-        try {
-            PostDTO getDTO = postService.updatePost(postId, postDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(getDTO);
-        } catch (RequestDeniedException e) {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        }
+    public ResponseEntity<?> postEdit(@PathVariable Long postId, @RequestBody PostUpdate postUpdate) {
+        Post post = postService.update(postId, postUpdate);
+
+        PostUpdateResponse response = PostUpdateResponse.from(post);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
 
     @ValidateUser
     @DeleteMapping("/{postId}/delete")
-    public ResponseEntity<?> postDelete(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
-        Long userId = postDTO.getUserId();
-        try {
-            postService.deletePost(postId, userId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (RequestDeniedException e) {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        }
+    public ResponseEntity<?> postDelete(@PathVariable Long postId, @RequestBody PostDelete postDelete) {
+        postService.deletePost(postDelete);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ValidateUser
     @PostMapping("/{postId}/like")
-    public ResponseEntity<?> postLike(@PathVariable Long postId, @RequestBody @Validated(PostDTO.valid2.class) PostDTO postDTO) {
-        Long userId = postDTO.getUserId();
-        LikeDTO numOfLike = postService.likePost(postId, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(numOfLike);
+    public ResponseEntity<?> postLike(@PathVariable Long postId, @RequestBody PostLikeRequest postLike) {
+        LikeResponse likeResponse = postService.likePost(postLike);
+        return ResponseEntity.status(HttpStatus.CREATED).body(likeResponse);
     }
 
 }

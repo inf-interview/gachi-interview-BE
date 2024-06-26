@@ -2,7 +2,7 @@ package inflearn.interview.feedback.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.common.aop.ValidateUser;
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.feedback.domain.FeedbackDTO;
 import inflearn.interview.common.domain.GptCountDTO;
 import inflearn.interview.common.service.GptCallCountService;
@@ -22,13 +22,13 @@ public class FeedbackController {
 
     @ValidateUser
     @PostMapping("/{video_Id}")
-    public void submit(@AuthenticationPrincipal User user, @PathVariable Long video_Id, @RequestBody FeedbackDTO dto) throws JsonProcessingException {
-        gptService.GPTFeedback(video_Id, user, dto);
+    public void submit(@AuthenticationPrincipal UserEntity userEntity, @PathVariable Long video_Id, @RequestBody FeedbackDTO dto) throws JsonProcessingException {
+        gptService.GPTFeedback(video_Id, userEntity, dto);
     }
 
     @GetMapping("/limits")
-    public ResponseEntity<?> checkLimits(@AuthenticationPrincipal User user) {
-        Integer count = callCountService.interviewCountToClient(user.getUserId());
+    public ResponseEntity<?> checkLimits(@AuthenticationPrincipal UserEntity userEntity) {
+        Integer count = callCountService.interviewCountToClient(userEntity.getUserId());
         GptCountDTO dto = new GptCountDTO(3, count);
         return ResponseEntity.ok(dto);
     }

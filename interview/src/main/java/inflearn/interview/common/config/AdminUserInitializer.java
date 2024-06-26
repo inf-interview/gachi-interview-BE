@@ -1,7 +1,6 @@
 package inflearn.interview.common.config;
 
-import inflearn.interview.user.domain.User;
-import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.user.infrastructure.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +20,7 @@ public class AdminUserInitializer {
             if (userRepository.findAdmin("ADMIN") == null) {
                 String name = "같이면접 AI 서비스";
 
-                User admin = new User();
+                UserEntity admin = new UserEntity();
                 admin.setName(name);
                 admin.setSocial("ADMIN");
                 admin.setEmail("thstkddnr20@naver.com");

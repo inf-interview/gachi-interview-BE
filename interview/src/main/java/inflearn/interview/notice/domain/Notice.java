@@ -1,6 +1,6 @@
 package inflearn.interview.notice.domain;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,14 +17,14 @@ public class Notice {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private UserEntity userEntity;
 
     private String content;
 
     private LocalDateTime createdAt;
 
-    public Notice(User user, String content) {
-        this.user = user;
+    public Notice(UserEntity userEntity, String content) {
+        this.userEntity = userEntity;
         this.content = content;
         this.createdAt = LocalDateTime.now();
     }

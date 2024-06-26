@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.common.service.GptCallCountService;
 import inflearn.interview.common.service.GptService;
 import inflearn.interview.question.domain.Question;
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.workbook.domain.Workbook;
 import inflearn.interview.question.domain.QuestionRequestDTO;
 import inflearn.interview.workbook.domain.WorkbookRequestDTO;
 import inflearn.interview.common.exception.GptCallCountExceededException;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.question.service.QuestionRepository;
-import inflearn.interview.user.service.UserRepository;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,20 +32,20 @@ public class WorkbookService {
     private final GptService gptService;
     private final GptCallCountService callCountService;
 
-    public List<Workbook> getWorkbooks(User user) {
-        return workbookRepository.findAllByUser(user);
+    public List<Workbook> getWorkbooks(UserEntity userEntity) {
+        return workbookRepository.findAllByUser(userEntity);
     }
 
     public void createWorkbook(WorkbookRequestDTO dto) throws JsonProcessingException {
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        UserEntity userEntity = userRepository.findById(dto.getUserId()).orElseThrow(OptionalNotFoundException::new);
         if (dto.getJob().isEmpty()) {
-            Workbook workbook = new Workbook(user, dto.getTitle());
+            Workbook workbook = new Workbook(userEntity, dto.getTitle());
             workbookRepository.save(workbook);
             return;
         }
-        if (callCountService.getQuestionCount(user.getUserId()) < QUESTION_MAX_COUNT) {
-            callCountService.plusQuestionCallCount(user.getUserId());
-            Workbook saved = workbookRepository.save(new Workbook(user, dto.getTitle()));
+        if (callCountService.getQuestionCount(userEntity.getUserId()) < QUESTION_MAX_COUNT) {
+            callCountService.plusQuestionCallCount(userEntity.getUserId());
+            Workbook saved = workbookRepository.save(new Workbook(userEntity, dto.getTitle()));
             String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
             QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
             createQuestion(saved.getId(), questionDto);

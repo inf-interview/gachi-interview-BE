@@ -3,7 +3,7 @@ package inflearn.interview.video.domain;
 import inflearn.interview.videocomment.domain.VideoComment;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -49,7 +49,7 @@ public class Video {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity userEntity;
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
     List<VideoComment> comments = new ArrayList<>();

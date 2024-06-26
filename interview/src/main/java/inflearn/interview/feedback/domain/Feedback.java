@@ -1,6 +1,6 @@
 package inflearn.interview.feedback.domain;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.video.domain.Video;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +27,7 @@ public class Feedback {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity userEntity;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

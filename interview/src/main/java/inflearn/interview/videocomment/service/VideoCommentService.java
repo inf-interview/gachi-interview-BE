@@ -1,14 +1,13 @@
 package inflearn.interview.videocomment.service;
 
 import inflearn.interview.fcm.service.FcmTokenService;
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.videocomment.domain.VideoComment;
 import inflearn.interview.postcomment.domain.PostCommentDTO;
 import inflearn.interview.videocomment.domain.VideoCommentDTO;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.common.exception.RequestDeniedException;
-import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.video.service.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,18 +48,18 @@ public class VideoCommentService {
 
     public void addComment(Long videoId, VideoCommentDTO comment) {
         VideoComment videoComment = new VideoComment();
-        User user = userRepository.findById(comment.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        UserEntity userEntity = userRepository.findById(comment.getUserId()).orElseThrow(OptionalNotFoundException::new);
         Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
-        videoComment.setUser(user);
+        videoComment.setUserEntity(userEntity);
         videoComment.setVideo(video);
         videoComment.setTime(LocalDateTime.now());
         videoComment.setContent(comment.getContent());
 
         VideoComment saved = commentRepository.save(videoComment);
 
-        if (!(video.getUser().getUserId().equals(comment.getUserId()))) {
+        if (!(video.getUserEntity().getUserId().equals(comment.getUserId()))) {
             try {
-                fcmTokenService.commentSendNotification(saved.getVideo().getUser().getUserId(), saved.getVideo().getVideoTitle(), saved.getUser().getName());
+                fcmTokenService.commentSendNotification(saved.getVideo().getUserEntity().getUserId(), saved.getVideo().getVideoTitle(), saved.getUserEntity().getName());
             } catch (Exception e) {
                 log.error("VideoComment 알림 전송 실패 = {}", e.getMessage());
             }
@@ -70,7 +69,7 @@ public class VideoCommentService {
 
     public void editComment(Long commentId, VideoCommentDTO videoCommentDTO) {
         VideoComment target = commentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
-        if (target.getUser().getUserId().equals(videoCommentDTO.getUserId())) {
+        if (target.getUserEntity().getUserId().equals(videoCommentDTO.getUserId())) {
             target.setUpdatedTime(LocalDateTime.now());
             target.setContent(videoCommentDTO.getContent());
         } else {
@@ -80,7 +79,7 @@ public class VideoCommentService {
 
     public void deleteComment(Long commentId, VideoCommentDTO videoCommentDTO) {
         VideoComment target = commentRepository.findById(commentId).orElseThrow(OptionalNotFoundException::new);
-        if (target.getUser().getUserId().equals(videoCommentDTO.getUserId())) {
+        if (target.getUserEntity().getUserId().equals(videoCommentDTO.getUserId())) {
             commentRepository.deleteById(commentId);
         } else {
             throw new RequestDeniedException();

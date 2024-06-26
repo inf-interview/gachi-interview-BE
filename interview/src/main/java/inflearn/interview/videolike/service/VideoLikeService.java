@@ -1,12 +1,11 @@
 package inflearn.interview.videolike.service;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.common.domain.LikeDTO;
 import inflearn.interview.video.domain.VideoDTO2;
 import inflearn.interview.common.exception.OptionalNotFoundException;
-import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.video.service.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,12 +24,12 @@ public class VideoLikeService {
 
     public LikeDTO addLike(Long video_id, VideoDTO2 videoDTO2){
         Video video = videoRepository.findById(video_id).orElseThrow(OptionalNotFoundException::new);
-        User user = userRepository.findById(videoDTO2.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(user, video);
+        UserEntity userEntity = userRepository.findById(videoDTO2.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(userEntity, video);
         if(getLike.isEmpty()){
             VideoLike videoLike = new VideoLike();
             videoLike.setVideo(video);
-            videoLike.setUser(user);
+            videoLike.setUserEntity(userEntity);
             videoLike.setTime(LocalDateTime.now());
             video.setNumOfLike(video.getNumOfLike() + 1);
 

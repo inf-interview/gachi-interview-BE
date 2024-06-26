@@ -1,7 +1,7 @@
 package inflearn.interview.workbook.domain;
 
 import inflearn.interview.question.domain.Question;
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class Workbook {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity userEntity;
 
     @OneToMany(mappedBy = "workbook", cascade = CascadeType.REMOVE)
     private List<Question> questions;
@@ -35,8 +35,8 @@ public class Workbook {
 
     private LocalDateTime updatedAt;
 
-    public Workbook(User user, String title) {
-        this.user = user;
+    public Workbook(UserEntity userEntity, String title) {
+        this.userEntity = userEntity;
         this.title = title;
         this.numOfQuestion = 0;
         this.createdAt = LocalDateTime.now();

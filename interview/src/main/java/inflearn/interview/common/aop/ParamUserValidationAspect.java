@@ -1,6 +1,6 @@
 package inflearn.interview.common.aop;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.exception.UserValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +26,10 @@ public class ParamUserValidationAspect {
     public void validate(Long userId) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User getUser = (User) authentication.getPrincipal();
+        UserEntity getUserEntity = (UserEntity) authentication.getPrincipal();
 
-        if (userId == null || !userId.equals(getUser.getUserId())) {
-            log.info("Param 유저 검증 실패, User={}, Path={}", getUser.getName(), request.getRequestURI());
+        if (userId == null || !userId.equals(getUserEntity.getUserId())) {
+            log.info("Param 유저 검증 실패, User={}, Path={}", getUserEntity.getName(), request.getRequestURI());
             throw new UserValidationException("유저 검증에 실패하였습니다.", request.getRequestURI());
         }
 

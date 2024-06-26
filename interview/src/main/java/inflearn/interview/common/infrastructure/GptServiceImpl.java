@@ -7,13 +7,12 @@ import inflearn.interview.common.service.GptService;
 import inflearn.interview.feedback.domain.FeedbackDTO;
 import inflearn.interview.feedback.service.FeedbackRepository;
 import inflearn.interview.question.service.QuestionRepository;
-import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.video.service.VideoRepository;
 import inflearn.interview.videocomment.service.VideoCommentService;
 import inflearn.interview.videocomment.domain.VideoCommentDTO;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.feedback.domain.Feedback;
-import inflearn.interview.user.domain.User;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
@@ -58,16 +57,16 @@ public class GptServiceImpl implements GptService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
+    public void GPTFeedback(Long videoId, UserEntity userEntity, FeedbackDTO dto) throws JsonProcessingException {
 
         if (dto.getContent().isEmpty()) {
             sendFailComment(videoId);
             return;
         }
 
-        if (callCountService.getInterviewCount(user.getUserId()) < INTERVIEW_MAX_COUNT) {
+        if (callCountService.getInterviewCount(userEntity.getUserId()) < INTERVIEW_MAX_COUNT) {
 
-            callCountService.plusInterviewCallCount(user.getUserId());
+            callCountService.plusInterviewCallCount(userEntity.getUserId());
 
             Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
             List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
@@ -215,7 +214,7 @@ public class GptServiceImpl implements GptService {
 
     private void sendCompleteComment(String result, Long videoId) {
         VideoCommentDTO videoCommentDTO = new VideoCommentDTO();
-        User admin = userRepository.findAdmin("ADMIN");
+        UserEntity admin = userRepository.findAdmin("ADMIN");
         videoCommentDTO.setUserId(admin.getUserId());
         videoCommentDTO.setContent(result);
         videoCommentService.addComment(videoId, videoCommentDTO);
@@ -223,7 +222,7 @@ public class GptServiceImpl implements GptService {
 
     private void sendFailComment(Long videoId) {
         VideoCommentDTO videoCommentDTO = new VideoCommentDTO();
-        User admin = userRepository.findAdmin("ADMIN");
+        UserEntity admin = userRepository.findAdmin("ADMIN");
         videoCommentDTO.setUserId(admin.getUserId());
         String failMessage1 = "올바른 영상이 제공되지 않았습니다. 피드백을 받기 위해 더 긴 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
         String failMessage2 = "음성 입력이 제대로 되지 않았습니다. 음성이 명확하게 들리는 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
@@ -245,8 +244,8 @@ public class GptServiceImpl implements GptService {
     }
 
     public List<Feedback> getFeedbacks(Long userId) {
-        User findUser = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        List<Video> findVideos = videoRepository.findByUser_UserId(findUser.getUserId());
+        UserEntity findUserEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        List<Video> findVideos = videoRepository.findByUser_UserId(findUserEntity.getUserId());
         List<Feedback> feedbacks = new ArrayList<>();
         for (Video video : findVideos) {
             feedbacks.addAll(feedbackRepository.findByVideo(videoRepository.findById(video.getVideoId()).orElseThrow(OptionalNotFoundException::new)));

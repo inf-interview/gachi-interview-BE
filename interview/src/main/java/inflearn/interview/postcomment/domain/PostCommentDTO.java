@@ -40,8 +40,8 @@ public class PostCommentDTO implements BaseDTO {
 
     public PostCommentDTO(PostComment postComment) {
         this.commentId = postComment.getPostCommentId();
-        this.userId = postComment.getUser().getUserId();
-        this.username = postComment.getUser().getName();
+        this.userId = postComment.getUserEntity().getUserId();
+        this.username = postComment.getUserEntity().getName();
         this.content = postComment.getContent();
         this.postId = postComment.getPost().getPostId();
         this.category = postComment.getPost().getCategory();
@@ -49,9 +49,9 @@ public class PostCommentDTO implements BaseDTO {
 
     public PostCommentDTO(VideoComment videoComment) {
         this.commentId = videoComment.getId();
-        this.userId = videoComment.getUser().getUserId();
-        this.username = videoComment.getUser().getName();
-        this.image = videoComment.getUser().getImage();
+        this.userId = videoComment.getUserEntity().getUserId();
+        this.username = videoComment.getUserEntity().getName();
+        this.image = videoComment.getUserEntity().getImage();
         this.content = videoComment.getContent();
         this.createdAt = videoComment.getTime();
     }

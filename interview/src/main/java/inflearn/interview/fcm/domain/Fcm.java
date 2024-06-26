@@ -1,6 +1,6 @@
 package inflearn.interview.fcm.domain;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,5 +22,5 @@ public class Fcm {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    User user;
+    UserEntity userEntity;
 }

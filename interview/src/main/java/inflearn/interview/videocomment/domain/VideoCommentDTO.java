@@ -32,9 +32,9 @@ public class VideoCommentDTO implements BaseDTO {
 
     public VideoCommentDTO(VideoComment videoComment) {
         this.commentId = videoComment.getId();
-        this.userId = videoComment.getUser().getUserId();
+        this.userId = videoComment.getUserEntity().getUserId();
         this.videoId = videoComment.getVideo().getVideoId();
-        this.userName = videoComment.getUser().getName();
+        this.userName = videoComment.getUserEntity().getName();
         this.content = videoComment.getContent();
     }
 

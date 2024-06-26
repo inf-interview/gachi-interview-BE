@@ -1,11 +1,11 @@
 package inflearn.interview.user.controller;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.fcm.domain.FcmTokenDTO;
-import inflearn.interview.user.domain.LoginResponse;
-import inflearn.interview.user.service.AuthenticationService;
-import inflearn.interview.fcm.service.FcmTokenService;
+import inflearn.interview.user.controller.response.LoginResponse;
+import inflearn.interview.user.service.LoginService;
 import inflearn.interview.user.service.UserService;
+import inflearn.interview.fcm.service.FcmTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ import java.io.IOException;
 public class LoginController {
 
     private final UserService userService;
-    private final AuthenticationService authenticationService;
     private final FcmTokenService fcmTokenService;
+    private final LoginService loginService;
 
     @Value("${spring.kakao.client_id}")
     private String kakaoClientId;
@@ -46,9 +46,9 @@ public class LoginController {
     public ResponseEntity<LoginResponse> kakaoGetInfo(@RequestParam String code, HttpServletRequest request) {
         String isLocal = kakaoCheckLocal(request);
 
-        LoginResponse loginResponse = userService.loginKakao(code, isLocal);
+        LoginResponse loginResponse = loginService.loginKakao(code, isLocal);
 
-        String[] tokens = authenticationService.register(loginResponse.getUserId());
+        String[] tokens = userService.register(loginResponse.getUserId());
 
         loginResponse.setAccessToken(tokens[0]);
         loginResponse.setRefreshToken(tokens[1]);
@@ -69,21 +69,14 @@ public class LoginController {
     public ResponseEntity<LoginResponse> googleGetInfo(@RequestParam String code, HttpServletRequest request) {
         String isLocal = googleCheckLocal(request);
 
-        LoginResponse loginResponse = userService.loginGoogle(code, isLocal);
+        LoginResponse loginResponse = loginService.loginGoogle(code, isLocal);
 
-        String[] tokens = authenticationService.register(loginResponse.getUserId());
+        String[] tokens = userService.register(loginResponse.getUserId());
 
         loginResponse.setAccessToken(tokens[0]);
         loginResponse.setRefreshToken(tokens[1]);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse); // accessToken, refreshToken 반환
-    }
-
-    //fcmToken
-    @PostMapping("/user/fcm/token")
-    public ResponseEntity<?> getFcmToken(@RequestBody FcmTokenDTO tokenDTO, @AuthenticationPrincipal User user) {
-        fcmTokenService.registerToken(user, tokenDTO.getFcmToken());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     private String kakaoCheckLocal(HttpServletRequest request) {

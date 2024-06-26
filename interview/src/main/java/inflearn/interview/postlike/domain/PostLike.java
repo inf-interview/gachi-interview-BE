@@ -1,37 +1,34 @@
 package inflearn.interview.postlike.domain;
 
-import inflearn.interview.user.domain.User;
 import inflearn.interview.post.domain.Post;
-import jakarta.persistence.*;
+import inflearn.interview.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 public class PostLike {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postLikeId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    private Long id;
     private Post post;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     private User user;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
-    public PostLike(Post post, User user) {
+    @Builder
+    public PostLike(Long id, Post post, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.post = post;
         this.user = user;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public PostLike() {
+    public static PostLike from(Post post, User user) {
+        return PostLike.builder()
+                .post(post)
+                .user(user)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }

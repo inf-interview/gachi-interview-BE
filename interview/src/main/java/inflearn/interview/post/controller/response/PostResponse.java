@@ -1,7 +1,8 @@
-package inflearn.interview.post.domain;
+package inflearn.interview.post.controller.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import inflearn.interview.common.domain.BaseDTO;
+import inflearn.interview.post.domain.Post;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PostDTO implements BaseDTO {
+public class PostResponse implements BaseDTO {
 
     public interface valid1{} // create, update
     public interface valid2{} // delete, like
@@ -47,9 +48,9 @@ public class PostDTO implements BaseDTO {
     private boolean isLiked;
 
 
-    public PostDTO(Post post, Long commentCount) {
-        this.userId = post.getUser().getUserId();
-        this.userName = post.getUser().getName();
+    public PostResponse(Post post, Long commentCount) {
+        this.userId = post.getUserEntity().getUserId();
+        this.userName = post.getUserEntity().getName();
         this.postId = post.getPostId();
         this.postTitle = post.getTitle();
         this.category = post.getCategory();
@@ -61,11 +62,11 @@ public class PostDTO implements BaseDTO {
         this.time = post.getCreatedAt();
         this.updateTime = post.getUpdatedAt();
         this.numOfComment = Math.toIntExact(commentCount);
-        this.image = post.getUser().getImage();
+        this.image = post.getUserEntity().getImage();
     }
 
     @QueryProjection
-    public PostDTO(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, Long numOfComment, String tag, String image) {
+    public PostResponse(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, Long numOfComment, String tag, String image) {
         this.userId = userId;
         this.userName = userName;
         this.postId = postId;
@@ -82,7 +83,7 @@ public class PostDTO implements BaseDTO {
         this.image = image;
     }
 
-    public PostDTO() {
+    public PostResponse() {
     }
 
     private String[] entityToDtoTagConverter(String tag) {

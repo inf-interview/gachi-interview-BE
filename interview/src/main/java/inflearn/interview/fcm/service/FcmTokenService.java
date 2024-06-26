@@ -7,6 +7,7 @@ import com.google.firebase.messaging.Notification;
 import inflearn.interview.fcm.domain.Fcm;
 import inflearn.interview.notice.domain.Notice;
 import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.notice.service.NoticeRepository;
 import inflearn.interview.user.service.UserRepository;
@@ -24,7 +25,7 @@ import java.util.Optional;
 @Slf4j
 public class FcmTokenService {
 
-    private final FCMRepository fcmRepository;
+    private final FcmRepository fcmRepository;
     private final UserRepository userRepository;
     private final NoticeRepository noticeRepository;
 
@@ -32,17 +33,18 @@ public class FcmTokenService {
         Optional<Fcm> getUser = fcmRepository.findByUser(user);
         if (getUser.isEmpty()) {
             Fcm fcm = new Fcm();
-            fcm.setUser(user);
+            fcm.setUserEntity(UserEntity.fromModel(user));
             fcm.setFcmToken(token);
             fcmRepository.save(fcm);
         } else {
             Fcm fcm = getUser.get();
             fcm.setFcmToken(token);
+            fcmRepository.save(fcm);
         }
     }
 
     private String getTokenByUserId(Long userId) {
-        return fcmRepository.findByUserUserId(userId)
+        return fcmRepository.findByUserId(userId)
                 .map(Fcm::getFcmToken)
                 .orElse(null);
     }

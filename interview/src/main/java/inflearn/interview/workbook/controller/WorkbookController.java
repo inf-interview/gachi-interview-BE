@@ -2,7 +2,7 @@ package inflearn.interview.workbook.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.common.aop.ValidateUser;
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.question.domain.QuestionRequestDTO;
 import inflearn.interview.question.domain.QuestionResponseDTO;
 import inflearn.interview.workbook.domain.WorkbookRequestDTO;
@@ -26,8 +26,8 @@ public class WorkbookController {
     private final WorkbookService workbookService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<WorkbookResponseDTO>> getWorkbookList(@AuthenticationPrincipal User user) {
-        List<WorkbookResponseDTO> workbooks = workbookService.getWorkbooks(user).stream()
+    public ResponseEntity<List<WorkbookResponseDTO>> getWorkbookList(@AuthenticationPrincipal UserEntity userEntity) {
+        List<WorkbookResponseDTO> workbooks = workbookService.getWorkbooks(userEntity).stream()
                 .map(WorkbookResponseDTO::new).collect(Collectors.toList());
 
         return new ResponseEntity<>(workbooks, HttpStatus.OK);

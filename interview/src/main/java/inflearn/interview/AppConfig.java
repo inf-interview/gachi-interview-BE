@@ -1,7 +1,6 @@
 package inflearn.interview;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.user.service.CustomUserDetailsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

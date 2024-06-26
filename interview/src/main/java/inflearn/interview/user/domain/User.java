@@ -1,70 +1,77 @@
 package inflearn.interview.user.domain;
 
-import inflearn.interview.video.domain.Video;
-import inflearn.interview.videocomment.domain.VideoComment;
-import inflearn.interview.videolike.domain.VideoLike;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Getter
-@Setter
-@Entity
-@Table(name = "user_table")
 public class User implements UserDetails {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long userId;
 
-    @NotNull
-    String name;
-
-    @Email
-    String email;
-
-    @NotNull
-    String social;
-
-    @NotNull
-    @Column(name = "created_at")
-    LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    LocalDateTime updatedAt;
-
+    private Long id;
+    private String name;
+    private String email;
+    private String social;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String image;
-
     private String refreshToken;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Video> videos = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<VideoComment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<VideoLike> likes = new ArrayList<>();
-
     private String role;
-
-    private Integer questionGptCallCount = 0;
-
-    private Integer interviewGptCallCount = 0;
-
+    private Integer questionGptCallCount;
+    private Integer interviewGptCallCount;
     private LocalDateTime questionGptCallTime;
-
     private LocalDateTime interviewGptCallTime;
+
+    @Builder
+    public User(Long id, String name, String email, String social, LocalDateTime createdAt, LocalDateTime updatedAt, String image, String refreshToken, String role, Integer questionGptCallCount, Integer interviewGptCallCount, LocalDateTime questionGptCallTime, LocalDateTime interviewGptCallTime) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.social = social;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.image = image;
+        this.refreshToken = refreshToken;
+        this.role = role;
+        this.questionGptCallCount = questionGptCallCount;
+        this.interviewGptCallCount = interviewGptCallCount;
+        this.questionGptCallTime = questionGptCallTime;
+        this.interviewGptCallTime = interviewGptCallTime;
+    }
+
+    public static User from(UserCreate userCreate) {
+        return User.builder()
+                .name(userCreate.getName())
+                .email(userCreate.getEmail())
+                .social(userCreate.getSocial())
+                .createdAt(LocalDateTime.now())
+                .image(userCreate.getImage())
+                .role(userCreate.getRole())
+                .build();
+    }
+
+    public User setRefreshToken(String refreshToken) {
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .social(social)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .image(image)
+                .refreshToken(refreshToken)
+                .role(role)
+                .questionGptCallCount(questionGptCallCount)
+                .interviewGptCallCount(interviewGptCallCount)
+                .questionGptCallTime(questionGptCallTime)
+                .interviewGptCallTime(interviewGptCallTime)
+                .build();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -78,26 +85,26 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userId.toString();
+        return id.toString();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
     }
 }

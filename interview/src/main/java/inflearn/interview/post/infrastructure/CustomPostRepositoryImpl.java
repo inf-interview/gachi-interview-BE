@@ -3,7 +3,7 @@ package inflearn.interview.post.infrastructure;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import inflearn.interview.post.domain.PostDTO;
+import inflearn.interview.post.controller.response.PostResponse;
 import inflearn.interview.domain.dto.QPostDTO;
 import inflearn.interview.post.service.CustomPostRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +26,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     @Override
-    public Page<PostDTO> findAllPostByPageInfo(String sortType, String category, String keyword, Pageable pageable) {
+    public Page<PostResponse> findAllPostByPageInfo(String sortType, String category, String keyword, Pageable pageable) {
 
-        List<PostDTO> result = jpaQueryFactory
+        List<PostResponse> result = jpaQueryFactory
                 .select(new QPostDTO(
                         post.user.userId,
                         post.user.name,

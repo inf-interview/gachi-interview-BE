@@ -1,12 +1,17 @@
 package inflearn.interview.post.service;
 
+import inflearn.interview.post.domain.PostCreate;
 import inflearn.interview.post.domain.Post;
+import inflearn.interview.post.controller.response.PostResponse;
+import inflearn.interview.post.domain.PostDelete;
+import inflearn.interview.post.domain.PostUpdate;
+import inflearn.interview.postlike.controller.response.LikeResponse;
 import inflearn.interview.postlike.domain.PostLike;
+import inflearn.interview.postlike.domain.PostLikeRequest;
+import inflearn.interview.postlike.infrastructure.PostLikeEntity;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.common.domain.LikeDTO;
-import inflearn.interview.post.domain.PostDTO;
 import inflearn.interview.common.exception.OptionalNotFoundException;
-import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.postlike.service.PostLikeRepository;
 import inflearn.interview.user.service.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,98 +29,69 @@ import java.util.Optional;
 @Slf4j
 public class PostService {
 
+    private final CustomPostRepository customPostRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
 
-
-    public Page<PostDTO> getAllPost(String sortType, String category, String keyword, int page) {
-        PageRequest pageRequest = PageRequest.of(page - 1, 12);
-        return postRepository.findAllPostByPageInfo(sortType, category, keyword, pageRequest);
+    private Post getById(Long id) {
+        return postRepository.findById(id).orElseThrow(OptionalNotFoundException::new);
     }
 
-    public PostDTO getPostById(Long postId, Long userId) {
-        PostDTO postDTO = postRepository.findPostByPostId(postId).orElseThrow(OptionalNotFoundException::new);
-        Optional<PostLike> postLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId);
+    public Page<PostResponse> getAllPost(String sortType, String category, String keyword, int page) {
+        PageRequest pageRequest = PageRequest.of(page - 1, 12);
+        return customPostRepository.findAllPostByPageInfo(sortType, category, keyword, pageRequest);
+    }
+
+    public PostResponse getPostDetail(Long postId, Long userId) { // TODO 다른 부분 고치고와서 고쳐야함
+        Post post = getById(postId);
+        Optional<PostLike> postLike = postLikeRepository.findPostLike(userId, postId);
         if (postLike.isEmpty()) {
-            postDTO.setLiked(false);
+            postResponse.setLiked(false);
         } else {
-            postDTO.setLiked(true);
+            postResponse.setLiked(true);
         }
-        return postDTO;
+        return postResponse;
     }
     //게시글 생성
 
-    public PostDTO createPost(PostDTO postDTO) {
-        User findUser = userRepository.findById(postDTO.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        Post post = new Post(findUser, postDTO.getPostTitle(), postDTO.getContent(), DtoToEntityTagConverter(postDTO.getTag()), postDTO.getCategory());
-        postRepository.save(post);
-        postDTO.setUserId(findUser.getUserId());
-        postDTO.setPostId(post.getPostId());
-        postDTO.setTime(post.getCreatedAt());
-        return postDTO;
+    public Post create(PostCreate postCreate) {
+        User user = userRepository.findById(postCreate.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        Post post = Post.from(user, postCreate);
+        return postRepository.save(post);
     }
 
-    public PostDTO updatePost(Long postId, PostDTO postDTO) {
-        Post findPost = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
-        if (postDTO.getUserId().equals(findPost.getUser().getUserId())) {
-            findPost.setTitle(postDTO.getPostTitle());
-            findPost.setCategory(postDTO.getCategory());
-            findPost.setTag(DtoToEntityTagConverter(postDTO.getTag()));
-            findPost.setContent(postDTO.getContent());
-            postDTO.setPostId(findPost.getPostId());
-            return postDTO;
+    public Post update(Long postId, PostUpdate postUpdate) {
+        Post post = getById(postId);
+        post = post.update(postUpdate);
+        return postRepository.save(post);
+    }
+
+    public void deletePost(PostDelete postDelete) {
+        Post post = getById(postDelete.getPostId());
+        postRepository.delete(post);
+    }
+
+    public LikeResponse likePost(PostLikeRequest postLikeRequest) { // like 처리는 그대로 사용
+        Post post = getById(postLikeRequest.getPostId());
+        User user = userRepository.findById(postLikeRequest.getUserId()).orElseThrow(OptionalNotFoundException::new);
+
+        Optional<PostLike> postLike = postLikeRepository.findPostLike(postLikeRequest.getUserId(), postLikeRequest.getPostId());
+
+        if (postLike.isEmpty()) {
+            PostLike like = PostLike.from(post, user);
+            postLikeRepository.save(like);
+            Post likedPost = post.plusLike();
+            postRepository.save(likedPost);
+
+            return LikeResponse.from(true, likedPost);
         } else {
-            throw new RequestDeniedException();
-        }
-    }
+            postLikeRepository.delete(postLike.get());
+            Post unLikedPost = post.minusLike();
+            postRepository.save(unLikedPost);
 
-    public void deletePost(Long postId, Long userId) {
-        //유저가 작성한 포스트인지 체크
-        Post post = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
-
-        if (!(post.getUser().getUserId()).equals(userId)) {
-            throw new RequestDeniedException();
-        }
-        postRepository.deleteById(postId);
-    }
-
-    public LikeDTO likePost(Long postId, Long userId) {
-        Post findPost = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
-        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-
-        Optional<PostLike> findPostLike = postLikeRepository.findPostLikeByUserIdAndPostId(userId, postId);
-
-        if (findPostLike.isEmpty()) {
-            //없으므로 새로 생성
-            PostLike postLike = new PostLike(findPost, user);
-            postLikeRepository.save(postLike);
-            findPost.setNumOfLike(findPost.getNumOfLike() + 1);
-            return new LikeDTO(findPost.getNumOfLike(), true);
-        } else {
-            //있던것 삭제
-            postLikeRepository.delete(findPostLike.get());
-            findPost.setNumOfLike(findPost.getNumOfLike() - 1);
-            return new LikeDTO(findPost.getNumOfLike(), false);
+            return LikeResponse.from(false, unLikedPost);
         }
 
-
-
-        //유저 정보, postId를 이용하여 이미 like가 있는지 확인
-
-        //없을 경우 새로 생성 -> 좋아요 생성
-        //있을 경우 삭제 -> 좋아요 취소
-    }
-
-    private String DtoToEntityTagConverter(String[] tags) {
-        if (tags != null) {
-            StringBuilder tagMaker = new StringBuilder();
-            for (String tag : tags) {
-                tagMaker.append(tag).append(".");
-            }
-            return tagMaker.toString();
-        } else {
-            return null;
-        }
     }
 }

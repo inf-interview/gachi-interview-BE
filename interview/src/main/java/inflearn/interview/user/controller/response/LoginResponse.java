@@ -1,4 +1,4 @@
-package inflearn.interview.user.domain;
+package inflearn.interview.user.controller.response;
 
 import lombok.Getter;
 import lombok.Setter;

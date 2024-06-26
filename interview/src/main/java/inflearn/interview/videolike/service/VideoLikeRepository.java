@@ -1,6 +1,6 @@
 package inflearn.interview.videolike.service;
 
-import inflearn.interview.user.domain.User;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.videolike.domain.VideoLike;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface VideoLikeRepository extends JpaRepository<VideoLike, Long> {
-    void deleteByUserAndVideo(User user, Video video);
+    void deleteByUserAndVideo(UserEntity userEntity, Video video);
 
-    Optional<VideoLike> findByUserAndVideo(User user, Video video);
+    Optional<VideoLike> findByUserAndVideo(UserEntity userEntity, Video video);
 
     Long countAllByVideo(Video video);
 

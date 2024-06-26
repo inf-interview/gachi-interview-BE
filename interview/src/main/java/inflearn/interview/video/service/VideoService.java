@@ -2,12 +2,11 @@ package inflearn.interview.video.service;
 
 import inflearn.interview.common.service.S3Service;
 import inflearn.interview.question.service.QuestionRepository;
-import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.video.domain.VideoDTO2;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.question.domain.Question;
-import inflearn.interview.user.domain.User;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videolike.service.VideoLikeRepository;
@@ -34,20 +33,20 @@ public class VideoService {
     private final QuestionRepository questionRepository;
     private final S3Service s3Service;
 
-    public VideoDTO2 getVideoById(Long videoId, User user){
+    public VideoDTO2 getVideoById(Long videoId, UserEntity userEntity){
 
         Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
         if (video.getExposure()) {
             VideoDTO2 videoDTO = new VideoDTO2(video);
 
-            Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(user, video);
+            Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(userEntity, video);
             videoDTO.setLiked(vl.isPresent());
             return videoDTO;
         } else {
-            if (user.getUserId().equals(video.getUser().getUserId())) {
+            if (userEntity.getUserId().equals(video.getUserEntity().getUserId())) {
                 VideoDTO2 videoDTO = new VideoDTO2(video);
 
-                Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(user, video);
+                Optional<VideoLike> vl = videoLikeRepository.findByUserAndVideo(userEntity, video);
                 videoDTO.setLiked(vl.isPresent());
                 return videoDTO;
             }
@@ -57,7 +56,7 @@ public class VideoService {
 
     public void updateVideo(Long videoId, VideoDTO2 updatedVideo){
         Video originalVideo = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
-        if (originalVideo.getUser().getUserId().equals(updatedVideo.getUserId())) {
+        if (originalVideo.getUserEntity().getUserId().equals(updatedVideo.getUserId())) {
             originalVideo.setExposure(updatedVideo.isExposure());
             originalVideo.setVideoTitle(updatedVideo.getVideoTitle());
             originalVideo.setTag(dtoToEntityConverter(updatedVideo.getTags()));
@@ -68,7 +67,7 @@ public class VideoService {
 
     public void deleteVideo(Long videoId, VideoDTO2 video){
         Video originalVideo = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
-        if (originalVideo.getUser().getUserId().equals(video.getUserId())) {
+        if (originalVideo.getUserEntity().getUserId().equals(video.getUserId())) {
             s3Service.deleteVideo(originalVideo.getVideoLink(), originalVideo.getThumbnailLink());
             videoRepository.deleteById(videoId);
         } else {
@@ -93,9 +92,9 @@ public class VideoService {
 
 
     public Long completeVideo(VideoDTO2 videoDTO) {
-        User user = userRepository.findById(videoDTO.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        UserEntity userEntity = userRepository.findById(videoDTO.getUserId()).orElseThrow(OptionalNotFoundException::new);
         Video video = new Video();
-        video.setUser(user);
+        video.setUserEntity(userEntity);
         video.setExposure(videoDTO.isExposure());
         video.setVideoLink(videoDTO.getVideoLink());
         video.setVideoTitle(videoDTO.getVideoTitle());
