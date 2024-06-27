@@ -105,13 +105,13 @@ public class GptCallCountService {
         if (user.getInterviewGptCallTime() == null) {
             return true;
         }
-        return user.getInterviewGptCallTime().isAfter(user.getInterviewGptCallTime().plusDays(1));
+        return LocalDateTime.now().isAfter(user.getInterviewGptCallTime().plusDays(1));
     }
 
     private boolean isQuestionTimeAfter(User user) {
         if (user.getQuestionGptCallTime() == null) {
             return true;
         }
-        return user.getQuestionGptCallTime().isAfter(user.getQuestionGptCallTime().plusDays(1));
+        return LocalDateTime.now().isAfter(user.getQuestionGptCallTime().plusDays(1));
     }
 }
