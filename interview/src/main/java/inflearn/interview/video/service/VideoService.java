@@ -3,15 +3,13 @@ package inflearn.interview.video.service;
 import inflearn.interview.common.service.S3Service;
 import inflearn.interview.question.service.QuestionRepository;
 import inflearn.interview.user.domain.User;
-import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.question.domain.Question;
-import inflearn.interview.video.infrastructure.VideoEntity;
-import inflearn.interview.videolike.domain.VideoLike;
+import inflearn.interview.videolike.infrastructure.VideoLikeEntity;
 import inflearn.interview.videolike.service.VideoLikeRepository;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
@@ -43,12 +41,12 @@ public class VideoService {
 
         Video video = getById(videoId);
         if (video.getExposure()) {
-            Optional<VideoLike> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
+            Optional<VideoLikeEntity> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
             return VideoDetailResponse.from(video, user, videoLike.isPresent());
         }
         else {
             if (user.equals(video.getUser())) {
-                Optional<VideoLike> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
+                Optional<VideoLikeEntity> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
                 return VideoDetailResponse.from(video, user, videoLike.isPresent());
             }
             throw new RequestDeniedException();

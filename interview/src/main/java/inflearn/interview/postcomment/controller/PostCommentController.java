@@ -4,14 +4,12 @@ import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.postcomment.controller.response.PostCommentCreateResponse;
 import inflearn.interview.postcomment.controller.response.PostCommentListResponse;
 import inflearn.interview.postcomment.domain.PostCommentCreate;
-import inflearn.interview.postcomment.domain.PostCommentDTO;
 import inflearn.interview.postcomment.domain.PostCommentDelete;
 import inflearn.interview.postcomment.domain.PostCommentUpdate;
 import inflearn.interview.postcomment.service.PostCommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

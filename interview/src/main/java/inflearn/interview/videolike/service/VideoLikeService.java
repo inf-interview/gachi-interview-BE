@@ -1,17 +1,17 @@
 package inflearn.interview.videolike.service;
 
-import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.video.infrastructure.VideoEntity;
+import inflearn.interview.user.domain.User;
+import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.video.domain.Video;
+import inflearn.interview.videolike.controller.response.LikeResponse;
 import inflearn.interview.videolike.domain.VideoLike;
-import inflearn.interview.common.domain.LikeDTO;
-import inflearn.interview.video.domain.VideoDTO2;
+import inflearn.interview.videolike.domain.VideoLikeRequest;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.video.service.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -22,25 +22,24 @@ public class VideoLikeService {
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
 
-    public LikeDTO addLike(Long video_id, VideoDTO2 videoDTO2){
-        VideoEntity videoEntity = videoRepository.findById(video_id).orElseThrow(OptionalNotFoundException::new);
-        UserEntity userEntity = userRepository.findById(videoDTO2.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(userEntity, videoEntity);
-        if(getLike.isEmpty()){
-            VideoLike videoLike = new VideoLike();
-            videoLike.setVideoEntity(videoEntity);
-            videoLike.setUserEntity(userEntity);
-            videoLike.setTime(LocalDateTime.now());
-            videoEntity.setNumOfLike(videoEntity.getNumOfLike() + 1);
+    public LikeResponse addLike(VideoLikeRequest videoLikeRequest){
+        Video video = videoRepository.findById(videoLikeRequest.getVideoId()).orElseThrow(OptionalNotFoundException::new);
+        User user = userRepository.findById(videoLikeRequest.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(user, video);
 
+        if (getLike.isEmpty()) {
+            VideoLike videoLike = VideoLike.from(user, video);
             videoLikeRepository.save(videoLike);
-            return new LikeDTO(videoEntity.getNumOfLike(), true);
-        }
-        else{
-            VideoLike videoLike = getLike.get();
-            videoLikeRepository.delete(videoLike);
-            videoEntity.setNumOfLike(videoEntity.getNumOfLike() - 1);
-            return new LikeDTO(videoEntity.getNumOfLike(), false);
+            Video likedVideo = video.plusLike();
+            videoRepository.save(likedVideo);
+            return LikeResponse.from(true, likedVideo);
+
+        } else {
+            videoLikeRepository.delete(getLike.get());
+            Video unLikedVideo = video.minusLike();
+            videoRepository.save(unLikedVideo);
+
+            return LikeResponse.from(false, unLikedVideo);
         }
 
     }

@@ -5,11 +5,11 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import inflearn.interview.fcm.domain.Fcm;
-import inflearn.interview.notice.domain.Notice;
+import inflearn.interview.notice.infrastructure.Notice;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.exception.OptionalNotFoundException;
-import inflearn.interview.notice.service.NoticeRepository;
+import inflearn.interview.notice.infrastructure.NoticeRepository;
 import inflearn.interview.user.service.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +60,7 @@ public class FcmTokenService {
         sendNotification(token, title, sendBody);
 
         User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        Notice notice = new Notice(user, body);
+        Notice notice = new Notice(UserEntity.fromModel(user), body);
         noticeRepository.save(notice);
     }
 

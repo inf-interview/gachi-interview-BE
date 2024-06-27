@@ -12,6 +12,8 @@ public interface PostCommentJpaRepository extends JpaRepository<PostCommentEntit
     List<PostCommentEntity> findCommentList(@Param("postId") Long postId);
 
     @Query("select pc from PostCommentEntity pc where pc.userEntity.id=:userId")
-    List<PostCommentEntity> findCommentByUserId(@Param("userId") Long userId);
+    List<PostCommentEntity> findMyComment(@Param("userId") Long userId);
 
+    @Query("select count(p.postCommentEntities) from PostEntity p where p.id=:postId")
+    int findCommentCount(@Param("postId") Long postId);
 }

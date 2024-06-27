@@ -5,6 +5,7 @@ import inflearn.interview.common.service.GptCallCountService;
 import inflearn.interview.common.service.GptService;
 import inflearn.interview.question.domain.Question;
 import inflearn.interview.user.infrastructure.UserEntity;
+import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.workbook.domain.Workbook;
 import inflearn.interview.question.domain.QuestionRequestDTO;
 import inflearn.interview.workbook.domain.WorkbookRequestDTO;

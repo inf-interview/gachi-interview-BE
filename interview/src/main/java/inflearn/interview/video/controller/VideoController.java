@@ -2,14 +2,14 @@ package inflearn.interview.video.controller;
 
 import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.user.domain.User;
-import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.domain.ErrorResponse;
-import inflearn.interview.common.domain.LikeDTO;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.VideoDTO2;
 import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.video.domain.VideoDelete;
 import inflearn.interview.video.domain.VideoUpdate;
+import inflearn.interview.videolike.controller.response.LikeResponse;
+import inflearn.interview.videolike.domain.VideoLikeRequest;
 import inflearn.interview.videolike.service.VideoLikeService;
 import inflearn.interview.video.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -54,14 +53,10 @@ public class VideoController {
 
     @ValidateUser
     @PostMapping("/{video_id}/like")
-    public ResponseEntity<LikeDTO> likeVideoController(@PathVariable Long video_id, @RequestBody @Validated(VideoDTO2.like.class) VideoDTO2 video) {
-        LikeDTO likeDTO = videoLikeService.addLike(video_id, video);
-        return ResponseEntity.status(HttpStatus.CREATED).body(likeDTO);
+    public ResponseEntity<LikeResponse> likeVideoController(@PathVariable Long video_id, @RequestBody VideoLikeRequest videoLikeRequest) {
+        LikeResponse response = videoLikeService.addLike(videoLikeRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-    /**
-     * 페이징이랑 sortType맞춰서 수정
-     */
 
     @GetMapping("/list")
     public Page<VideoDTO2> videoListController(@RequestParam(defaultValue = "1") int page,

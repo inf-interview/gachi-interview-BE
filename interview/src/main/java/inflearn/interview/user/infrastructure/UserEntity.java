@@ -3,7 +3,7 @@ package inflearn.interview.user.infrastructure;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
-import inflearn.interview.videolike.domain.VideoLike;
+import inflearn.interview.videolike.infrastructure.VideoLikeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
@@ -48,7 +48,7 @@ public class UserEntity {
     List<VideoCommentEntity> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<VideoLike> likes = new ArrayList<>();
+    List<VideoLikeEntity> likes = new ArrayList<>();
 
     private String role;
 

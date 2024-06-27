@@ -1,11 +1,13 @@
 package inflearn.interview.post.infrastructure;
 
 import inflearn.interview.post.controller.response.PostResponse;
+import inflearn.interview.post.controller.response.MyPostResponse;
 import inflearn.interview.post.domain.Post;
 import inflearn.interview.post.service.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,5 +34,10 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public void delete(Post post) {
         postJpaRepository.delete(PostEntity.fromModel(post));
+    }
+
+    @Override
+    public List<MyPostResponse> findMyPost(Long userId, String category) {
+        return postJpaRepository.findPostByUserId(userId, category);
     }
 }

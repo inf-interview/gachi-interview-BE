@@ -10,4 +10,6 @@ public interface UserRepository {
     User save(User user);
 
     Optional<User> findById(Long id);
+
+    User findWriter(Long postId);
 }

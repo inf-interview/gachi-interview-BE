@@ -1,10 +1,12 @@
 package inflearn.interview.video.infrastructure;
 
+import inflearn.interview.video.controller.response.MyVideoResponse;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.video.service.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,5 +28,10 @@ public class VideoRepositoryImpl implements VideoRepository {
     @Override
     public void delete(Video video) {
         videoJpaRepository.delete(VideoEntity.fromModel(video));
+    }
+
+    @Override
+    public List<MyVideoResponse> findMyVideo(Long userId) {
+        return videoJpaRepository.findVideoByUserId(userId);
     }
 }

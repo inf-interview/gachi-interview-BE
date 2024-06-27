@@ -1,10 +1,12 @@
 package inflearn.interview.post.service;
 
+import inflearn.interview.post.controller.response.PostDetailResponse;
 import inflearn.interview.post.domain.PostCreate;
 import inflearn.interview.post.domain.Post;
 import inflearn.interview.post.controller.response.PostResponse;
 import inflearn.interview.post.domain.PostDelete;
 import inflearn.interview.post.domain.PostUpdate;
+import inflearn.interview.postcomment.service.PostCommentRepository;
 import inflearn.interview.postlike.controller.response.LikeResponse;
 import inflearn.interview.postlike.domain.PostLike;
 import inflearn.interview.postlike.domain.PostLikeRequest;
@@ -33,6 +35,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
+    private final PostCommentRepository postCommentRepository;
 
     private Post getById(Long id) {
         return postRepository.findById(id).orElseThrow(OptionalNotFoundException::new);
@@ -43,15 +46,15 @@ public class PostService {
         return customPostRepository.findAllPostByPageInfo(sortType, category, keyword, pageRequest);
     }
 
-    public PostResponse getPostDetail(Long postId, Long userId) { // TODO 다른 부분 고치고와서 고쳐야함
+    public PostDetailResponse getPostDetail(Long postId, Long userId) {
         Post post = getById(postId);
+        User writer = userRepository.findWriter(postId);
+        int numOfComments = postCommentRepository.getCommentCount(postId);
         Optional<PostLike> postLike = postLikeRepository.findPostLike(userId, postId);
         if (postLike.isEmpty()) {
-            postResponse.setLiked(false);
-        } else {
-            postResponse.setLiked(true);
+            return PostDetailResponse.from(writer, post, numOfComments, false);
         }
-        return postResponse;
+        return PostDetailResponse.from(writer, post, numOfComments, true);
     }
     //게시글 생성
 

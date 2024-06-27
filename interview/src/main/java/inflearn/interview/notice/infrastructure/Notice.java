@@ -1,4 +1,4 @@
-package inflearn.interview.notice.domain;
+package inflearn.interview.notice.infrastructure;
 
 import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
@@ -26,7 +26,5 @@ public class Notice {
     public Notice(UserEntity userEntity, String content) {
         this.userEntity = userEntity;
         this.content = content;
-        this.createdAt = LocalDateTime.now();
     }
-
 }

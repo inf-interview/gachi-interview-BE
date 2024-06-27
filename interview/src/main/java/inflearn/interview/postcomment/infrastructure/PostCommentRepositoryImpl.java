@@ -33,4 +33,14 @@ public class PostCommentRepositoryImpl implements PostCommentRepository {
     public List<PostCommentEntity> findCommentList(Long postId) {
         return postCommentJpaRepository.findCommentList(postId);
     }
+
+    @Override
+    public int getCommentCount(Long postId) {
+        return postCommentJpaRepository.findCommentCount(postId);
+    }
+
+    @Override
+    public List<PostCommentEntity> findMyComment(Long userId) {
+        return postCommentJpaRepository.findMyComment(userId);
+    }
 }

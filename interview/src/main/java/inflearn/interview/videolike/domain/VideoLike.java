@@ -1,36 +1,34 @@
 package inflearn.interview.videolike.domain;
 
-import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.video.infrastructure.VideoEntity;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import inflearn.interview.user.domain.User;
+import inflearn.interview.video.domain.Video;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@Entity
-@Table(name = "video_like")
 public class VideoLike {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
-    Long id;
+    private Long id;
+    private LocalDateTime time;
+    private LocalDateTime updatedTime;
+    private User user;
+    private Video video;
 
-    @Column(name = "created_at")
-    LocalDateTime time;
+    @Builder
+    public VideoLike(Long id, LocalDateTime time, LocalDateTime updatedTime, User user, Video video) {
+        this.id = id;
+        this.time = time;
+        this.updatedTime = updatedTime;
+        this.user = user;
+        this.video = video;
+    }
 
-    @Column(name = "updated_at")
-    LocalDateTime updatedTime;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
-    private VideoEntity videoEntity;
+    public static VideoLike from(User user, Video video) {
+        return VideoLike.builder()
+                .time(LocalDateTime.now())
+                .user(user)
+                .video(video)
+                .build();
+    }
 }

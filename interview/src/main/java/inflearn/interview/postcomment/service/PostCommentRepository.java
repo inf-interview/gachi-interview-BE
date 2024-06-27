@@ -18,4 +18,8 @@ public interface PostCommentRepository {
     void delete(PostComment postComment);
 
     List<PostCommentEntity> findCommentList(Long postId);
+
+    int getCommentCount(Long postId);
+
+    List<PostCommentEntity> findMyComment(Long userId);
 }

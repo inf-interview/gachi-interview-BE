@@ -33,4 +33,9 @@ public class VideoCommentRepositoryImpl implements VideoCommentRepository {
     public List<VideoCommentEntity> findCommentList(Long videoId) {
         return videoCommentJpaRepository.findCommentList(videoId);
     }
+
+    @Override
+    public List<VideoCommentEntity> findMyComment(Long userId) {
+        return videoCommentJpaRepository.findMyComment(userId);
+    }
 }

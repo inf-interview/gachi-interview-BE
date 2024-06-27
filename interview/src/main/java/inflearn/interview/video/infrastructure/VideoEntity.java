@@ -2,7 +2,7 @@ package inflearn.interview.video.infrastructure;
 
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
-import inflearn.interview.videolike.domain.VideoLike;
+import inflearn.interview.videolike.infrastructure.VideoLikeEntity;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
 import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
@@ -55,7 +55,7 @@ public class VideoEntity {
     List<VideoCommentEntity> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
-    List<VideoLike> likes = new ArrayList<>();
+    List<VideoLikeEntity> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
     List<VideoQuestion> videoQuestions = new ArrayList<>();

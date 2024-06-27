@@ -1,6 +1,6 @@
 package inflearn.interview.notice.domain;
 
-import inflearn.interview.notice.domain.Notice;
+import inflearn.interview.notice.infrastructure.Notice;
 import lombok.Getter;
 import lombok.Setter;
 

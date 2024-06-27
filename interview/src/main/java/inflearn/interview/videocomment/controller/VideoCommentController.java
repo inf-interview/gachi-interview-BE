@@ -1,7 +1,6 @@
 package inflearn.interview.videocomment.controller;
 
 import inflearn.interview.common.aop.ValidateUser;
-import inflearn.interview.postcomment.domain.PostCommentDTO;
 import inflearn.interview.videocomment.controller.response.VideoCommentListResponse;
 import inflearn.interview.videocomment.domain.VideoCommentCreate;
 import inflearn.interview.videocomment.domain.VideoCommentDTO;
@@ -10,7 +9,6 @@ import inflearn.interview.videocomment.domain.VideoCommentUpdate;
 import inflearn.interview.videocomment.service.VideoCommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

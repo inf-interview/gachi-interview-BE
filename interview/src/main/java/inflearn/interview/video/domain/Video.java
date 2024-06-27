@@ -55,6 +55,36 @@ public class Video {
                 .build();
     }
 
+    public Video plusLike() {
+        return Video.builder()
+                .id(id)
+                .time(time)
+                .updatedTime(updatedTime)
+                .exposure(exposure)
+                .videoTitle(videoTitle)
+                .thumbnailLink(thumbnailLink)
+                .numOfLike(numOfLike + 1)
+                .videoLink(videoLink)
+                .tag(tag)
+                .user(user)
+                .build();
+    }
+
+    public Video minusLike() {
+        return Video.builder()
+                .id(id)
+                .time(time)
+                .updatedTime(updatedTime)
+                .exposure(exposure)
+                .videoTitle(videoTitle)
+                .thumbnailLink(thumbnailLink)
+                .numOfLike(numOfLike + 1)
+                .videoLink(videoLink)
+                .tag(tag)
+                .user(user)
+                .build();
+    }
+
     private static String tagConverter(String[] tags) {
         if (tags != null) {
             StringBuilder tagMaker = new StringBuilder();

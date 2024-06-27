@@ -2,6 +2,7 @@ package inflearn.interview.post.controller;
 
 import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.post.controller.response.PostCreateResponse;
+import inflearn.interview.post.controller.response.PostDetailResponse;
 import inflearn.interview.post.controller.response.PostResponse;
 import inflearn.interview.post.controller.response.PostUpdateResponse;
 import inflearn.interview.post.domain.Post;
@@ -10,6 +11,7 @@ import inflearn.interview.post.domain.PostDelete;
 import inflearn.interview.post.domain.PostUpdate;
 import inflearn.interview.postlike.controller.response.LikeResponse;
 import inflearn.interview.postlike.domain.PostLikeRequest;
+import inflearn.interview.user.domain.User;
 import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.domain.ErrorResponse;
 import inflearn.interview.common.domain.LikeDTO;
@@ -39,8 +41,9 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public PostResponse postDetail(@PathVariable Long postId, @AuthenticationPrincipal UserEntity userEntity) {
-        return postService.getPostDetail(postId, userEntity.getUserId());
+    public ResponseEntity<?> postDetail(@PathVariable Long postId, @AuthenticationPrincipal User user) {
+        PostDetailResponse response = postService.getPostDetail(postId, user.getId());
+        return ResponseEntity.ok(response);
     }
 
     @ValidateUser

@@ -7,16 +7,13 @@ import inflearn.interview.video.domain.Video;
 import inflearn.interview.videocomment.controller.response.VideoCommentListResponse;
 import inflearn.interview.videocomment.domain.*;
 import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
-import inflearn.interview.postcomment.domain.PostCommentDTO;
 import inflearn.interview.common.exception.OptionalNotFoundException;
-import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.video.service.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 

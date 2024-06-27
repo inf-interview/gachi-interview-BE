@@ -1,7 +1,6 @@
 package inflearn.interview.user.infrastructure;
 
 import inflearn.interview.user.domain.User;
-import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -27,5 +26,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findById(Long id) {
         return userJpaRepository.findById(id).map(UserEntity::toModel);
+    }
+
+    @Override
+    public User findWriter(Long postId) {
+        return userJpaRepository.findWriter(postId);
     }
 }

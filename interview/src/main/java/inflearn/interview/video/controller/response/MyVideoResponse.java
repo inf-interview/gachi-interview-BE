@@ -1,4 +1,4 @@
-package inflearn.interview.video.domain;
+package inflearn.interview.video.controller.response;
 
 import inflearn.interview.video.infrastructure.VideoEntity;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class MyVideoDTO {
+public class MyVideoResponse {
     private Long userId;
     private String userName;
     private Long videoId;
@@ -23,11 +23,11 @@ public class MyVideoDTO {
     private int numOfComment;
     private String image;
 
-    private String[] entityToDtoTagConverter(String tag) {
+    private String[] tagConverter(String tag) {
         return tag.split("[.]");
     }
-    public MyVideoDTO(VideoEntity videoEntity, Long count) {
-        this.userId = videoEntity.getUserEntity().getUserId();
+    public MyVideoResponse(VideoEntity videoEntity, Long count) {
+        this.userId = videoEntity.getUserEntity().getId();
         this.userName = videoEntity.getUserEntity().getName();
         this.videoId = videoEntity.getId();
         this.videoLink = videoEntity.getVideoLink();
@@ -35,7 +35,7 @@ public class MyVideoDTO {
         this.time = videoEntity.getTime();
         this.updateTime = videoEntity.getUpdatedTime();
         this.numOfLike = videoEntity.getNumOfLike();
-        this.tags = entityToDtoTagConverter(videoEntity.getTag());
+        this.tags = tagConverter(videoEntity.getTag());
         this.thumbnailLink = videoEntity.getThumbnailLink();
         this.exposure = videoEntity.getExposure();
         this.numOfComment = count.intValue();

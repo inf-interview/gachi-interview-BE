@@ -17,4 +17,6 @@ public interface VideoCommentRepository {
     void delete(VideoComment videoComment);
 
     List<VideoCommentEntity> findCommentList(Long videoId);
+
+    List<VideoCommentEntity> findMyComment(Long userId);
 }
