@@ -1,7 +1,7 @@
 package inflearn.interview.post.infrastructure;
 
 import inflearn.interview.post.domain.Post;
-import inflearn.interview.postcomment.domain.PostComment;
+import inflearn.interview.postcomment.infrastructure.PostCommentEntity;
 import inflearn.interview.postlike.infrastructure.PostLikeEntity;
 import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
@@ -26,7 +26,7 @@ public class PostEntity {
     private UserEntity userEntity;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-    private List<PostComment> postComments;
+    private List<PostCommentEntity> postCommentEntities;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLikeEntity> postLikeEntities;

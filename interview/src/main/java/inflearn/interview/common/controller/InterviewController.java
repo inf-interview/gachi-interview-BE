@@ -2,7 +2,7 @@ package inflearn.interview.common.controller;
 
 import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.common.domain.UrlReturnDTO;
-import inflearn.interview.video.domain.VideoDTO2;
+import inflearn.interview.video.domain.VideoCreate;
 import inflearn.interview.common.domain.VideoNameDTO;
 import inflearn.interview.common.service.S3Service;
 import inflearn.interview.video.service.VideoService;
@@ -25,8 +25,8 @@ public class InterviewController {
 
     @ValidateUser
     @PostMapping("/complete")
-    public ResponseEntity<?> complete(@RequestBody VideoDTO2 video){
-        Long videoId = videoService.completeVideo(video);
+    public ResponseEntity<?> complete(@RequestBody VideoCreate videoCreate){
+        Long videoId = videoService.create(videoCreate);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("videoId", videoId));
     }
 

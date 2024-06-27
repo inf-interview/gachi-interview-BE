@@ -1,36 +1,48 @@
 package inflearn.interview.videocomment.domain;
 
-import inflearn.interview.user.infrastructure.UserEntity;
+import inflearn.interview.user.domain.User;
 import inflearn.interview.video.domain.Video;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@Entity
-@Table(name = "video_comment")
 public class VideoComment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    String content;
-    @Column(name = "created_AT")
-    LocalDateTime time;
-    @Column(name = "UPDATED_AT")
-    LocalDateTime updatedTime;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
+    private Long id;
+    private String content;
+    private LocalDateTime time;
+    private LocalDateTime updatedTime;
+    private User user;
     private Video video;
+
+    @Builder
+    public VideoComment(Long id, String content, LocalDateTime time, LocalDateTime updatedTime, User user, Video video) {
+        this.id = id;
+        this.content = content;
+        this.time = time;
+        this.updatedTime = updatedTime;
+        this.user = user;
+        this.video = video;
+    }
+
+    public static VideoComment from(VideoCommentCreate videoCommentCreate, User user, Video video) {
+        return VideoComment.builder()
+                .content(videoCommentCreate.getContent())
+                .time(LocalDateTime.now())
+                .user(user)
+                .video(video)
+                .build();
+    }
+
+    public VideoComment update(VideoCommentUpdate videoCommentUpdate) {
+        return VideoComment.builder()
+                .id(id)
+                .content(videoCommentUpdate.getContent())
+                .time(time)
+                .updatedTime(LocalDateTime.now())
+                .user(user)
+                .video(video)
+                .build();
+    }
 }

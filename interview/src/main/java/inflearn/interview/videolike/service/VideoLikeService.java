@@ -1,7 +1,7 @@
 package inflearn.interview.videolike.service;
 
 import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.video.domain.Video;
+import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.common.domain.LikeDTO;
 import inflearn.interview.video.domain.VideoDTO2;
@@ -23,24 +23,24 @@ public class VideoLikeService {
     private final VideoRepository videoRepository;
 
     public LikeDTO addLike(Long video_id, VideoDTO2 videoDTO2){
-        Video video = videoRepository.findById(video_id).orElseThrow(OptionalNotFoundException::new);
+        VideoEntity videoEntity = videoRepository.findById(video_id).orElseThrow(OptionalNotFoundException::new);
         UserEntity userEntity = userRepository.findById(videoDTO2.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(userEntity, video);
+        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(userEntity, videoEntity);
         if(getLike.isEmpty()){
             VideoLike videoLike = new VideoLike();
-            videoLike.setVideo(video);
+            videoLike.setVideoEntity(videoEntity);
             videoLike.setUserEntity(userEntity);
             videoLike.setTime(LocalDateTime.now());
-            video.setNumOfLike(video.getNumOfLike() + 1);
+            videoEntity.setNumOfLike(videoEntity.getNumOfLike() + 1);
 
             videoLikeRepository.save(videoLike);
-            return new LikeDTO(video.getNumOfLike(), true);
+            return new LikeDTO(videoEntity.getNumOfLike(), true);
         }
         else{
             VideoLike videoLike = getLike.get();
             videoLikeRepository.delete(videoLike);
-            video.setNumOfLike(video.getNumOfLike() - 1);
-            return new LikeDTO(video.getNumOfLike(), false);
+            videoEntity.setNumOfLike(videoEntity.getNumOfLike() - 1);
+            return new LikeDTO(videoEntity.getNumOfLike(), false);
         }
 
     }

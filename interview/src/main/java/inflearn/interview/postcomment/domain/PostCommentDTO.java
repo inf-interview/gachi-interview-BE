@@ -1,7 +1,8 @@
 package inflearn.interview.postcomment.domain;
 
 import inflearn.interview.common.domain.BaseDTO;
-import inflearn.interview.videocomment.domain.VideoComment;
+import inflearn.interview.postcomment.infrastructure.PostCommentEntity;
+import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -38,21 +39,21 @@ public class PostCommentDTO implements BaseDTO {
     public PostCommentDTO() {
     }
 
-    public PostCommentDTO(PostComment postComment) {
-        this.commentId = postComment.getPostCommentId();
-        this.userId = postComment.getUserEntity().getUserId();
-        this.username = postComment.getUserEntity().getName();
-        this.content = postComment.getContent();
-        this.postId = postComment.getPost().getPostId();
-        this.category = postComment.getPost().getCategory();
+    public PostCommentDTO(PostCommentEntity postCommentEntity) {
+        this.commentId = postCommentEntity.getPostCommentId();
+        this.userId = postCommentEntity.getUserEntity().getUserId();
+        this.username = postCommentEntity.getUserEntity().getName();
+        this.content = postCommentEntity.getContent();
+        this.postId = postCommentEntity.getPost().getPostId();
+        this.category = postCommentEntity.getPost().getCategory();
     }
 
-    public PostCommentDTO(VideoComment videoComment) {
-        this.commentId = videoComment.getId();
-        this.userId = videoComment.getUserEntity().getUserId();
-        this.username = videoComment.getUserEntity().getName();
-        this.image = videoComment.getUserEntity().getImage();
-        this.content = videoComment.getContent();
-        this.createdAt = videoComment.getTime();
+    public PostCommentDTO(VideoCommentEntity videoCommentEntity) {
+        this.commentId = videoCommentEntity.getId();
+        this.userId = videoCommentEntity.getUserEntity().getUserId();
+        this.username = videoCommentEntity.getUserEntity().getName();
+        this.image = videoCommentEntity.getUserEntity().getImage();
+        this.content = videoCommentEntity.getContent();
+        this.createdAt = videoCommentEntity.getTime();
     }
 }

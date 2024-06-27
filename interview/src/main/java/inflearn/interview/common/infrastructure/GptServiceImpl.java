@@ -13,7 +13,7 @@ import inflearn.interview.videocomment.service.VideoCommentService;
 import inflearn.interview.videocomment.domain.VideoCommentDTO;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.feedback.domain.Feedback;
-import inflearn.interview.video.domain.Video;
+import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
 import lombok.Getter;
@@ -68,8 +68,8 @@ public class GptServiceImpl implements GptService {
 
             callCountService.plusInterviewCallCount(userEntity.getUserId());
 
-            Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
-            List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(video);
+            VideoEntity videoEntity = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
+            List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(videoEntity);
             StringBuilder sb = new StringBuilder();
 
             for (VideoQuestion videoQuestion : videoQuestions) {
@@ -217,7 +217,7 @@ public class GptServiceImpl implements GptService {
         UserEntity admin = userRepository.findAdmin("ADMIN");
         videoCommentDTO.setUserId(admin.getUserId());
         videoCommentDTO.setContent(result);
-        videoCommentService.addComment(videoId, videoCommentDTO);
+        videoCommentService.create(videoId, videoCommentDTO);
     }
 
     private void sendFailComment(Long videoId) {
@@ -235,7 +235,7 @@ public class GptServiceImpl implements GptService {
             case 1 -> videoCommentDTO.setContent(failMessage2);
             case 2 -> videoCommentDTO.setContent(failMessage3);
         }
-        videoCommentService.addComment(videoId, videoCommentDTO);
+        videoCommentService.create(videoId, videoCommentDTO);
     }
 
 
@@ -245,10 +245,10 @@ public class GptServiceImpl implements GptService {
 
     public List<Feedback> getFeedbacks(Long userId) {
         UserEntity findUserEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        List<Video> findVideos = videoRepository.findByUser_UserId(findUserEntity.getUserId());
+        List<VideoEntity> findVideoEntities = videoRepository.findByUser_UserId(findUserEntity.getUserId());
         List<Feedback> feedbacks = new ArrayList<>();
-        for (Video video : findVideos) {
-            feedbacks.addAll(feedbackRepository.findByVideo(videoRepository.findById(video.getVideoId()).orElseThrow(OptionalNotFoundException::new)));
+        for (VideoEntity videoEntity : findVideoEntities) {
+            feedbacks.addAll(feedbackRepository.findByVideo(videoRepository.findById(videoEntity.getId()).orElseThrow(OptionalNotFoundException::new)));
         }
         return feedbacks;
     }

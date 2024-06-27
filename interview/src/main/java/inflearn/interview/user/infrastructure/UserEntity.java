@@ -1,21 +1,16 @@
 package inflearn.interview.user.infrastructure;
 
 import inflearn.interview.user.domain.User;
-import inflearn.interview.video.domain.Video;
-import inflearn.interview.videocomment.domain.VideoComment;
+import inflearn.interview.video.infrastructure.VideoEntity;
+import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
 import inflearn.interview.videolike.domain.VideoLike;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -47,10 +42,10 @@ public class UserEntity {
     private String refreshToken;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Video> videos = new ArrayList<>();
+    List<VideoEntity> videoEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<VideoComment> comments = new ArrayList<>();
+    List<VideoCommentEntity> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<VideoLike> likes = new ArrayList<>();

@@ -1,17 +1,21 @@
 package inflearn.interview.postcomment.service;
 
 import inflearn.interview.postcomment.domain.PostComment;
+import inflearn.interview.postcomment.infrastructure.PostCommentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface PostCommentRepository extends JpaRepository<PostComment, Long> {
+public interface PostCommentRepository {
 
-    @Query("select pc from PostComment pc where pc.post.postId=:postId")
-    List<PostComment> findCommentList(@Param("postId") Long postId);
+    PostComment save(PostComment postComment);
 
-    @Query("select pc from PostComment pc where pc.user.userId=:userId")
-    List<PostComment> findCommentByUserId(@Param("userId") Long userId);
+    Optional<PostComment> findById(Long id);
+
+    void delete(PostComment postComment);
+
+    List<PostCommentEntity> findCommentList(Long postId);
 }

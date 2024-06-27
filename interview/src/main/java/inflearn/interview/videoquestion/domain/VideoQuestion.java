@@ -1,6 +1,6 @@
 package inflearn.interview.videoquestion.domain;
 
-import inflearn.interview.video.domain.Video;
+import inflearn.interview.video.infrastructure.VideoEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ public class VideoQuestion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id")
-    private Video video;
+    private VideoEntity videoEntity;
 
     //GPT에 전달할 Question의 id를 찾기 위해 저장
     private Long questionId;
@@ -24,8 +24,8 @@ public class VideoQuestion {
     //GPT에 전달할 질문 내용
     private String question;
 
-    public VideoQuestion(Video video, Long questionId, String question) {
-        this.video = video;
+    public VideoQuestion(VideoEntity videoEntity, Long questionId, String question) {
+        this.videoEntity = videoEntity;
         this.questionId = questionId;
         this.question = question;
     }

@@ -47,24 +47,6 @@ public class PostResponse implements BaseDTO {
 
     private boolean isLiked;
 
-
-    public PostResponse(Post post, Long commentCount) {
-        this.userId = post.getUserEntity().getUserId();
-        this.userName = post.getUserEntity().getName();
-        this.postId = post.getPostId();
-        this.postTitle = post.getTitle();
-        this.category = post.getCategory();
-        if (post.getTag() != null) {
-            this.tag = entityToDtoTagConverter(post.getTag());
-        }
-        this.numOfLike = post.getNumOfLike();
-        this.content = post.getContent();
-        this.time = post.getCreatedAt();
-        this.updateTime = post.getUpdatedAt();
-        this.numOfComment = Math.toIntExact(commentCount);
-        this.image = post.getUserEntity().getImage();
-    }
-
     @QueryProjection
     public PostResponse(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, Long numOfComment, String tag, String image) {
         this.userId = userId;

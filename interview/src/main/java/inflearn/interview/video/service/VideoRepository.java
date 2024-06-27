@@ -1,21 +1,14 @@
 package inflearn.interview.video.service;
 
 import inflearn.interview.video.domain.Video;
-import inflearn.interview.video.domain.MyVideoDTO;
-import inflearn.interview.video.service.CustomVideoRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface VideoRepository extends JpaRepository<Video, Long>, CustomVideoRepository {
-    List<Video> findByUser_UserId(Long userId);
-    @Query("select new inflearn.interview.domain.dto.MyVideoDTO(v, count(c.id)) " +
-            "from Video v " +
-            "left join VideoComment c on v.videoId = c.video.videoId " +
-            "where v.user.userId=:userId group by v.videoId order by v.videoId desc")
-    List<MyVideoDTO> findVideoByUserId(@Param("userId") Long userId);
+public interface VideoRepository {
+
+    Video save(Video video);
+
+    Optional<Video> findById(Long id);
+
+    void delete(Video video);
 }

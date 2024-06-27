@@ -1,62 +1,69 @@
 package inflearn.interview.video.domain;
 
-import inflearn.interview.videocomment.domain.VideoComment;
-import inflearn.interview.videolike.domain.VideoLike;
-import inflearn.interview.videoquestion.domain.VideoQuestion;
-import inflearn.interview.user.infrastructure.UserEntity;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import inflearn.interview.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
-@Setter
-@Entity
-@Table(name = "video")
 public class Video {
+    private Long id;
+    private LocalDateTime time;
+    private LocalDateTime updatedTime;
+    private Boolean exposure;
+    private String videoTitle;
+    private String thumbnailLink;
+    private int numOfLike;
+    private String videoLink;
+    private String tag;
+    private User user;
 
-    @Id
-    @Column(name = "video_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long videoId;
-    @Column(name = "CREATED_AT")
-    LocalDateTime time;
-    @Column(name = "UPDATED_AT")
-    LocalDateTime updatedTime;
-    @NotNull
-    @Column(name = "public")
-    Boolean exposure;
-    @NotNull
-    @Column(name = "video_title")
-    String videoTitle;
-    @Column(name = "img_link")
-    String thumbnailLink;
+    @Builder
+    public Video(Long id, LocalDateTime time, LocalDateTime updatedTime, Boolean exposure, String videoTitle, String thumbnailLink, int numOfLike, String videoLink, String tag, User user) {
+        this.id = id;
+        this.time = time;
+        this.updatedTime = updatedTime;
+        this.exposure = exposure;
+        this.videoTitle = videoTitle;
+        this.thumbnailLink = thumbnailLink;
+        this.numOfLike = numOfLike;
+        this.videoLink = videoLink;
+        this.tag = tag;
+        this.user = user;
+    }
 
-    int numOfLike;
+    public static Video from(VideoCreate videoCreate, User user) {
+        return Video.builder()
+                .user(user)
+                .exposure(videoCreate.isExposure())
+                .videoLink(videoCreate.getVideoLink())
+                .videoTitle(videoCreate.getVideoTitle())
+                .tag(tagConverter(videoCreate.getTags()))
+                .thumbnailLink(videoCreate.getThumbnailLink())
+                .build();
+    }
 
-    @NotNull
-    @Column(name = "video_link")
-    String videoLink;
-    @Column(name = "tag")
-    String tag;
+    public Video update(VideoUpdate videoUpdate) {
+        return Video.builder()
+                .user(user)
+                .exposure(videoUpdate.isExposure())
+                .videoLink(videoLink)
+                .videoTitle(videoUpdate.getVideoTitle())
+                .tag(tagConverter(videoUpdate.getTags()))
+                .thumbnailLink(thumbnailLink)
+                .build();
+    }
 
-    @Transient
-    List<String> tags;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
-
-    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
-    List<VideoComment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
-    List<VideoLike> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
-    List<VideoQuestion> videoQuestions = new ArrayList<>();
+    private static String tagConverter(String[] tags) {
+        if (tags != null) {
+            StringBuilder tagMaker = new StringBuilder();
+            for (String tag : tags) {
+                tagMaker.append(tag).append(".");
+            }
+            return tagMaker.toString();
+        } else {
+            return null;
+        }
+    }
 }

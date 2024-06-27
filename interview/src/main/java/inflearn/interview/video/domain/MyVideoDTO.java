@@ -1,5 +1,6 @@
 package inflearn.interview.video.domain;
 
+import inflearn.interview.video.infrastructure.VideoEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,19 +26,19 @@ public class MyVideoDTO {
     private String[] entityToDtoTagConverter(String tag) {
         return tag.split("[.]");
     }
-    public MyVideoDTO(Video video, Long count) {
-        this.userId = video.getUserEntity().getUserId();
-        this.userName = video.getUserEntity().getName();
-        this.videoId = video.getVideoId();
-        this.videoLink = video.getVideoLink();
-        this.videoTitle = video.getVideoTitle();
-        this.time = video.getTime();
-        this.updateTime = video.getUpdatedTime();
-        this.numOfLike = video.getNumOfLike();
-        this.tags = entityToDtoTagConverter(video.getTag());
-        this.thumbnailLink = video.getThumbnailLink();
-        this.exposure = video.getExposure();
+    public MyVideoDTO(VideoEntity videoEntity, Long count) {
+        this.userId = videoEntity.getUserEntity().getUserId();
+        this.userName = videoEntity.getUserEntity().getName();
+        this.videoId = videoEntity.getId();
+        this.videoLink = videoEntity.getVideoLink();
+        this.videoTitle = videoEntity.getVideoTitle();
+        this.time = videoEntity.getTime();
+        this.updateTime = videoEntity.getUpdatedTime();
+        this.numOfLike = videoEntity.getNumOfLike();
+        this.tags = entityToDtoTagConverter(videoEntity.getTag());
+        this.thumbnailLink = videoEntity.getThumbnailLink();
+        this.exposure = videoEntity.getExposure();
         this.numOfComment = count.intValue();
-        this.image = video.getUserEntity().getImage();
+        this.image = videoEntity.getUserEntity().getImage();
     }
 }

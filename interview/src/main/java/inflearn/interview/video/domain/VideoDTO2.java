@@ -2,6 +2,7 @@ package inflearn.interview.video.domain;
 
 import com.querydsl.core.annotations.QueryProjection;
 import inflearn.interview.common.domain.BaseDTO;
+import inflearn.interview.video.infrastructure.VideoEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,21 +54,21 @@ public class VideoDTO2 implements BaseDTO {
         this.image = image;
     }
 
-    public VideoDTO2(Video video) {
-        userId = video.getUserEntity().getUserId();
-        userName = video.getUserEntity().getName();
-        videoId = video.getVideoId();
-        exposure = video.getExposure();
-        videoTitle = video.getVideoTitle();
-        time = video.getTime();
-        updateTime = video.getUpdatedTime();
-        numOfLike = video.getNumOfLike();
-        thumbnailLink = video.getThumbnailLink();
-        image = video.getUserEntity().getImage();
-        if (video.getTag() != null) {
-            this.tags = entityToDtoTagConverter(video.getTag());
+    public VideoDTO2(VideoEntity videoEntity) {
+        userId = videoEntity.getUserEntity().getUserId();
+        userName = videoEntity.getUserEntity().getName();
+        videoId = videoEntity.getId();
+        exposure = videoEntity.getExposure();
+        videoTitle = videoEntity.getVideoTitle();
+        time = videoEntity.getTime();
+        updateTime = videoEntity.getUpdatedTime();
+        numOfLike = videoEntity.getNumOfLike();
+        thumbnailLink = videoEntity.getThumbnailLink();
+        image = videoEntity.getUserEntity().getImage();
+        if (videoEntity.getTag() != null) {
+            this.tags = entityToDtoTagConverter(videoEntity.getTag());
         }
-        videoLink = video.getVideoLink();
+        videoLink = videoEntity.getVideoLink();
     }
 
 

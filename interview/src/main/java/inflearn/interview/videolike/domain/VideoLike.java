@@ -1,7 +1,7 @@
 package inflearn.interview.videolike.domain;
 
 import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.video.domain.Video;
+import inflearn.interview.video.infrastructure.VideoEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -32,5 +32,5 @@ public class VideoLike {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id")
-    private Video video;
+    private VideoEntity videoEntity;
 }

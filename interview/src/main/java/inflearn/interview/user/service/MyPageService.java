@@ -4,13 +4,13 @@ import inflearn.interview.notice.domain.NoticeDTO;
 import inflearn.interview.notice.service.NoticeRepository;
 import inflearn.interview.post.domain.MyPostDTO;
 import inflearn.interview.post.infrastructure.PostJpaRepository;
-import inflearn.interview.postcomment.domain.PostComment;
+import inflearn.interview.postcomment.infrastructure.PostCommentEntity;
 import inflearn.interview.postcomment.domain.PostCommentDTO;
 import inflearn.interview.postcomment.service.PostCommentRepository;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.video.domain.MyVideoDTO;
 import inflearn.interview.video.service.VideoRepository;
-import inflearn.interview.videocomment.domain.VideoComment;
+import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.videocomment.domain.VideoCommentDTO;
 import inflearn.interview.videocomment.service.VideoCommentRepository;
@@ -44,13 +44,13 @@ public class MyPageService { // TODO 수정필요
 
 
     public List<PostCommentDTO> getMyComment(Long userId) {
-        List<PostComment> postComments = postCommentRepository.findCommentByUserId(userId);
-        return postComments.stream().map(comment -> new PostCommentDTO(comment)).toList();
+        List<PostCommentEntity> postCommentEntities = postCommentRepository.findCommentByUserId(userId);
+        return postCommentEntities.stream().map(comment -> new PostCommentDTO(comment)).toList();
     }
 
     public List<VideoCommentDTO> getMyVideoComment(Long userId) {
-        List<VideoComment> videoComments = videoCommentRepository.findCommentByUserId(userId);
-        return videoComments.stream().map(comment -> new VideoCommentDTO(comment)).toList();
+        List<VideoCommentEntity> videoCommentEntities = videoCommentRepository.findCommentByUserId(userId);
+        return videoCommentEntities.stream().map(comment -> new VideoCommentDTO(comment)).toList();
     }
 
     public List<NoticeDTO> getMyNotice(Long userId) {

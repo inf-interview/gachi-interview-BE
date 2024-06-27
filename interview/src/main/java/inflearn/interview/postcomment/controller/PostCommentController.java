@@ -1,7 +1,12 @@
 package inflearn.interview.postcomment.controller;
 
 import inflearn.interview.common.aop.ValidateUser;
+import inflearn.interview.postcomment.controller.response.PostCommentCreateResponse;
+import inflearn.interview.postcomment.controller.response.PostCommentListResponse;
+import inflearn.interview.postcomment.domain.PostCommentCreate;
 import inflearn.interview.postcomment.domain.PostCommentDTO;
+import inflearn.interview.postcomment.domain.PostCommentDelete;
+import inflearn.interview.postcomment.domain.PostCommentUpdate;
 import inflearn.interview.postcomment.service.PostCommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,38 +25,31 @@ public class PostCommentController {
 
     //댓글 목록 조회
     @GetMapping("/comments")
-    public List<PostCommentDTO> postComments(@PathVariable(name = "post_id") Long postId) {
-        return postCommentService.getComments(postId);
-    }
-
-    //댓글 조회
-    @GetMapping("/{comment_id}")
-    public ResponseEntity<PostCommentDTO> postComment(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId) {
-        PostCommentDTO comment = postCommentService.getComment(commentId);
-        return ResponseEntity.ok(comment);
+    public ResponseEntity<List<PostCommentListResponse>> postComments(@PathVariable(name = "post_id") Long postId) {
+        return ResponseEntity.ok(postCommentService.getComments(postId));
     }
 
     //댓글 작성
     @ValidateUser
     @PostMapping("/submit")
-    public ResponseEntity<PostCommentDTO> postCommentWrite(@PathVariable(name = "post_id") Long postId, @RequestBody @Validated(PostCommentDTO.create.class) PostCommentDTO postCommentDTO) {
-        PostCommentDTO comment = postCommentService.createComment(postCommentDTO, postId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(comment);
+    public ResponseEntity<PostCommentCreateResponse> postCommentWrite(@PathVariable(name = "post_id") Long postId, @RequestBody PostCommentCreate postCommentCreate) {
+        PostCommentCreateResponse response = postCommentService.createComment(postCommentCreate, postId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     //댓글 수정
     @ValidateUser
     @PatchMapping("/comments/{comment_id}")
-    public ResponseEntity<?> postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.update.class) PostCommentDTO postCommentDTO) {
-        postCommentService.updateComment(postId, commentId, postCommentDTO);
+    public ResponseEntity<?> postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody PostCommentUpdate postCommentUpdate) {
+        postCommentService.updateComment(postCommentUpdate);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     //댓글 삭제
     @ValidateUser
     @DeleteMapping("/comments/{comment_id}")
-    public ResponseEntity<?> postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody @Validated(PostCommentDTO.delete.class) PostCommentDTO postCommentDTO) {
-        postCommentService.deleteComment(postId, commentId, postCommentDTO);
+    public ResponseEntity<?> postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody PostCommentDelete postCommentDelete) {
+        postCommentService.deleteComment(postCommentDelete);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

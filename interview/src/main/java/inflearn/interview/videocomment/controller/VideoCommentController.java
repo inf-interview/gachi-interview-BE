@@ -2,9 +2,14 @@ package inflearn.interview.videocomment.controller;
 
 import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.postcomment.domain.PostCommentDTO;
+import inflearn.interview.videocomment.controller.response.VideoCommentListResponse;
+import inflearn.interview.videocomment.domain.VideoCommentCreate;
 import inflearn.interview.videocomment.domain.VideoCommentDTO;
+import inflearn.interview.videocomment.domain.VideoCommentDelete;
+import inflearn.interview.videocomment.domain.VideoCommentUpdate;
 import inflearn.interview.videocomment.service.VideoCommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,19 +19,13 @@ import java.util.List;
 @RequestMapping("/video/{video_id}")
 @RequiredArgsConstructor
 public class VideoCommentController {
-    /**
-     * 영상 목록 댓글 조회
-     * 영상 댓글 조회
-     * 영상 댓글 작성
-     * 댓글 수정
-     * 댓글 삭제
-     */
 
     private final VideoCommentService commentService;
 
     @GetMapping("/comments")
-    public List<PostCommentDTO> getVideoCommentsController(@PathVariable("video_id") Long videoId) {
-        return commentService.getComments(videoId);
+    public ResponseEntity<?> getVideoCommentsController(@PathVariable("video_id") Long videoId) {
+        List<VideoCommentListResponse> response = commentService.getComments(videoId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{comment_id}")
@@ -36,20 +35,20 @@ public class VideoCommentController {
 
     @ValidateUser
     @PostMapping("/submit")
-    public void addVideoCommentController(@PathVariable("video_id") Long videoId, @RequestBody @Validated(VideoCommentDTO.create.class) VideoCommentDTO videoCommentDTO) {
-        commentService.addComment(videoId, videoCommentDTO);
+    public void addComment(@PathVariable("video_id") Long videoId, @RequestBody VideoCommentCreate videoCommentCreate) {
+        commentService.create(videoId, videoCommentCreate);
     }
 
     @ValidateUser
     @PatchMapping("/comments/{comment_id}")
-    public void updateVideoCommentController(@PathVariable("comment_id") Long commentId, @RequestBody @Validated(VideoCommentDTO.patch.class) VideoCommentDTO videoCommentDTO) {
-        commentService.editComment(commentId, videoCommentDTO);
+    public void updateComment(@PathVariable("comment_id") Long commentId, @RequestBody VideoCommentUpdate videoCommentUpdate) {
+        commentService.update(videoCommentUpdate);
     }
 
     @ValidateUser
     @DeleteMapping("/comments/{comment_id}")
-    public void deleteVideoCommentController(@PathVariable("comment_id") Long commentId, @RequestBody @Validated(VideoCommentDTO.delete.class) VideoCommentDTO videoCommentDTO) {
-        commentService.deleteComment(commentId, videoCommentDTO);
+    public void deleteComment(@PathVariable("comment_id") Long commentId, @RequestBody VideoCommentDelete videoCommentDelete) {
+        commentService.delete(videoCommentDelete);
     }
 
 }

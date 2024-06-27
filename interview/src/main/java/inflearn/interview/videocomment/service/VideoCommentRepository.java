@@ -1,17 +1,20 @@
 package inflearn.interview.videocomment.service;
 
 import inflearn.interview.videocomment.domain.VideoComment;
+import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface VideoCommentRepository extends JpaRepository<VideoComment, Long> {
+public interface VideoCommentRepository {
+    VideoComment save(VideoComment videoComment);
 
-    @Query("select vc from VideoComment vc where vc.video.videoId=:videoId")
-    List<VideoComment> findCommentList(@Param("videoId") Long videoId);
+    Optional<VideoComment> findByid(Long id);
 
-    @Query("select vc from VideoComment vc where vc.user.userId=:userId")
-    List<VideoComment> findCommentByUserId(@Param("userId") Long userId);
+    void delete(VideoComment videoComment);
+
+    List<VideoCommentEntity> findCommentList(Long videoId);
 }
