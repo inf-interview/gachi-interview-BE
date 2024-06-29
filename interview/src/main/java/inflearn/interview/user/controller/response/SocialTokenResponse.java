@@ -1,4 +1,4 @@
-package inflearn.interview.common.domain;
+package inflearn.interview.user.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

@@ -3,7 +3,7 @@ package inflearn.interview.feedback.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.feedback.domain.FeedbackDTO;
-import inflearn.interview.common.domain.GptCountDTO;
+import inflearn.interview.feedback.controller.response.GptCountResponse;
 import inflearn.interview.common.service.GptCallCountService;
 import inflearn.interview.common.service.GptService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class FeedbackController {
     @GetMapping("/limits")
     public ResponseEntity<?> checkLimits(@AuthenticationPrincipal User user) {
         Integer count = callCountService.interviewCountToClient(user.getId());
-        GptCountDTO dto = new GptCountDTO(3, count);
+        GptCountResponse dto = new GptCountResponse(3, count);
         return ResponseEntity.ok(dto);
     }
 
