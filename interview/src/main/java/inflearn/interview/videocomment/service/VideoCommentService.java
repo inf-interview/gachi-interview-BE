@@ -50,7 +50,6 @@ public class VideoCommentService {
         VideoComment videoComment = VideoComment.from(videoCommentCreate, user, video);
         videoComment = commentRepository.save(videoComment);
 
-        //TODO fcm 수정필요
         if (!(videoWriter.equals(user))) {
             try {
                 fcmTokenService.commentSendNotification(videoWriter.getId(), video.getVideoTitle(), user.getName());
