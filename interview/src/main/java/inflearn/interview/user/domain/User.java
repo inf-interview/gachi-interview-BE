@@ -53,6 +53,8 @@ public class User implements UserDetails {
                 .createdAt(LocalDateTime.now())
                 .image(userCreate.getImage())
                 .role(userCreate.getRole())
+                .interviewGptCallCount(0)
+                .questionGptCallCount(0)
                 .build();
     }
 
