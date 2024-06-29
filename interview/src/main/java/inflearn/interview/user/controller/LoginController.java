@@ -3,7 +3,6 @@ package inflearn.interview.user.controller;
 import inflearn.interview.user.controller.response.LoginResponse;
 import inflearn.interview.user.service.LoginService;
 import inflearn.interview.user.service.UserService;
-import inflearn.interview.fcm.service.FcmTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import java.io.IOException;
 public class LoginController {
 
     private final UserService userService;
-    private final FcmTokenService fcmTokenService;
     private final LoginService loginService;
 
     @Value("${spring.kakao.client_id}")

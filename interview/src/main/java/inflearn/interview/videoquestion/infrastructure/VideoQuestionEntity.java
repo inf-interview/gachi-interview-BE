@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(name = "video_question")
 public class VideoQuestionEntity {
 
     @Id

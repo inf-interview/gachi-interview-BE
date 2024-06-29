@@ -1,7 +1,6 @@
 package inflearn.interview.post.domain;
 
 import inflearn.interview.user.domain.User;
-import inflearn.interview.user.infrastructure.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
 

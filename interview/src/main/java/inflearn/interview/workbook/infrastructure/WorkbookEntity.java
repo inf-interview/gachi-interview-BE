@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Setter
+@Table(name = "workbook")
 public class WorkbookEntity {
 
     @Id
