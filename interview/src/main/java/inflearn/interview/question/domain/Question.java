@@ -1,37 +1,36 @@
 package inflearn.interview.question.domain;
 
 import inflearn.interview.workbook.domain.Workbook;
-import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Entity
 public class Question {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workbook_id")
     private Workbook workbook;
-
     private String content;
-
     private String answer;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
-    public Question() {
-    }
-
-    public Question(Workbook workbook, String content, String answer) {
+    @Builder
+    public Question(Long id, Workbook workbook, String content, String answer, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.workbook = workbook;
         this.content = content;
         this.answer = answer;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static Question from(Workbook workbook, CreateQuestion createQuestion) {
+        return Question.builder()
+                .workbook(workbook)
+                .content(createQuestion.getQuestionContent())
+                .answer(createQuestion.getAnswerContent())
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }

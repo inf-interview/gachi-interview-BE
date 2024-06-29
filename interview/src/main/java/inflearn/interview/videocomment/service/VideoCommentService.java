@@ -39,15 +39,21 @@ public class VideoCommentService {
     }
 
     public void create(Long videoId, VideoCommentCreate videoCommentCreate) {
+        //작성자
         User user = userRepository.findById(videoCommentCreate.getUserId()).orElseThrow(OptionalNotFoundException::new);
+
+        //댓글 작성 할 게시글
         Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
+        //게시글 주인
+        User videoWriter = userRepository.findVideoWriter(videoId);
+
         VideoComment videoComment = VideoComment.from(videoCommentCreate, user, video);
         videoComment = commentRepository.save(videoComment);
 
         //TODO fcm 수정필요
-        if (!(videoEntity.getUserEntity().getUserId().equals(comment.getUserId()))) {
+        if (!(videoWriter.equals(user))) {
             try {
-                fcmTokenService.commentSendNotification(saved.getVideoEntity().getUserEntity().getUserId(), saved.getVideoEntity().getVideoTitle(), saved.getUserEntity().getName());
+                fcmTokenService.commentSendNotification(videoWriter.getId(), video.getVideoTitle(), user.getName());
             } catch (Exception e) {
                 log.error("VideoComment 알림 전송 실패 = {}", e.getMessage());
             }

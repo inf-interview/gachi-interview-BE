@@ -29,16 +29,15 @@ public class FcmTokenService {
     private final UserRepository userRepository;
     private final NoticeRepository noticeRepository;
 
-    public void registerToken(User user, String token) {
-        Optional<Fcm> getUser = fcmRepository.findByUser(user);
-        if (getUser.isEmpty()) {
-            Fcm fcm = new Fcm();
-            fcm.setUserEntity(UserEntity.fromModel(user));
-            fcm.setFcmToken(token);
+    public void registerToken(Long userId, String token) {
+        User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
+        Optional<Fcm> getFcm = fcmRepository.findByUserId(userId);
+        if (getFcm.isEmpty()) {
+            Fcm fcm = Fcm.from(token, user);
             fcmRepository.save(fcm);
         } else {
-            Fcm fcm = getUser.get();
-            fcm.setFcmToken(token);
+            Fcm fcm = getFcm.get();
+            fcm = fcm.update(token);
             fcmRepository.save(fcm);
         }
     }

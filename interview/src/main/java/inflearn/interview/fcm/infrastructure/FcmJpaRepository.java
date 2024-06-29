@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface FcmJpaRepository extends JpaRepository<Fcm, Long> {
+public interface FcmJpaRepository extends JpaRepository<FcmEntity, Long> {
 
-    Optional<Fcm> findByUserEntityId(Long userId);
+    Optional<FcmEntity> findByUserEntityId(Long userId);
 }

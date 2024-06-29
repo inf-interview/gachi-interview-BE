@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class WorkbookRequestDTO implements BaseDTO {
+public class CreateWorkbook implements BaseDTO {
 
     private Long userId;
 

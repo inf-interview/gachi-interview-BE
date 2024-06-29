@@ -74,6 +74,119 @@ public class User implements UserDetails {
                 .build();
     }
 
+    /**
+     * GPT
+     */
+
+    public User setQuestionCallCountOne() {
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .social(social)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .image(image)
+                .refreshToken(refreshToken)
+                .role(role)
+                .questionGptCallCount(1)
+                .interviewGptCallCount(interviewGptCallCount)
+                .questionGptCallTime(LocalDateTime.now())
+                .interviewGptCallTime(interviewGptCallTime)
+                .build();
+    }
+
+    public User setQuestionCallCountZero() {
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .social(social)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .image(image)
+                .refreshToken(refreshToken)
+                .role(role)
+                .questionGptCallCount(0)
+                .interviewGptCallCount(interviewGptCallCount)
+                .questionGptCallTime(questionGptCallTime)
+                .interviewGptCallTime(interviewGptCallTime)
+                .build();
+    }
+
+    public User setInterviewCallCountOne() {
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .social(social)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .image(image)
+                .refreshToken(refreshToken)
+                .role(role)
+                .questionGptCallCount(questionGptCallCount)
+                .interviewGptCallCount(1)
+                .questionGptCallTime(questionGptCallTime)
+                .interviewGptCallTime(LocalDateTime.now())
+                .build();
+    }
+
+    public User setInterviewCallCountZero() {
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .social(social)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .image(image)
+                .refreshToken(refreshToken)
+                .role(role)
+                .questionGptCallCount(questionGptCallCount)
+                .interviewGptCallCount(0)
+                .questionGptCallTime(questionGptCallTime)
+                .interviewGptCallTime(interviewGptCallTime)
+                .build();
+    }
+
+    public User plusQuestionCall() {
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .social(social)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .image(image)
+                .refreshToken(refreshToken)
+                .role(role)
+                .questionGptCallCount(questionGptCallCount + 1)
+                .interviewGptCallCount(interviewGptCallCount)
+                .questionGptCallTime(questionGptCallTime)
+                .interviewGptCallTime(interviewGptCallTime)
+                .build();
+    }
+
+    public User plusInterviewCall() {
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .social(social)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .image(image)
+                .refreshToken(refreshToken)
+                .role(role)
+                .questionGptCallCount(questionGptCallCount)
+                .interviewGptCallCount(interviewGptCallCount + 1)
+                .questionGptCallTime(questionGptCallTime)
+                .interviewGptCallTime(interviewGptCallTime)
+                .build();
+    }
+
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

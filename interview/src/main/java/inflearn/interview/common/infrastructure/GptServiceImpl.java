@@ -2,19 +2,15 @@ package inflearn.interview.common.infrastructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.common.service.GptCallCountService;
 import inflearn.interview.common.service.GptService;
 import inflearn.interview.feedback.domain.FeedbackDTO;
-import inflearn.interview.feedback.service.FeedbackRepository;
-import inflearn.interview.question.service.QuestionRepository;
-import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.video.service.VideoRepository;
+import inflearn.interview.user.domain.User;
+import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.videocomment.domain.VideoCommentCreate;
 import inflearn.interview.videocomment.service.VideoCommentService;
-import inflearn.interview.videocomment.domain.VideoCommentDTO;
-import inflearn.interview.common.exception.OptionalNotFoundException;
-import inflearn.interview.feedback.domain.Feedback;
-import inflearn.interview.video.infrastructure.VideoEntity;
-import inflearn.interview.videoquestion.domain.VideoQuestion;
+import inflearn.interview.videoquestion.domain.QuestionFromVideoQuestion;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -38,42 +34,32 @@ import static inflearn.interview.common.constant.GptCount.INTERVIEW_MAX_COUNT;
 @Slf4j
 @Transactional
 public class GptServiceImpl implements GptService {
-    private final FeedbackRepository feedbackRepository;
-    private final VideoRepository videoRepository;
     private final UserRepository userRepository;
     private final VideoQuestionRepository videoQuestionRepository;
-    private final QuestionRepository questionRepository;
     private final VideoCommentService videoCommentService;
     private final GptCallCountService callCountService;
 
 
-    @Value("${python.server.url}")
-    private String pythonServerURL;
-
     @Value("${api.key}")
     private String apiKey;
 
-    RestTemplate restTemplate = new RestTemplate();
-
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public void GPTFeedback(Long videoId, UserEntity userEntity, FeedbackDTO dto) throws JsonProcessingException {
+    public void GPTFeedback(Long videoId, User user, FeedbackDTO dto) throws JsonProcessingException {
 
         if (dto.getContent().isEmpty()) {
             sendFailComment(videoId);
             return;
         }
 
-        if (callCountService.getInterviewCount(userEntity.getUserId()) < INTERVIEW_MAX_COUNT) {
+        if (callCountService.getInterviewCount(user.getId()) < INTERVIEW_MAX_COUNT) {
 
-            callCountService.plusInterviewCallCount(userEntity.getUserId());
+            callCountService.plusInterviewCallCount(user.getId());
 
-            VideoEntity videoEntity = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
-            List<VideoQuestion> videoQuestions = videoQuestionRepository.findAllByVideo(videoEntity);
+            List<QuestionFromVideoQuestion> questions = videoQuestionRepository.findQuestionsByVideoId(videoId);
             StringBuilder sb = new StringBuilder();
-
-            for (VideoQuestion videoQuestion : videoQuestions) {
-                sb.append("question").append(": ").append(videoQuestion.getQuestion());
+            for (QuestionFromVideoQuestion question : questions) {
+                sb.append("question").append(": ").append(question.getQuestion());
             }
 
             String question = sb.toString();
@@ -213,49 +199,26 @@ public class GptServiceImpl implements GptService {
     }
 
     private void sendCompleteComment(String result, Long videoId) {
-        VideoCommentDTO videoCommentDTO = new VideoCommentDTO();
-        UserEntity admin = userRepository.findAdmin("ADMIN");
-        videoCommentDTO.setUserId(admin.getUserId());
-        videoCommentDTO.setContent(result);
-        videoCommentService.create(videoId, videoCommentDTO);
+        User admin = userRepository.findAdmin("ADMIN").orElseThrow(OptionalNotFoundException::new);
+        VideoCommentCreate videoCommentCreate = VideoCommentCreate.create(admin.getId(), result);
+        videoCommentService.create(videoId, videoCommentCreate);
     }
 
     private void sendFailComment(Long videoId) {
-        VideoCommentDTO videoCommentDTO = new VideoCommentDTO();
-        UserEntity admin = userRepository.findAdmin("ADMIN");
-        videoCommentDTO.setUserId(admin.getUserId());
-        String failMessage1 = "올바른 영상이 제공되지 않았습니다. 피드백을 받기 위해 더 긴 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
-        String failMessage2 = "음성 입력이 제대로 되지 않았습니다. 음성이 명확하게 들리는 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
-        String failMessage3 = "피드백을 받기 위해 영상의 음질과 길이를 확인해주세요. 명확한 음성과 충분한 길이의 영상을 업로드해 주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
+        User admin = userRepository.findAdmin("ADMIN").orElseThrow(OptionalNotFoundException::new);
+        String ex1 = "올바른 영상이 제공되지 않았습니다. 피드백을 받기 위해 더 긴 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
+        String ex2 = "음성 입력이 제대로 되지 않았습니다. 음성이 명확하게 들리는 영상을 업로드해주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
+        String ex3 = "피드백을 받기 위해 영상의 음질과 길이를 확인해주세요. 명확한 음성과 충분한 길이의 영상을 업로드해 주세요. \n\n같이면접 서비스에서 권장되는 영상길이는 1~5분입니다.\n영상녹화에 적합한 환경인지 확인해주세요.";
 
         Random random = new Random();
         int i = random.nextInt(3);
         switch (i) {
-            case 0 -> videoCommentDTO.setContent(failMessage1);
-            case 1 -> videoCommentDTO.setContent(failMessage2);
-            case 2 -> videoCommentDTO.setContent(failMessage3);
+            case 0 -> videoCommentService.create(videoId, VideoCommentCreate.create(admin.getId(), ex1));
+            case 1 -> videoCommentService.create(videoId, VideoCommentCreate.create(admin.getId(), ex2));
+            case 2 -> videoCommentService.create(videoId, VideoCommentCreate.create(admin.getId(), ex3));
         }
-        videoCommentService.create(videoId, videoCommentDTO);
     }
 
-
-    public void deleteFeedback(Long videoId) {
-        feedbackRepository.deleteById(videoId);
-    }
-
-    public List<Feedback> getFeedbacks(Long userId) {
-        UserEntity findUserEntity = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        List<VideoEntity> findVideoEntities = videoRepository.findByUser_UserId(findUserEntity.getUserId());
-        List<Feedback> feedbacks = new ArrayList<>();
-        for (VideoEntity videoEntity : findVideoEntities) {
-            feedbacks.addAll(feedbackRepository.findByVideo(videoRepository.findById(videoEntity.getId()).orElseThrow(OptionalNotFoundException::new)));
-        }
-        return feedbacks;
-    }
-
-    public Feedback getFeedback(Long feedbackId) {
-        return feedbackRepository.findById(feedbackId).orElseThrow(OptionalNotFoundException::new);
-    }
 
 
     @Setter

@@ -16,17 +16,17 @@ public class FcmRepositoryImpl implements FcmRepository {
 
     @Override
     public Optional<Fcm> findByUserId(Long userId) {
-        fcmJpaRepository.findByUserEntityId(userId);
+        return fcmJpaRepository.findByUserEntityId(userId).map(FcmEntity::toModel);
     }
 
     @Override
     public Optional<Fcm> findByUser(User user) {
-        return Optional.empty();
+        return fcmJpaRepository.findByUserEntityId(user.getId()).map(FcmEntity::toModel);
     }
 
     @Override
     public void save(Fcm fcm) {
-        fcmJpaRepository.save(fcm);
+        fcmJpaRepository.save(FcmEntity.fromModel(fcm));
     }
 
 }

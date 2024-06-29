@@ -1,6 +1,6 @@
 package inflearn.interview.user.service;
 
-import inflearn.interview.notice.domain.NoticeDTO;
+import inflearn.interview.notice.controller.response.NoticeResponse;
 import inflearn.interview.notice.infrastructure.NoticeRepository;
 import inflearn.interview.post.controller.response.MyPostResponse;
 import inflearn.interview.post.service.PostRepository;
@@ -54,8 +54,8 @@ public class MyPageService {
         return MyVideoCommentResponse.from(findMyComment);
     }
 
-    public List<NoticeDTO> getMyNotice(Long userId) { // TODO 수정 필요
+    public List<NoticeResponse> getMyNotice(Long userId) { // TODO 수정 필요
         User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
-        return noticeRepository.findByUserEntity(UserEntity.fromModel(user)).stream().map(NoticeDTO::new).sorted(Comparator.comparing(NoticeDTO::getCreatedAt).reversed()).toList();
+        return noticeRepository.findByUserEntity(UserEntity.fromModel(user)).stream().map(NoticeResponse::new).sorted(Comparator.comparing(NoticeResponse::getCreatedAt).reversed()).toList();
     }
 }

@@ -3,7 +3,7 @@ package inflearn.interview.video.infrastructure;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import inflearn.interview.domain.dto.QVideoDTO2;
+import inflearn.interview.video.domain.QVideoDTO2;
 import inflearn.interview.video.domain.VideoDTO2;
 import inflearn.interview.video.service.CustomVideoRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static inflearn.interview.domain.QVideo.video;
+import static inflearn.interview.video.infrastructure.QVideoEntity.videoEntity;
+
 @Repository
 @RequiredArgsConstructor
 public class CustomVideoRepositoryImpl implements CustomVideoRepository {
@@ -25,20 +26,20 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository {
 
         List<VideoDTO2> result = jpaQueryFactory
                 .select(new QVideoDTO2(
-                        video.user.userId,
-                        video.user.name,
-                        video.videoId,
-                        video.videoLink,
-                        video.videoTitle,
-                        video.time,
-                        video.updatedTime,
-                        video.numOfLike,
-                        video.tag,
-                        video.thumbnailLink,
-                        video.user.image
+                        videoEntity.userEntity.id,
+                        videoEntity.userEntity.name,
+                        videoEntity.id,
+                        videoEntity.videoLink,
+                        videoEntity.videoTitle,
+                        videoEntity.time,
+                        videoEntity.updatedTime,
+                        videoEntity.numOfLike,
+                        videoEntity.tag,
+                        videoEntity.thumbnailLink,
+                        videoEntity.userEntity.image
                 ))
-                .from(video)
-                .where(video.exposure)
+                .from(videoEntity)
+                .where(videoEntity.exposure)
                 .where(keywordEq(keyword))
                 .orderBy(sortTypeEq(sortType))
                 .offset(pageable.getOffset())
@@ -47,9 +48,9 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository {
 
 
         Long total = jpaQueryFactory
-                .select(video.count())
-                .from(video)
-                .where(video.exposure)
+                .select(videoEntity.count())
+                .from(videoEntity)
+                .where(videoEntity.exposure)
                 .where(keywordEq(keyword))
                 .fetchOne();
 
@@ -60,7 +61,7 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository {
 
     private BooleanExpression keywordEq(String keyword) {
         if (!keyword.isEmpty()) {
-            return video.videoTitle.toLowerCase().contains(keyword).or(video.tag.toLowerCase().contains(keyword));
+            return videoEntity.videoTitle.toLowerCase().contains(keyword).or(videoEntity.tag.toLowerCase().contains(keyword));
         }
         return null;
     }
@@ -69,9 +70,9 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository {
 
         OrderSpecifier<?> orderSpecifier =
                 switch (sortType) {
-                    case "like" -> video.numOfLike.desc();
-                    case "new" -> video.time.desc();
-                    default -> video.time.desc();
+                    case "like" -> videoEntity.numOfLike.desc();
+                    case "new" -> videoEntity.time.desc();
+                    default -> videoEntity.time.desc();
                 };
 
         return orderSpecifier;

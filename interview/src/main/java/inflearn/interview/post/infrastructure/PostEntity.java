@@ -25,10 +25,10 @@ public class PostEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.REMOVE)
     private List<PostCommentEntity> postCommentEntities;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.REMOVE)
     private List<PostLikeEntity> postLikeEntities;
 
     private String title;

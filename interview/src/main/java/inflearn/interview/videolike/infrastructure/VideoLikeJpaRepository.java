@@ -10,8 +10,5 @@ import java.util.Optional;
 
 public interface VideoLikeJpaRepository extends JpaRepository<VideoLikeEntity, Long> {
 
-    @Query("select count(vl) from VideoLikeEntity vl where vl.video.videoId=:videoId")
-    Long countByVideoId(@Param("videoId") Long videoId);
-
     Optional<VideoLikeEntity> findByUserEntityAndVideoEntity(UserEntity userEntity, VideoEntity videoEntity);
 }

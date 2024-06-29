@@ -1,52 +1,57 @@
 package inflearn.interview.workbook.domain;
 
-import inflearn.interview.question.domain.Question;
-import inflearn.interview.user.infrastructure.UserEntity;
-import jakarta.persistence.*;
+import inflearn.interview.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
-@NoArgsConstructor
-@Entity
-@Setter
 public class Workbook {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
-
-    @OneToMany(mappedBy = "workbook", cascade = CascadeType.REMOVE)
-    private List<Question> questions;
-
+    private User user;
     private String title;
-
     private int numOfQuestion;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
-    public Workbook(UserEntity userEntity, String title) {
-        this.userEntity = userEntity;
+    @Builder
+    public Workbook(Long id, User user, String title, int numOfQuestion, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.user = user;
         this.title = title;
-        this.numOfQuestion = 0;
-        this.createdAt = LocalDateTime.now();
+        this.numOfQuestion = numOfQuestion;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public void increaseNumOfQuestion() {
-        this.numOfQuestion++;
+    public static Workbook from(User user, CreateWorkbook createWorkbook) {
+        return Workbook.builder()
+                .user(user)
+                .title(createWorkbook.getTitle())
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
-    public void decreaseNumOfQuestion() {
-        this.numOfQuestion--;
+    public Workbook plusNumOfQuestion() {
+        return Workbook.builder()
+                .id(id)
+                .user(user)
+                .title(title)
+                .numOfQuestion(numOfQuestion + 1)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
+    }
+
+    public Workbook minusNumOfQuestion() {
+        return Workbook.builder()
+                .id(id)
+                .user(user)
+                .title(title)
+                .numOfQuestion(numOfQuestion - 1)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
     }
 }

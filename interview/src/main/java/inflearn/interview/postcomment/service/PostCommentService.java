@@ -44,23 +44,26 @@ public class PostCommentService {
     }
 
     public PostCommentCreateResponse createComment(PostCommentCreate postCommentCreate, Long postId) {
+        //댓글이 달릴 게시글
         Post post = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
+
+        //게시글 작성자
+        User postWriter = userRepository.findPostWriter(postId);
+
+        //댓글 작성자
         User user = userRepository.findById(postCommentCreate.getUserId()).orElseThrow(OptionalNotFoundException::new);
         PostComment postComment = PostComment.from(postCommentCreate, post, user);
         postComment = postCommentRepository.save(postComment);
-        return PostCommentCreateResponse.from(postComment, user);
 
-
-        //TODO 알림 수정 필요
-        if (!(post.getUserEntity().getUserId().equals(postCommentDTO.getUserId()))) {
+        if (!(postWriter.equals(user))) {
             try {
-                fcmTokenService.commentSendNotification(saved.getPost().getUserEntity().getUserId(), saved.getPost().getTitle(), saved.getUserEntity().getName());
+                fcmTokenService.commentSendNotification(postWriter.getId(), post.getTitle(), user.getName());
             } catch (Exception e) {
                 log.error("PostComment 알림 전송 실패 = {}", e.getMessage());
             }
         }
 
-        return returnDto;
+        return PostCommentCreateResponse.from(postComment, user);
 
     }
 

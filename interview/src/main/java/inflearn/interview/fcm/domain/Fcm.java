@@ -1,26 +1,40 @@
 package inflearn.interview.fcm.domain;
 
-import inflearn.interview.user.infrastructure.UserEntity;
-import jakarta.persistence.*;
+import inflearn.interview.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
-@Setter
 public class Fcm {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String FcmToken;
-
-    @Column(name = "created_at")
+    private String fcmToken;
     private LocalDateTime createdAt;
+    private User user;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    UserEntity userEntity;
+    @Builder
+    public Fcm(Long id, String fcmToken, LocalDateTime createdAt, User user) {
+        this.id = id;
+        this.fcmToken = fcmToken;
+        this.createdAt = createdAt;
+        this.user = user;
+    }
+
+    public static Fcm from(String fcmToken, User user) {
+        return Fcm.builder()
+                .fcmToken(fcmToken)
+                .createdAt(LocalDateTime.now())
+                .user(user)
+                .build();
+    }
+
+    public Fcm update(String fcmToken) {
+        return Fcm.builder()
+                .id(id)
+                .fcmToken(fcmToken)
+                .createdAt(createdAt)
+                .user(user)
+                .build();
+    }
 }

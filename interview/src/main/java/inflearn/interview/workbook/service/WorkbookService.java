@@ -3,12 +3,16 @@ package inflearn.interview.workbook.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.common.service.GptCallCountService;
 import inflearn.interview.common.service.GptService;
+import inflearn.interview.question.controller.response.QuestionListResponse;
 import inflearn.interview.question.domain.Question;
-import inflearn.interview.user.infrastructure.UserEntity;
+import inflearn.interview.question.infrastructure.QuestionEntity;
+import inflearn.interview.user.domain.User;
 import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.workbook.controller.response.WorkbookListResponse;
 import inflearn.interview.workbook.domain.Workbook;
-import inflearn.interview.question.domain.QuestionRequestDTO;
-import inflearn.interview.workbook.domain.WorkbookRequestDTO;
+import inflearn.interview.workbook.infrastructure.WorkbookEntity;
+import inflearn.interview.question.domain.CreateQuestion;
+import inflearn.interview.workbook.domain.CreateWorkbook;
 import inflearn.interview.common.exception.GptCallCountExceededException;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.question.service.QuestionRepository;
@@ -33,65 +37,76 @@ public class WorkbookService {
     private final GptService gptService;
     private final GptCallCountService callCountService;
 
-    public List<Workbook> getWorkbooks(UserEntity userEntity) {
-        return workbookRepository.findAllByUser(userEntity);
+    private Workbook getById(Long id) {
+        return workbookRepository.findById(id).orElseThrow(OptionalNotFoundException::new);
     }
 
-    public void createWorkbook(WorkbookRequestDTO dto) throws JsonProcessingException {
-        UserEntity userEntity = userRepository.findById(dto.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        if (dto.getJob().isEmpty()) {
-            Workbook workbook = new Workbook(userEntity, dto.getTitle());
+
+    public List<WorkbookListResponse> getWorkbookList(Long userId) {
+        List<WorkbookEntity> workbookList = workbookRepository.findAllByUserId(userId);
+        return WorkbookListResponse.from(workbookList);
+    }
+
+    public void createWorkbook(CreateWorkbook createWorkbook) throws JsonProcessingException {
+        User user = userRepository.findById(createWorkbook.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        if (createWorkbook.getJob().isEmpty()) {
+            Workbook workbook = Workbook.from(user, createWorkbook);
             workbookRepository.save(workbook);
             return;
         }
-        if (callCountService.getQuestionCount(userEntity.getUserId()) < QUESTION_MAX_COUNT) {
-            callCountService.plusQuestionCallCount(userEntity.getUserId());
-            Workbook saved = workbookRepository.save(new Workbook(userEntity, dto.getTitle()));
-            String[] questionAndAnswer = gptService.GPTWorkBook(dto.getJob());
-            QuestionRequestDTO questionDto = new QuestionRequestDTO(dto.getUserId(), questionAndAnswer[0], questionAndAnswer[1]);
-            createQuestion(saved.getId(), questionDto);
+        if (callCountService.getQuestionCount(user.getId()) < QUESTION_MAX_COUNT) {
+            callCountService.plusQuestionCallCount(user.getId());
+            Workbook workbook = Workbook.from(user, createWorkbook);
+            workbook = workbookRepository.save(workbook);
+
+            String[] questionAndAnswer = gptService.GPTWorkBook(createWorkbook.getJob());
+
+            CreateQuestion createQuestion = CreateQuestion.builder()
+                    .userId(user.getId())
+                    .questionContent(questionAndAnswer[0])
+                    .answerContent(questionAndAnswer[1])
+                    .build();
+
+            createQuestion(workbook.getId(), createQuestion);
         } else {
             throw new GptCallCountExceededException();
         }
     }
 
-    public Workbook findWorkbook(Long workbookId) {
-        return workbookRepository.findById(workbookId).orElseGet(null);
-    }
-
-
-    public Workbook updateWorkbook(Long workbookId, String newTitle) {
-        Workbook workbook = findWorkbook(workbookId);
-        workbook.setTitle(newTitle);
-        return workbookRepository.save(workbook);
-    }
 
     public void deleteWorkbook(Long workbookId) {
-        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
+        Workbook workbook = getById(workbookId);
         workbookRepository.delete(workbook);
     }
 
     /**
      *  질문 세트
      */
-    public void createQuestion(Long workbookId, QuestionRequestDTO dto) {
-        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
-        workbook.increaseNumOfQuestion();
+    public void createQuestion(Long workbookId, CreateQuestion createQuestion) {
+        Workbook workbook = getById(workbookId);
+        workbook = workbook.plusNumOfQuestion();
+        workbook = workbookRepository.save(workbook);
 
-        Question question = new Question(workbook, dto.getQuestionContent(), dto.getAnswerContent());
+        Question question = Question.from(workbook, createQuestion);
         questionRepository.save(question);
     }
 
     public void deleteQuestion(Long workbookId, Long questionId) {
-        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
-        workbook.decreaseNumOfQuestion();
+        Workbook workbook = getById(workbookId);
+        workbook = workbook.minusNumOfQuestion();
+        workbookRepository.save(workbook);
 
-        questionRepository.deleteById(questionId);
+        Question question = questionRepository.findById(questionId).orElseThrow(OptionalNotFoundException::new);
+        questionRepository.delete(question);
+
     }
 
-    public List<Question> findQuestion(Long workbookId) {
-        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(OptionalNotFoundException::new);
-        return questionRepository.findByWorkbook(workbook);
+    public List<QuestionListResponse> findQuestionList(Long workbookId) {
+        List<QuestionEntity> list = questionRepository.findAllByWorkbook(workbookId);
+        return QuestionListResponse.from(list);
     }
+
+
+
 }
 

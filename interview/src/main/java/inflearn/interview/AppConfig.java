@@ -2,6 +2,7 @@ package inflearn.interview;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import inflearn.interview.user.service.CustomUserDetailsService;
+import inflearn.interview.user.service.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;

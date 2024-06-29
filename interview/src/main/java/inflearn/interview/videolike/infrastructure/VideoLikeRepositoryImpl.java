@@ -18,18 +18,8 @@ public class VideoLikeRepositoryImpl implements VideoLikeRepository {
     private final VideoLikeJpaRepository videoLikeJpaRepository;
 
     @Override
-    public void deleteByUserAndVideo(User user, Video video) {
-
-    }
-
-    @Override
     public Optional<VideoLike> findByUserAndVideo(User user, Video video) {
         return videoLikeJpaRepository.findByUserEntityAndVideoEntity(UserEntity.fromModel(user), VideoEntity.fromModel(video)).map(VideoLikeEntity::toModel);
-    }
-
-    @Override
-    public Long countAllByVideo(Video video) {
-        return null;
     }
 
     @Override

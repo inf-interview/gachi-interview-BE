@@ -1,7 +1,7 @@
 package inflearn.interview.user.controller;
 
 import inflearn.interview.common.aop.ValidateUserParam;
-import inflearn.interview.notice.domain.NoticeDTO;
+import inflearn.interview.notice.controller.response.NoticeResponse;
 import inflearn.interview.user.service.MyPageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +49,7 @@ public class MyPageController {
     @ValidateUserParam
     @GetMapping("/{user_id}/notice")
     public ResponseEntity<?> getNotice(@PathVariable(name = "user_id") Long userId) {
-        List<NoticeDTO> getNotice = myPageService.getMyNotice(userId);
-        return ResponseEntity.ok(getNotice);
+        List<NoticeResponse> noticeResponse = myPageService.getMyNotice(userId);
+        return ResponseEntity.ok(noticeResponse);
     }
 }

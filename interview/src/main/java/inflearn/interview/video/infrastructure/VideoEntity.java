@@ -3,7 +3,7 @@ package inflearn.interview.video.infrastructure;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
 import inflearn.interview.videolike.infrastructure.VideoLikeEntity;
-import inflearn.interview.videoquestion.domain.VideoQuestion;
+import inflearn.interview.videoquestion.infrastructure.VideoQuestionEntity;
 import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -51,14 +51,14 @@ public class VideoEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "videoEntity", cascade = CascadeType.REMOVE)
     List<VideoCommentEntity> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "videoEntity", cascade = CascadeType.REMOVE)
     List<VideoLikeEntity> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "video", cascade = CascadeType.REMOVE)
-    List<VideoQuestion> videoQuestions = new ArrayList<>();
+    @OneToMany(mappedBy = "videoEntity", cascade = CascadeType.REMOVE)
+    List<VideoQuestionEntity> videoQuestionEntities = new ArrayList<>();
 
     public static VideoEntity fromModel(Video video) {
         VideoEntity videoEntity = new VideoEntity();

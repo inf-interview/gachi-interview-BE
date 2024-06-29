@@ -1,35 +1,30 @@
 package inflearn.interview.videoquestion.domain;
 
-import inflearn.interview.video.infrastructure.VideoEntity;
-import jakarta.persistence.*;
+import inflearn.interview.question.domain.Question;
+import inflearn.interview.video.domain.Video;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-@Entity
 public class VideoQuestion {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
-    private VideoEntity videoEntity;
-
-    //GPT에 전달할 Question의 id를 찾기 위해 저장
+    private Video video;
     private Long questionId;
-
-    //GPT에 전달할 질문 내용
     private String question;
 
-    public VideoQuestion(VideoEntity videoEntity, Long questionId, String question) {
-        this.videoEntity = videoEntity;
+    @Builder
+    public VideoQuestion(Long id, Video video, Long questionId, String question) {
+        this.id = id;
+        this.video = video;
         this.questionId = questionId;
         this.question = question;
     }
 
-    public VideoQuestion() {
+    public static VideoQuestion from(Video video, Question question) {
+        return VideoQuestion.builder()
+                .video(video)
+                .questionId(question.getId())
+                .question(question.getContent())
+                .build();
     }
 }

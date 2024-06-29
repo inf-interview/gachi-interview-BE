@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
-public class FcmTokenDTO {
+public class SaveFcmToken {
 
     private String fcmToken;
 }

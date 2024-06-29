@@ -11,5 +11,9 @@ public interface UserRepository {
 
     Optional<User> findById(Long id);
 
-    User findWriter(Long postId);
+    User findPostWriter(Long postId);
+
+    User findVideoWriter(Long videoId);
+
+    Optional<User> findAdmin(String role);
 }

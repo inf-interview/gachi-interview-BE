@@ -1,15 +1,14 @@
 package inflearn.interview.workbook.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import inflearn.interview.common.aop.ValidateUser;
-import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.question.domain.QuestionRequestDTO;
-import inflearn.interview.question.domain.QuestionResponseDTO;
-import inflearn.interview.workbook.domain.WorkbookRequestDTO;
-import inflearn.interview.workbook.domain.WorkbookResponseDTO;
+import inflearn.interview.user.domain.User;
+import inflearn.interview.question.domain.CreateQuestion;
+import inflearn.interview.question.controller.response.QuestionListResponse;
+import inflearn.interview.workbook.domain.CreateWorkbook;
+import inflearn.interview.workbook.controller.response.WorkbookListResponse;
 import inflearn.interview.workbook.service.WorkbookService;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,23 +25,19 @@ public class WorkbookController {
     private final WorkbookService workbookService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<WorkbookResponseDTO>> getWorkbookList(@AuthenticationPrincipal UserEntity userEntity) {
-        List<WorkbookResponseDTO> workbooks = workbookService.getWorkbooks(userEntity).stream()
-                .map(WorkbookResponseDTO::new).collect(Collectors.toList());
-
-        return new ResponseEntity<>(workbooks, HttpStatus.OK);
+    public ResponseEntity<List<WorkbookListResponse>> getWorkbookList(@AuthenticationPrincipal User user) {
+        List<WorkbookListResponse> list = workbookService.getWorkbookList(user.getId());
+        return ResponseEntity.ok(list);
     }
 
-    @ValidateUser
     @PostMapping
-    public ResponseEntity<String> createWorkbook(@RequestBody WorkbookRequestDTO dto) throws JsonProcessingException {
-        workbookService.createWorkbook(dto);
+    public ResponseEntity<String> createWorkbook(@RequestBody CreateWorkbook createWorkbook) throws JsonProcessingException {
+        workbookService.createWorkbook(createWorkbook);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ValidateUser
     @DeleteMapping("/{workbook_id}")
-    public ResponseEntity<?> deleteWorkbook(@RequestBody WorkbookRequestDTO dto, @PathVariable(name = "workbook_id") Long workbookId) {
+    public ResponseEntity<?> deleteWorkbook(@RequestBody CreateWorkbook dto, @PathVariable(name = "workbook_id") Long workbookId) {
         workbookService.deleteWorkbook(workbookId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -52,16 +47,15 @@ public class WorkbookController {
      * 질문 세트
      */
     @GetMapping("/{workbook_id}/question/list")
-    public ResponseEntity<List<QuestionResponseDTO>> getWorkbook(@PathVariable(name = "workbook_id") Long workbookId) {
-        List<QuestionResponseDTO> questions = workbookService.findQuestion(workbookId).stream().map(QuestionResponseDTO::new).toList();
-        return ResponseEntity.ok(questions);
+    public ResponseEntity<List<QuestionListResponse>> getWorkbook(@PathVariable(name = "workbook_id") Long workbookId) {
+        List<QuestionListResponse> list = workbookService.findQuestionList(workbookId);
+        return ResponseEntity.ok(list);
 
     }
 
-    @ValidateUser
     @PostMapping("/{workbook_id}/question")
-    public ResponseEntity<?> writeQuestion(@PathVariable(name = "workbook_id") Long workbookId, @RequestBody QuestionRequestDTO dto) {
-        workbookService.createQuestion(workbookId, dto);
+    public ResponseEntity<?> writeQuestion(@PathVariable(name = "workbook_id") Long workbookId, @RequestBody CreateQuestion createQuestion) {
+        workbookService.createQuestion(workbookId, createQuestion);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

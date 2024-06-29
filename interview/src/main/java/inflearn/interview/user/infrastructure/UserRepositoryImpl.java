@@ -29,7 +29,17 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findWriter(Long postId) {
-        return userJpaRepository.findWriter(postId);
+    public User findPostWriter(Long postId) {
+        return userJpaRepository.findPostWriter(postId).toModel();
+    }
+
+    @Override
+    public User findVideoWriter(Long videoId) {
+        return userJpaRepository.findVideoWriter(videoId).toModel();
+    }
+
+    @Override
+    public Optional<User> findAdmin(String role) {
+        return userJpaRepository.findAdmin(role).map(UserEntity::toModel);
     }
 }

@@ -1,6 +1,5 @@
 package inflearn.interview.postcomment.controller;
 
-import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.postcomment.controller.response.PostCommentCreateResponse;
 import inflearn.interview.postcomment.controller.response.PostCommentListResponse;
 import inflearn.interview.postcomment.domain.PostCommentCreate;
@@ -28,7 +27,6 @@ public class PostCommentController {
     }
 
     //댓글 작성
-    @ValidateUser
     @PostMapping("/submit")
     public ResponseEntity<PostCommentCreateResponse> postCommentWrite(@PathVariable(name = "post_id") Long postId, @RequestBody PostCommentCreate postCommentCreate) {
         PostCommentCreateResponse response = postCommentService.createComment(postCommentCreate, postId);
@@ -36,7 +34,6 @@ public class PostCommentController {
     }
 
     //댓글 수정
-    @ValidateUser
     @PatchMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody PostCommentUpdate postCommentUpdate) {
         postCommentService.updateComment(postCommentUpdate);
@@ -44,7 +41,6 @@ public class PostCommentController {
     }
 
     //댓글 삭제
-    @ValidateUser
     @DeleteMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody PostCommentDelete postCommentDelete) {
         postCommentService.deleteComment(postCommentDelete);

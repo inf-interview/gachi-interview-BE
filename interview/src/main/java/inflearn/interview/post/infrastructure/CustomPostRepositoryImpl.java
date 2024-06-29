@@ -4,7 +4,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import inflearn.interview.post.controller.response.PostResponse;
-import inflearn.interview.domain.dto.QPostDTO;
+import inflearn.interview.post.controller.response.QPostResponse;
 import inflearn.interview.post.service.CustomPostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.querydsl.jpa.JPAExpressions.select;
-import static inflearn.interview.domain.QPost.post;
-import static inflearn.interview.domain.QPostComment.postComment;
+import static inflearn.interview.post.infrastructure.QPostEntity.postEntity;
+import static inflearn.interview.postcomment.infrastructure.QPostCommentEntity.postCommentEntity;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,20 +29,20 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
     public Page<PostResponse> findAllPostByPageInfo(String sortType, String category, String keyword, Pageable pageable) {
 
         List<PostResponse> result = jpaQueryFactory
-                .select(new QPostDTO(
-                        post.user.userId,
-                        post.user.name,
-                        post.postId,
-                        post.title,
-                        post.content,
-                        post.category,
-                        post.createdAt,
-                        post.updatedAt,
-                        post.numOfLike,
-                        select(postComment.count()).from(postComment).where(postComment.post.postId.eq(post.postId)),
-                        post.tag,
-                        post.user.image))
-                .from(post)
+                .select(new QPostResponse(
+                        postEntity.userEntity.id,
+                        postEntity.userEntity.name,
+                        postEntity.id,
+                        postEntity.title,
+                        postEntity.content,
+                        postEntity.category,
+                        postEntity.createdAt,
+                        postEntity.updatedAt,
+                        postEntity.numOfLike,
+                        select(postCommentEntity.count()).from(postCommentEntity).where(postCommentEntity.postEntity.id.eq(postEntity.id)),
+                        postEntity.tag,
+                        postEntity.userEntity.image))
+                .from(postEntity)
                 .where(categoryEq(category))
                 .where(keywordEq(keyword))
                 .orderBy(sortTypeEq(sortType))
@@ -51,8 +51,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                 .fetch();
 
         Long total = jpaQueryFactory
-                .select(post.count())
-                .from(post)
+                .select(postEntity.count())
+                .from(postEntity)
                 .where(categoryEq(category))
                 .where(keywordEq(keyword))
                 .fetchOne();
@@ -66,10 +66,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
         switch (category) {
             case "studies" -> {
-                return post.category.eq("studies");
+                return postEntity.category.eq("studies");
             }
             case "reviews" -> {
-                return post.category.eq("reviews");
+                return postEntity.category.eq("reviews");
             }
             default -> {
                 return null;
@@ -79,7 +79,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
     private BooleanExpression keywordEq(String keyword) {
         if (!keyword.isEmpty()) {
-            return post.title.toLowerCase().contains(keyword).or(post.tag.toLowerCase().contains(keyword));
+            return postEntity.title.toLowerCase().contains(keyword).or(postEntity.tag.toLowerCase().contains(keyword));
         }
         return null;
     }
@@ -88,9 +88,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
         OrderSpecifier<?> orderSpecifier =
                 switch (sortType) {
-            case "like" -> post.numOfLike.desc();
-            case "new" -> post.createdAt.desc();
-            default -> post.createdAt.desc();
+            case "like" -> postEntity.numOfLike.desc();
+            case "new" -> postEntity.createdAt.desc();
+            default -> postEntity.createdAt.desc();
         };
 
         return orderSpecifier;

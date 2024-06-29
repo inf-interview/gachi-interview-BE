@@ -1,6 +1,7 @@
 package inflearn.interview.video.service;
 
 import inflearn.interview.common.service.S3Service;
+import inflearn.interview.question.domain.Question;
 import inflearn.interview.question.service.QuestionRepository;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.service.UserRepository;
@@ -8,10 +9,10 @@ import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.common.exception.RequestDeniedException;
-import inflearn.interview.question.domain.Question;
-import inflearn.interview.videolike.infrastructure.VideoLikeEntity;
+import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videolike.service.VideoLikeRepository;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
+import inflearn.interview.videoquestion.infrastructure.VideoQuestionEntity;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,12 +42,12 @@ public class VideoService {
 
         Video video = getById(videoId);
         if (video.getExposure()) {
-            Optional<VideoLikeEntity> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
+            Optional<VideoLike> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
             return VideoDetailResponse.from(video, user, videoLike.isPresent());
         }
         else {
             if (user.equals(video.getUser())) {
-                Optional<VideoLikeEntity> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
+                Optional<VideoLike> videoLike = videoLikeRepository.findByUserAndVideo(user, video);
                 return VideoDetailResponse.from(video, user, videoLike.isPresent());
             }
             throw new RequestDeniedException();
@@ -75,13 +76,13 @@ public class VideoService {
 
     public Long create(VideoCreate videoCreate) {
         User user = userRepository.findById(videoCreate.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        Video video = Video.from(videoCreate, user);
+        video = videoRepository.save(video);
         Long[] questions = videoCreate.getQuestions();
         for (Long question : questions) {
             Question getQuestion = questionRepository.findById(question).orElseThrow(OptionalNotFoundException::new);
-            videoQuestionRepository.save(VideoQuestion.from(getQuestion));
+            videoQuestionRepository.save(VideoQuestion.from(video, getQuestion));
         }
-        Video video = Video.from(videoCreate, user);
-        video = videoRepository.save(video);
         return video.getId();
     }
 }

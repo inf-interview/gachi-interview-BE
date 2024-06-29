@@ -1,6 +1,5 @@
 package inflearn.interview.video.controller;
 
-import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.common.domain.ErrorResponse;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
@@ -38,20 +37,17 @@ public class VideoController {
         }
     }
 
-    @ValidateUser
     @PatchMapping("/{video_id}")
     public ResponseEntity<?> editController(@PathVariable Long video_id, @RequestBody VideoUpdate videoUpdate) {
         videoService.update(videoUpdate);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ValidateUser
     @DeleteMapping("/{video_id}")
     public void deleteController(@PathVariable Long video_id, @RequestBody VideoDelete videoDelete) {
         videoService.delete(videoDelete);
     }
 
-    @ValidateUser
     @PostMapping("/{video_id}/like")
     public ResponseEntity<LikeResponse> likeVideoController(@PathVariable Long video_id, @RequestBody VideoLikeRequest videoLikeRequest) {
         LikeResponse response = videoLikeService.addLike(videoLikeRequest);

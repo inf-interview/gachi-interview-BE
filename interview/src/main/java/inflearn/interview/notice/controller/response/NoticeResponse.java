@@ -1,4 +1,4 @@
-package inflearn.interview.notice.domain;
+package inflearn.interview.notice.controller.response;
 
 import inflearn.interview.notice.infrastructure.Notice;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class NoticeDTO {
+public class NoticeResponse {
 
     private Long id;
 
@@ -16,7 +16,7 @@ public class NoticeDTO {
 
     private LocalDateTime createdAt;
 
-    public NoticeDTO(Notice notice) {
+    public NoticeResponse(Notice notice) {
         this.id = notice.getId();
         this.content = notice.getContent();
         this.createdAt = notice.getCreatedAt();

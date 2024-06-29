@@ -20,7 +20,7 @@ public class InterviewApplication {
 
 	@PostConstruct
 	public void initFirebase() throws IOException {
-		FileInputStream serviceAccount = new FileInputStream("/home/ubuntu/file/firebase-adminsdk.json");
+		FileInputStream serviceAccount = new FileInputStream("src/main/resources/firebase-adminsdk.json");
 
 		FirebaseOptions options = FirebaseOptions.builder()
 				.setCredentials(GoogleCredentials.fromStream(serviceAccount))

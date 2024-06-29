@@ -10,11 +10,8 @@ import inflearn.interview.videolike.infrastructure.VideoLikeEntity;
 import java.util.Optional;
 
 public interface VideoLikeRepository {
-    void deleteByUserAndVideo(User user, Video video);
 
     Optional<VideoLike> findByUserAndVideo(User user, Video video);
-
-    Long countAllByVideo(Video video);
 
     VideoLike save(VideoLike videoLike);
 

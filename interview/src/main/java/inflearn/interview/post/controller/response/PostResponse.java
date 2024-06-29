@@ -2,7 +2,6 @@ package inflearn.interview.post.controller.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import inflearn.interview.common.domain.BaseDTO;
-import inflearn.interview.post.domain.Post;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

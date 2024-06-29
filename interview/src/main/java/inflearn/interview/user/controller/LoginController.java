@@ -1,7 +1,5 @@
 package inflearn.interview.user.controller;
 
-import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.fcm.domain.FcmTokenDTO;
 import inflearn.interview.user.controller.response.LoginResponse;
 import inflearn.interview.user.service.LoginService;
 import inflearn.interview.user.service.UserService;
@@ -13,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;

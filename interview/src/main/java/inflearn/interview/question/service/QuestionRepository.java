@@ -1,12 +1,20 @@
 package inflearn.interview.question.service;
 
 import inflearn.interview.question.domain.Question;
-import inflearn.interview.workbook.domain.Workbook;
+import inflearn.interview.question.infrastructure.QuestionEntity;
+import inflearn.interview.workbook.infrastructure.WorkbookEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface QuestionRepository extends JpaRepository<Question, Long> {
+public interface QuestionRepository {
 
-    List<Question> findByWorkbook(Workbook workbook);
+    Question save(Question question);
+
+    Optional<Question> findById(Long questionId);
+
+    void delete(Question question);
+
+    List<QuestionEntity> findAllByWorkbook(Long workbookId);
 }

@@ -1,6 +1,5 @@
 package inflearn.interview.post.controller;
 
-import inflearn.interview.common.aop.ValidateUser;
 import inflearn.interview.post.controller.response.PostCreateResponse;
 import inflearn.interview.post.controller.response.PostDetailResponse;
 import inflearn.interview.post.controller.response.PostResponse;
@@ -12,10 +11,6 @@ import inflearn.interview.post.domain.PostUpdate;
 import inflearn.interview.postlike.controller.response.LikeResponse;
 import inflearn.interview.postlike.domain.PostLikeRequest;
 import inflearn.interview.user.domain.User;
-import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.common.domain.ErrorResponse;
-import inflearn.interview.common.domain.LikeDTO;
-import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,7 +41,6 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-    @ValidateUser
     @PostMapping("/write")
     public ResponseEntity<PostCreateResponse> postWrite(@RequestBody @Validated(PostResponse.valid1.class) PostCreate postCreate) {
 
@@ -59,7 +53,6 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @ValidateUser
     @PatchMapping("/{postId}/edit")
     public ResponseEntity<?> postEdit(@PathVariable Long postId, @RequestBody PostUpdate postUpdate) {
         Post post = postService.update(postId, postUpdate);
@@ -70,14 +63,12 @@ public class PostController {
 
     }
 
-    @ValidateUser
     @DeleteMapping("/{postId}/delete")
     public ResponseEntity<?> postDelete(@PathVariable Long postId, @RequestBody PostDelete postDelete) {
         postService.deletePost(postDelete);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ValidateUser
     @PostMapping("/{postId}/like")
     public ResponseEntity<?> postLike(@PathVariable Long postId, @RequestBody PostLikeRequest postLike) {
         LikeResponse likeResponse = postService.likePost(postLike);

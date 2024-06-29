@@ -10,9 +10,7 @@ import inflearn.interview.postcomment.service.PostCommentRepository;
 import inflearn.interview.postlike.controller.response.LikeResponse;
 import inflearn.interview.postlike.domain.PostLike;
 import inflearn.interview.postlike.domain.PostLikeRequest;
-import inflearn.interview.postlike.infrastructure.PostLikeEntity;
 import inflearn.interview.user.domain.User;
-import inflearn.interview.common.domain.LikeDTO;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.postlike.service.PostLikeRepository;
 import inflearn.interview.user.service.UserRepository;
@@ -48,7 +46,7 @@ public class PostService {
 
     public PostDetailResponse getPostDetail(Long postId, Long userId) {
         Post post = getById(postId);
-        User writer = userRepository.findWriter(postId);
+        User writer = userRepository.findPostWriter(postId);
         int numOfComments = postCommentRepository.getCommentCount(postId);
         Optional<PostLike> postLike = postLikeRepository.findPostLike(userId, postId);
         if (postLike.isEmpty()) {
