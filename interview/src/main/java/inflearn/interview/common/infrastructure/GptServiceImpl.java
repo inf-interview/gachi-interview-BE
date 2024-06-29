@@ -219,8 +219,6 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-
-
     @Setter
     @Getter
     static class RequestBody {

@@ -1,7 +1,6 @@
 package inflearn.interview.common.aop;
 
 import inflearn.interview.user.domain.User;
-import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.exception.UserValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

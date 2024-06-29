@@ -2,7 +2,6 @@ package inflearn.interview.common.config;
 
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.domain.UserCreate;
-import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.user.service.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

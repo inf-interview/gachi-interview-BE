@@ -9,15 +9,12 @@ import inflearn.interview.postcomment.domain.*;
 import inflearn.interview.postcomment.infrastructure.PostCommentEntity;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.common.exception.OptionalNotFoundException;
-import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.user.service.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 

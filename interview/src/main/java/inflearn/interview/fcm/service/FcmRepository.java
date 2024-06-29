@@ -1,7 +1,6 @@
 package inflearn.interview.fcm.service;
 
 import inflearn.interview.fcm.domain.Fcm;
-import inflearn.interview.fcm.infrastructure.FcmEntity;
 import inflearn.interview.user.domain.User;
 
 import java.util.Optional;

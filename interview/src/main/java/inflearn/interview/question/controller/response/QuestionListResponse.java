@@ -3,7 +3,6 @@ package inflearn.interview.question.controller.response;
 import inflearn.interview.question.infrastructure.QuestionEntity;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.stream.Collectors;

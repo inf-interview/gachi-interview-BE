@@ -1,7 +1,6 @@
 package inflearn.interview.common.service;
 
 import inflearn.interview.user.domain.User;
-import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.common.exception.TokenNotValidateException;
 import inflearn.interview.user.service.UserRepository;

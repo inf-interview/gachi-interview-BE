@@ -12,7 +12,6 @@ import inflearn.interview.common.exception.RequestDeniedException;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videolike.service.VideoLikeRepository;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
-import inflearn.interview.videoquestion.infrastructure.VideoQuestionEntity;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
