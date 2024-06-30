@@ -1,14 +1,12 @@
 package inflearn.interview.videolike.service;
 
-import inflearn.interview.user.domain.User;
-import inflearn.interview.video.domain.Video;
 import inflearn.interview.videolike.domain.VideoLike;
 
 import java.util.Optional;
 
 public interface VideoLikeRepository {
 
-    Optional<VideoLike> findByUserAndVideo(User user, Video video);
+    Optional<VideoLike> findVideoLike(Long userId, Long videoId);
 
     VideoLike save(VideoLike videoLike);
 

@@ -83,7 +83,7 @@ public class Video {
                 .exposure(exposure)
                 .videoTitle(videoTitle)
                 .thumbnailLink(thumbnailLink)
-                .numOfLike(numOfLike + 1)
+                .numOfLike(numOfLike - 1)
                 .videoLink(videoLink)
                 .tag(tag)
                 .user(user)

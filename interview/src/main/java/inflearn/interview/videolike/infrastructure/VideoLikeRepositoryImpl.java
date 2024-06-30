@@ -1,8 +1,6 @@
 package inflearn.interview.videolike.infrastructure;
 
-import inflearn.interview.user.domain.User;
 import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.video.domain.Video;
 import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videolike.service.VideoLikeRepository;
@@ -18,8 +16,8 @@ public class VideoLikeRepositoryImpl implements VideoLikeRepository {
     private final VideoLikeJpaRepository videoLikeJpaRepository;
 
     @Override
-    public Optional<VideoLike> findByUserAndVideo(User user, Video video) {
-        return videoLikeJpaRepository.findByUserEntityAndVideoEntity(UserEntity.fromModel(user), VideoEntity.fromModel(video)).map(VideoLikeEntity::toModel);
+    public Optional<VideoLike> findVideoLike(Long userId, Long videoId) {
+        return videoLikeJpaRepository.findVideoLikeByUserIdAndPostId(userId, videoId).map(VideoLikeEntity::toModel);
     }
 
     @Override

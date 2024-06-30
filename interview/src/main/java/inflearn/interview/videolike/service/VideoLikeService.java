@@ -25,7 +25,7 @@ public class VideoLikeService {
     public LikeResponse addLike(VideoLikeRequest videoLikeRequest){
         Video video = videoRepository.findById(videoLikeRequest.getVideoId()).orElseThrow(OptionalNotFoundException::new);
         User user = userRepository.findById(videoLikeRequest.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        Optional<VideoLike> getLike = videoLikeRepository.findByUserAndVideo(user, video);
+        Optional<VideoLike> getLike = videoLikeRepository.findVideoLike(videoLikeRequest.getUserId(), videoLikeRequest.getVideoId());
 
         if (getLike.isEmpty()) {
             VideoLike videoLike = VideoLike.from(user, video);
