@@ -25,10 +25,10 @@ public class Workbook {
         this.updatedAt = updatedAt;
     }
 
-    public static Workbook from(User user, CreateWorkbook createWorkbook) {
+    public static Workbook from(User user, WorkbookCreate workbookCreate) {
         return Workbook.builder()
                 .user(user)
-                .title(createWorkbook.getTitle())
+                .title(workbookCreate.getTitle())
                 .createdAt(LocalDateTime.now())
                 .build();
     }

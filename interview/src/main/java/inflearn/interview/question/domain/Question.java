@@ -25,11 +25,11 @@ public class Question {
         this.updatedAt = updatedAt;
     }
 
-    public static Question from(Workbook workbook, CreateQuestion createQuestion) {
+    public static Question from(Workbook workbook, QuestionCreate questionCreate) {
         return Question.builder()
                 .workbook(workbook)
-                .content(createQuestion.getQuestionContent())
-                .answer(createQuestion.getAnswerContent())
+                .content(questionCreate.getQuestionContent())
+                .answer(questionCreate.getAnswerContent())
                 .createdAt(LocalDateTime.now())
                 .build();
     }

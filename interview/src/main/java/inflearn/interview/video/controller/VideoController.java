@@ -10,7 +10,7 @@ import inflearn.interview.video.domain.VideoUpdate;
 import inflearn.interview.videolike.controller.response.LikeResponse;
 import inflearn.interview.videolike.domain.VideoLikeRequest;
 import inflearn.interview.videolike.service.VideoLikeService;
-import inflearn.interview.video.service.VideoService;
+import inflearn.interview.video.service.VideoServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class VideoController {
 
-    private final VideoService videoService;
+    private final VideoServiceImpl videoServiceImpl;
     private final VideoLikeService videoLikeService;
 
     @GetMapping("/{video_id}")
     public ResponseEntity<?> getVideoController(@PathVariable Long video_id, @AuthenticationPrincipal User user) {
         try {
-            VideoDetailResponse response = videoService.getVideoById(video_id, user);
+            VideoDetailResponse response = videoServiceImpl.getVideoById(video_id, user);
             return ResponseEntity.ok(response);
         } catch (RequestDeniedException e) {
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Access Denied", "권한이 없습니다");
@@ -39,13 +39,13 @@ public class VideoController {
 
     @PatchMapping("/{video_id}")
     public ResponseEntity<?> editController(@PathVariable Long video_id, @RequestBody VideoUpdate videoUpdate) {
-        videoService.update(videoUpdate);
+        videoServiceImpl.update(videoUpdate);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{video_id}")
     public void deleteController(@PathVariable Long video_id, @RequestBody VideoDelete videoDelete) {
-        videoService.delete(videoDelete);
+        videoServiceImpl.delete(videoDelete);
     }
 
     @PostMapping("/{video_id}/like")
@@ -58,7 +58,7 @@ public class VideoController {
     public Page<VideoDTO2> videoListController(@RequestParam(defaultValue = "1") int page,
                                                @RequestParam(defaultValue = "new") String sortType,
                                                @RequestParam(defaultValue = "") String keyword) {
-        return videoService.getVideoList(sortType, keyword, page);
+        return videoServiceImpl.getVideoList(sortType, keyword, page);
     }
 
 }

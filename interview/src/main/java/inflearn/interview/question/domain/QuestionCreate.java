@@ -7,17 +7,17 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateQuestion implements BaseDTO {
+public class QuestionCreate implements BaseDTO {
 
     private Long userId;
     private String questionContent;
     private String answerContent;
 
-    public CreateQuestion() {
+    public QuestionCreate() {
     }
 
     @Builder
-    public CreateQuestion(Long userId, String questionContent, String answerContent) {
+    public QuestionCreate(Long userId, String questionContent, String answerContent) {
         this.userId = userId;
         this.questionContent = questionContent;
         this.answerContent = answerContent;

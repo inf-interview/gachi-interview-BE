@@ -36,18 +36,23 @@ public class Video {
     public static Video from(VideoCreate videoCreate, User user) {
         return Video.builder()
                 .user(user)
+                .time(LocalDateTime.now())
                 .exposure(videoCreate.isExposure())
                 .videoLink(videoCreate.getVideoLink())
                 .videoTitle(videoCreate.getVideoTitle())
                 .tag(tagConverter(videoCreate.getTags()))
                 .thumbnailLink(videoCreate.getThumbnailLink())
+                .numOfLike(0)
                 .build();
     }
 
     public Video update(VideoUpdate videoUpdate) {
         return Video.builder()
+                .id(id)
                 .user(user)
                 .exposure(videoUpdate.isExposure())
+                .time(time)
+                .updatedTime(LocalDateTime.now())
                 .videoLink(videoLink)
                 .videoTitle(videoUpdate.getVideoTitle())
                 .tag(tagConverter(videoUpdate.getTags()))

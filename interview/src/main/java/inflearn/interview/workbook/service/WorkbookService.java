@@ -11,8 +11,8 @@ import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.workbook.controller.response.WorkbookListResponse;
 import inflearn.interview.workbook.domain.Workbook;
 import inflearn.interview.workbook.infrastructure.WorkbookEntity;
-import inflearn.interview.question.domain.CreateQuestion;
-import inflearn.interview.workbook.domain.CreateWorkbook;
+import inflearn.interview.question.domain.QuestionCreate;
+import inflearn.interview.workbook.domain.WorkbookCreate;
 import inflearn.interview.common.exception.GptCallCountExceededException;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.question.service.QuestionRepository;
@@ -47,27 +47,27 @@ public class WorkbookService {
         return WorkbookListResponse.from(workbookList);
     }
 
-    public void createWorkbook(CreateWorkbook createWorkbook) throws JsonProcessingException {
-        User user = userRepository.findById(createWorkbook.getUserId()).orElseThrow(OptionalNotFoundException::new);
-        if (createWorkbook.getJob().isEmpty()) {
-            Workbook workbook = Workbook.from(user, createWorkbook);
+    public void createWorkbook(WorkbookCreate workbookCreate) throws JsonProcessingException {
+        User user = userRepository.findById(workbookCreate.getUserId()).orElseThrow(OptionalNotFoundException::new);
+        if (workbookCreate.getJob().isEmpty()) {
+            Workbook workbook = Workbook.from(user, workbookCreate);
             workbookRepository.save(workbook);
             return;
         }
         if (callCountService.getQuestionCount(user.getId()) < QUESTION_MAX_COUNT) {
             callCountService.plusQuestionCallCount(user.getId());
-            Workbook workbook = Workbook.from(user, createWorkbook);
+            Workbook workbook = Workbook.from(user, workbookCreate);
             workbook = workbookRepository.save(workbook);
 
-            String[] questionAndAnswer = gptService.GPTWorkBook(createWorkbook.getJob());
+            String[] questionAndAnswer = gptService.GPTWorkBook(workbookCreate.getJob());
 
-            CreateQuestion createQuestion = CreateQuestion.builder()
+            QuestionCreate questionCreate = QuestionCreate.builder()
                     .userId(user.getId())
                     .questionContent(questionAndAnswer[0])
                     .answerContent(questionAndAnswer[1])
                     .build();
 
-            createQuestion(workbook.getId(), createQuestion);
+            createQuestion(workbook.getId(), questionCreate);
         } else {
             throw new GptCallCountExceededException();
         }
@@ -82,12 +82,12 @@ public class WorkbookService {
     /**
      *  질문 세트
      */
-    public void createQuestion(Long workbookId, CreateQuestion createQuestion) {
+    public void createQuestion(Long workbookId, QuestionCreate questionCreate) {
         Workbook workbook = getById(workbookId);
         workbook = workbook.plusNumOfQuestion();
         workbook = workbookRepository.save(workbook);
 
-        Question question = Question.from(workbook, createQuestion);
+        Question question = Question.from(workbook, questionCreate);
         questionRepository.save(question);
     }
 

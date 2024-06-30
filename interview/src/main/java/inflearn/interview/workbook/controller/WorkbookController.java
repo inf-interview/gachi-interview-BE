@@ -2,9 +2,9 @@ package inflearn.interview.workbook.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import inflearn.interview.user.domain.User;
-import inflearn.interview.question.domain.CreateQuestion;
+import inflearn.interview.question.domain.QuestionCreate;
 import inflearn.interview.question.controller.response.QuestionListResponse;
-import inflearn.interview.workbook.domain.CreateWorkbook;
+import inflearn.interview.workbook.domain.WorkbookCreate;
 import inflearn.interview.workbook.controller.response.WorkbookListResponse;
 import inflearn.interview.workbook.service.WorkbookService;
 import java.util.List;
@@ -31,13 +31,13 @@ public class WorkbookController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createWorkbook(@RequestBody CreateWorkbook createWorkbook) throws JsonProcessingException {
-        workbookService.createWorkbook(createWorkbook);
+    public ResponseEntity<String> createWorkbook(@RequestBody WorkbookCreate workbookCreate) throws JsonProcessingException {
+        workbookService.createWorkbook(workbookCreate);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{workbook_id}")
-    public ResponseEntity<?> deleteWorkbook(@RequestBody CreateWorkbook dto, @PathVariable(name = "workbook_id") Long workbookId) {
+    public ResponseEntity<?> deleteWorkbook(@RequestBody WorkbookCreate dto, @PathVariable(name = "workbook_id") Long workbookId) {
         workbookService.deleteWorkbook(workbookId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -54,8 +54,8 @@ public class WorkbookController {
     }
 
     @PostMapping("/{workbook_id}/question")
-    public ResponseEntity<?> writeQuestion(@PathVariable(name = "workbook_id") Long workbookId, @RequestBody CreateQuestion createQuestion) {
-        workbookService.createQuestion(workbookId, createQuestion);
+    public ResponseEntity<?> writeQuestion(@PathVariable(name = "workbook_id") Long workbookId, @RequestBody QuestionCreate questionCreate) {
+        workbookService.createQuestion(workbookId, questionCreate);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
