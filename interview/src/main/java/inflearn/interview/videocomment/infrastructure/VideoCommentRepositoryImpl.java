@@ -20,7 +20,7 @@ public class VideoCommentRepositoryImpl implements VideoCommentRepository {
     }
 
     @Override
-    public Optional<VideoComment> findByid(Long id) {
+    public Optional<VideoComment> findById(Long id) {
         return videoCommentJpaRepository.findById(id).map(VideoCommentEntity::toModel);
     }
 

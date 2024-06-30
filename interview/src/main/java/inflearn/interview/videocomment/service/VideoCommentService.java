@@ -28,7 +28,7 @@ public class VideoCommentService {
     private final VideoRepository videoRepository;
 
     private VideoComment getById(Long id) {
-        return commentRepository.findByid(id).orElseThrow(OptionalNotFoundException::new);
+        return commentRepository.findById(id).orElseThrow(OptionalNotFoundException::new);
     }
 
     public List<VideoCommentListResponse> getComments(Long videoId) {
@@ -38,7 +38,7 @@ public class VideoCommentService {
         return response;
     }
 
-    public void create(Long videoId, VideoCommentCreate videoCommentCreate) {
+    public VideoComment create(Long videoId, VideoCommentCreate videoCommentCreate) {
         //작성자
         User user = userRepository.findById(videoCommentCreate.getUserId()).orElseThrow(OptionalNotFoundException::new);
 
@@ -58,6 +58,7 @@ public class VideoCommentService {
             }
         }
 
+        return videoComment;
     }
 
     public void update(VideoCommentUpdate videoCommentUpdate) {
