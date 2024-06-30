@@ -45,6 +45,7 @@ public class Post {
 
     public Post update(PostUpdate postUpdate) {
         return Post.builder()
+                .id(id)
                 .user(user)
                 .title(postUpdate.getPostTitle())
                 .content(postUpdate.getContent())
@@ -57,6 +58,7 @@ public class Post {
 
     public Post plusLike() {
         return Post.builder()
+                .id(id)
                 .user(user)
                 .title(title)
                 .content(content)
@@ -70,6 +72,7 @@ public class Post {
 
     public Post minusLike() {
         return Post.builder()
+                .id(id)
                 .user(user)
                 .title(title)
                 .content(content)

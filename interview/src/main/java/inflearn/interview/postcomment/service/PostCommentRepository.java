@@ -19,7 +19,7 @@ public interface PostCommentRepository {
 
     List<PostCommentEntity> findCommentList(Long postId);
 
-    int getCommentCount(Long postId);
+    Integer getCommentCount(Long postId);
 
     List<PostCommentEntity> findMyComment(Long userId);
 }

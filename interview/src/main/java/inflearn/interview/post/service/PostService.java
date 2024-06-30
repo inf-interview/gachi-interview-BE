@@ -68,7 +68,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public void deletePost(PostDelete postDelete) {
+    public void delete(PostDelete postDelete) {
         Post post = getById(postDelete.getPostId());
         postRepository.delete(post);
     }

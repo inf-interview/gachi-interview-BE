@@ -26,7 +26,7 @@ public class UserService {
     }
 
     private void updateRefreshToken(User user, String refreshToken) {
-        User updatedUser = user.setRefreshToken(refreshToken);// 수정필요 업데이트해야함
+        User updatedUser = user.setRefreshToken(refreshToken);
         userRepository.save(updatedUser);
     }
 

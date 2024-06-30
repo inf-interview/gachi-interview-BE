@@ -35,8 +35,12 @@ public class PostCommentRepositoryImpl implements PostCommentRepository {
     }
 
     @Override
-    public int getCommentCount(Long postId) {
-        return postCommentJpaRepository.findCommentCount(postId);
+    public Integer getCommentCount(Long postId) {
+        Integer commentCount = postCommentJpaRepository.findCommentCount(postId);
+        if (commentCount == null) {
+            return 0;
+        }
+        return commentCount;
     }
 
     @Override
