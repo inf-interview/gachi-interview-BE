@@ -38,9 +38,9 @@ public class PostCommentEntity {
         postCommentEntity.id = postComment.getId();
         postCommentEntity.postEntity = PostEntity.fromModel(postComment.getPost());
         postCommentEntity.userEntity = UserEntity.fromModel(postComment.getUser());
-        postCommentEntity.content = postCommentEntity.getContent();
-        postCommentEntity.createdAt = postCommentEntity.getCreatedAt();
-        postCommentEntity.updatedAt = postCommentEntity.getUpdatedAt();
+        postCommentEntity.content = postComment.getContent();
+        postCommentEntity.createdAt = postComment.getCreatedAt();
+        postCommentEntity.updatedAt = postComment.getUpdatedAt();
         return postCommentEntity;
     }
 

@@ -40,7 +40,7 @@ public class PostCommentService {
         return response;
     }
 
-    public PostCommentCreateResponse createComment(PostCommentCreate postCommentCreate, Long postId) {
+    public PostCommentCreateResponse create(PostCommentCreate postCommentCreate, Long postId) {
         //댓글이 달릴 게시글
         Post post = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
 
@@ -66,13 +66,13 @@ public class PostCommentService {
 
 
 
-    public void updateComment(PostCommentUpdate postCommentUpdate) {
+    public void update(PostCommentUpdate postCommentUpdate) {
         PostComment postComment = getById(postCommentUpdate.getCommentId());
         postComment = postComment.update(postCommentUpdate);
         postCommentRepository.save(postComment);
     }
 
-    public void deleteComment(PostCommentDelete postCommentDelete) {
+    public void delete(PostCommentDelete postCommentDelete) {
         PostComment postComment = getById(postCommentDelete.getCommentId());
         postCommentRepository.delete(postComment);
     }

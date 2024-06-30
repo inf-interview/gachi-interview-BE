@@ -29,21 +29,21 @@ public class PostCommentController {
     //댓글 작성
     @PostMapping("/submit")
     public ResponseEntity<PostCommentCreateResponse> postCommentWrite(@PathVariable(name = "post_id") Long postId, @RequestBody PostCommentCreate postCommentCreate) {
-        PostCommentCreateResponse response = postCommentService.createComment(postCommentCreate, postId);
+        PostCommentCreateResponse response = postCommentService.create(postCommentCreate, postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     //댓글 수정
     @PatchMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentEdit(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody PostCommentUpdate postCommentUpdate) {
-        postCommentService.updateComment(postCommentUpdate);
+        postCommentService.update(postCommentUpdate);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     //댓글 삭제
     @DeleteMapping("/comments/{comment_id}")
     public ResponseEntity<?> postCommentDelete(@PathVariable(name = "post_id") Long postId, @PathVariable(name = "comment_id") Long commentId, @RequestBody PostCommentDelete postCommentDelete) {
-        postCommentService.deleteComment(postCommentDelete);
+        postCommentService.delete(postCommentDelete);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

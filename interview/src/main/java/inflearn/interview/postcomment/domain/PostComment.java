@@ -37,6 +37,7 @@ public class PostComment {
 
     public PostComment update(PostCommentUpdate postCommentUpdate) {
         return PostComment.builder()
+                .id(id)
                 .post(post)
                 .user(user)
                 .content(postCommentUpdate.getContent())

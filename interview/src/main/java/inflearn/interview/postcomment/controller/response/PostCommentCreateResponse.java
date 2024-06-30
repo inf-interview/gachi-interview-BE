@@ -3,9 +3,11 @@ package inflearn.interview.postcomment.controller.response;
 import inflearn.interview.postcomment.domain.PostComment;
 import inflearn.interview.user.domain.User;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class PostCommentCreateResponse {
 
     private Long commentId;
