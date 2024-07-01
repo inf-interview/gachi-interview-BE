@@ -37,7 +37,7 @@ public class UserService {
         userRepository.save(updatedUser);
     }
 
-    public List<NoticeResponse> getMyNotice(Long userId) { // TODO 수정 필요
+    public List<NoticeResponse> getMyNotice(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(OptionalNotFoundException::new);
         return noticeRepository.findByUserEntity(UserEntity.fromModel(user)).stream().map(NoticeResponse::new).sorted(Comparator.comparing(NoticeResponse::getCreatedAt).reversed()).toList();
     }

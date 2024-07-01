@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 import static inflearn.interview.common.constant.GptCount.INTERVIEW_MAX_COUNT;
 import static inflearn.interview.common.constant.GptCount.QUESTION_MAX_COUNT;
 
@@ -107,13 +109,13 @@ public class GptCallCountService {
         if (user.getInterviewGptCallTime() == null) {
             return true;
         }
-        return user.getInterviewGptCallTime().isAfter(user.getInterviewGptCallTime().plusDays(1));
+        return LocalDateTime.now().isAfter(user.getInterviewGptCallTime().plusDays(1));
     }
 
     private boolean isQuestionTimeAfter(User user) {
         if (user.getQuestionGptCallTime() == null) {
             return true;
         }
-        return user.getQuestionGptCallTime().isAfter(user.getQuestionGptCallTime().plusDays(1));
+        return LocalDateTime.now().isAfter(user.getQuestionGptCallTime().plusDays(1));
     }
 }
