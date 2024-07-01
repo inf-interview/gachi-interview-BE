@@ -3,6 +3,7 @@ package inflearn.interview.postcomment.service;
 import inflearn.interview.fcm.service.FcmTokenService;
 import inflearn.interview.post.domain.Post;
 import inflearn.interview.post.service.PostRepository;
+import inflearn.interview.postcomment.controller.response.MyPostCommentResponse;
 import inflearn.interview.postcomment.controller.response.PostCommentCreateResponse;
 import inflearn.interview.postcomment.controller.response.PostCommentListResponse;
 import inflearn.interview.postcomment.domain.*;
@@ -75,5 +76,10 @@ public class PostCommentService {
     public void delete(PostCommentDelete postCommentDelete) {
         PostComment postComment = getById(postCommentDelete.getCommentId());
         postCommentRepository.delete(postComment);
+    }
+
+    public List<MyPostCommentResponse> getMyComment(Long userId) {
+        List<PostCommentEntity> findMyComment = postCommentRepository.findMyComment(userId);
+        return MyPostCommentResponse.from(findMyComment);
     }
 }

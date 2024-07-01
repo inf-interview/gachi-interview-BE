@@ -5,6 +5,7 @@ import inflearn.interview.question.domain.Question;
 import inflearn.interview.question.service.QuestionRepository;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.video.controller.response.MyVideoResponse;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
 import inflearn.interview.common.exception.OptionalNotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -83,5 +85,9 @@ public class VideoServiceImpl implements VideoService{
             videoQuestionRepository.save(VideoQuestion.from(video, getQuestion));
         }
         return video.getId();
+    }
+
+    public List<MyVideoResponse> getMyVideo(Long userId) {
+        return videoRepository.findMyVideo(userId);
     }
 }

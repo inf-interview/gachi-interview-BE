@@ -4,6 +4,7 @@ import inflearn.interview.fcm.service.FcmTokenService;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.video.domain.Video;
+import inflearn.interview.videocomment.controller.response.MyVideoCommentResponse;
 import inflearn.interview.videocomment.controller.response.VideoCommentListResponse;
 import inflearn.interview.videocomment.domain.*;
 import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
@@ -70,5 +71,10 @@ public class VideoCommentService {
     public void delete(VideoCommentDelete videoCommentDelete) {
         VideoComment videoComment = getById(videoCommentDelete.getCommentId());
         commentRepository.delete(videoComment);
+    }
+
+    public List<MyVideoCommentResponse> getMyVideoComment(Long userId) {
+        List<VideoCommentEntity> findMyComment = commentRepository.findMyComment(userId);
+        return MyVideoCommentResponse.from(findMyComment);
     }
 }

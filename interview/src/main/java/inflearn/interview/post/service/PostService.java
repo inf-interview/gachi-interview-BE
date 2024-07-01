@@ -1,5 +1,6 @@
 package inflearn.interview.post.service;
 
+import inflearn.interview.post.controller.response.MyPostResponse;
 import inflearn.interview.post.controller.response.PostDetailResponse;
 import inflearn.interview.post.domain.PostCreate;
 import inflearn.interview.post.domain.Post;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -94,5 +96,9 @@ public class PostService {
             return LikeResponse.from(false, unLikedPost);
         }
 
+    }
+
+    public List<MyPostResponse> getMyPost(Long userId, String category) {
+        return postRepository.findMyPost(userId, category);
     }
 }

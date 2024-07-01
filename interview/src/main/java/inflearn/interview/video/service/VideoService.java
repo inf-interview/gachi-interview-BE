@@ -1,9 +1,12 @@
 package inflearn.interview.video.service;
 
 import inflearn.interview.user.domain.User;
+import inflearn.interview.video.controller.response.MyVideoResponse;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface VideoService {
     Video getById(Long id);
@@ -17,4 +20,6 @@ public interface VideoService {
     Page<VideoDTO2> getVideoList(String sortType, String keyword, int page);
 
     Long create(VideoCreate videoCreate);
+
+    List<MyVideoResponse> getMyVideo(Long userId);
 }

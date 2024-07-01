@@ -2,11 +2,14 @@ package inflearn.interview.video.service;
 
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.user.domain.User;
+import inflearn.interview.video.controller.response.MyVideoResponse;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FakeVideoService implements VideoService{
@@ -42,6 +45,11 @@ public class FakeVideoService implements VideoService{
 
     @Override
     public Long create(VideoCreate videoCreate) {
+        return null;
+    }
+
+    @Override
+    public List<MyVideoResponse> getMyVideo(Long userId) {
         return null;
     }
 }
