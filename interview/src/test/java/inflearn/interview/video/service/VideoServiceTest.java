@@ -9,6 +9,8 @@ import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
+import inflearn.interview.videoquestion.domain.QuestionFromVideoQuestion;
+import inflearn.interview.videoquestion.service.VideoQuestionRepository;
 import inflearn.interview.workbook.domain.Workbook;
 import inflearn.interview.workbook.domain.WorkbookCreate;
 import inflearn.interview.workbook.service.WorkbookRepository;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +50,9 @@ class VideoServiceTest {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private VideoQuestionRepository videoQuestionRepository;
 
     private Long userId;
     private Long videoId;
@@ -324,6 +330,27 @@ class VideoServiceTest {
 
         assertThat(list).size().isEqualTo(1);
 
+    }
+
+    @Test
+    @DisplayName("사용자는 비디오 게시글을 생성할 때 AI에게 질문하기위한 VideoQuestion도 같이 만들어진다")
+    void test8() {
+        VideoCreate videoCreate = VideoCreate.builder()
+                .userId(userId)
+                .exposure(true)
+                .videoLink("videoLink.com")
+                .videoTitle("제목입니다")
+                .questions(new Long[]{questionId})
+                .tags(new String[]{"백엔드", "BE"})
+                .thumbnailLink("thumbnail.com")
+                .build();
+
+        Long id = videoServiceImpl.create(videoCreate);
+
+        List<QuestionFromVideoQuestion> questions = videoQuestionRepository.findQuestionsByVideoId(id);
+
+        assertThat(questions).size().isEqualTo(1);
+        assertThat(questions.get(0).getQuestion()).isEqualTo("질문1");
     }
 
 
