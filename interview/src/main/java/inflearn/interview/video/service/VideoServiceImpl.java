@@ -15,6 +15,7 @@ import inflearn.interview.videolike.service.VideoLikeRepository;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Primary
 public class VideoServiceImpl implements VideoService{
     private final VideoRepository videoRepository;
     private final VideoLikeRepository videoLikeRepository;

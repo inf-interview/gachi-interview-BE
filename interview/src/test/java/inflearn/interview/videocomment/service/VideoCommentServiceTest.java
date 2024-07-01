@@ -8,6 +8,7 @@ import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.video.domain.VideoCreate;
 import inflearn.interview.video.service.VideoServiceImpl;
+import inflearn.interview.videocomment.controller.response.MyVideoCommentResponse;
 import inflearn.interview.videocomment.controller.response.VideoCommentListResponse;
 import inflearn.interview.videocomment.domain.VideoComment;
 import inflearn.interview.videocomment.domain.VideoCommentCreate;
@@ -170,6 +171,25 @@ class VideoCommentServiceTest {
         List<VideoCommentListResponse> comments = videoCommentService.getComments(videoId);
 
         assertThat(comments).size().isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("(MY) 사용자는 본인의 비디오 댓글을 조회할 수 있다")
+    void test5() {
+        VideoCommentCreate videoCommentCreate = VideoCommentCreate.create(userId, "안녕하세용");
+        VideoComment videoComment = videoCommentService.create(videoId, videoCommentCreate);
+
+        List<MyVideoCommentResponse> response = videoCommentService.getMyVideoComment(userId);
+
+        User user = userRepository.findById(userId).orElseThrow();
+
+        assertThat(response).size().isEqualTo(1);
+        assertThat(response.get(0).getCommentId()).isEqualTo(videoComment.getId());
+        assertThat(response.get(0).getUserId()).isEqualTo(userId);
+        assertThat(response.get(0).getVideoId()).isEqualTo(videoComment.getVideo().getId());
+        assertThat(response.get(0).getUserName()).isEqualTo(user.getName());
+        assertThat(response.get(0).getContent()).isEqualTo("안녕하세용");
+
     }
 
 }

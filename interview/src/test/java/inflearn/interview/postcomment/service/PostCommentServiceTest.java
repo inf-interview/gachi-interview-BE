@@ -3,6 +3,7 @@ package inflearn.interview.postcomment.service;
 import inflearn.interview.post.domain.Post;
 import inflearn.interview.post.domain.PostCreate;
 import inflearn.interview.post.service.PostService;
+import inflearn.interview.postcomment.controller.response.MyPostCommentResponse;
 import inflearn.interview.postcomment.controller.response.PostCommentCreateResponse;
 import inflearn.interview.postcomment.controller.response.PostCommentListResponse;
 import inflearn.interview.postcomment.domain.PostComment;
@@ -161,6 +162,28 @@ class PostCommentServiceTest {
 
     }
 
+    @Test
+    @DisplayName("(MY) 사용자는 본인이 작성한 댓글을 조회할 수 있다")
+    void test5() {
+        PostCommentCreate postCommentCreate = PostCommentCreate.builder()
+                .userId(userId)
+                .content("안녕하세요!")
+                .build();
+
+        PostCommentCreateResponse create = postCommentService.create(postCommentCreate, postId);
+
+        List<MyPostCommentResponse> response = postCommentService.getMyComment(userId);
+
+        User user = userRepository.findById(userId).orElseThrow();
+
+        assertThat(response).size().isEqualTo(1);
+        assertThat(response.get(0).getCommentId()).isEqualTo(create.getCommentId());
+        assertThat(response.get(0).getPostId()).isEqualTo(postId);
+        assertThat(response.get(0).getUserId()).isEqualTo(userId);
+        assertThat(response.get(0).getUsername()).isEqualTo(user.getName());
+        assertThat(response.get(0).getContent()).isEqualTo("안녕하세요!");
+
+    }
 
 
 }

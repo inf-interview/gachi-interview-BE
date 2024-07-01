@@ -7,6 +7,7 @@ import inflearn.interview.question.service.QuestionRepository;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.video.controller.response.MyVideoResponse;
 import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
 import inflearn.interview.videoquestion.domain.QuestionFromVideoQuestion;
@@ -353,5 +354,44 @@ class VideoServiceTest {
         assertThat(questions.get(0).getQuestion()).isEqualTo("질문1");
     }
 
+
+    @Test
+    @DisplayName("(MY) 사용자는 본인의 영상 게시글을 조회할 수 있다")
+    void test9() {
+        VideoCreate videoCreate = VideoCreate.builder()
+                .userId(userId)
+                .exposure(true)
+                .videoLink("videoLink.com")
+                .videoTitle("제목입니다")
+                .questions(new Long[]{questionId})
+                .tags(new String[]{"백엔드", "BE"})
+                .thumbnailLink("thumbnail.com")
+                .build();
+
+        Long id = videoServiceImpl.create(videoCreate);
+
+        Video video = videoRepository.findById(id).orElseThrow();
+
+        User user = userRepository.findById(userId).orElseThrow();
+
+        List<MyVideoResponse> response = videoServiceImpl.getMyVideo(userId);
+
+        assertThat(response).size().isEqualTo(1);
+        assertThat(response.get(0).getUserId()).isEqualTo(userId);
+        assertThat(response.get(0).getUserName()).isEqualTo(user.getName());
+        assertThat(response.get(0).getVideoId()).isEqualTo(id);
+        assertThat(response.get(0).getVideoLink()).isEqualTo(video.getVideoLink());
+        assertThat(response.get(0).getVideoTitle()).isEqualTo(video.getVideoTitle());
+        assertThat(response.get(0).getTime()).isEqualTo(video.getTime());
+        assertThat(response.get(0).getUpdateTime()).isEqualTo(video.getUpdatedTime());
+        assertThat(response.get(0).getNumOfLike()).isEqualTo(video.getNumOfLike());
+        assertThat(response.get(0).getTags()).isEqualTo(video.getTag().split("[.]"));
+        assertThat(response.get(0).getThumbnailLink()).isEqualTo(video.getThumbnailLink());
+        assertThat(response.get(0).isExposure()).isEqualTo(video.getExposure());
+        assertThat(response.get(0).getImage()).isEqualTo(user.getImage());
+
+        assertThat(response.get(0).getNumOfComment()).isEqualTo(0);
+
+    }
 
 }

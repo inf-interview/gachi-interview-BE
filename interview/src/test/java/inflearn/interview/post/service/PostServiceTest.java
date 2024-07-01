@@ -1,5 +1,6 @@
 package inflearn.interview.post.service;
 
+import inflearn.interview.post.controller.response.MyPostResponse;
 import inflearn.interview.post.controller.response.PostDetailResponse;
 import inflearn.interview.post.controller.response.PostResponse;
 import inflearn.interview.post.domain.Post;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -276,6 +278,30 @@ class PostServiceTest {
 
         Page<PostResponse> response2 = postService.getAllPost("new", "reviews", "", 1);
         assertThat(response2).isEmpty();
+    }
+
+    @Test
+    @DisplayName("(MY) 사용자는 본인의 게시글을 확인할 수 있다")
+    void test9() {
+
+        PostCreate postCreate = PostCreate.builder()
+                .userId(userId)
+                .postTitle("게시글 제목")
+                .content("내용내용")
+                .category("studies")
+                .tag(new String[]{"안녕", "하세요"})
+                .build();
+
+        postService.create(postCreate);
+
+        List<MyPostResponse> response = postService.getMyPost(userId, "studies");
+
+        assertThat(response.get(0).getPostTitle()).isEqualTo("게시글 제목");
+        assertThat(response.get(0).getContent()).isEqualTo("내용내용");
+        assertThat(response.get(0).getCategory()).isEqualTo("studies");
+        assertThat(response.get(0).getTag().length).isEqualTo(2);
+        assertThat(response).size().isEqualTo(1);
+
     }
 
 
