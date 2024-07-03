@@ -2,7 +2,9 @@ package inflearn.interview.post.controller.response;
 
 import inflearn.interview.post.domain.Post;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class PostUpdateResponse {
 
     private Long postId;

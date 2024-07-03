@@ -14,14 +14,16 @@ public class MyPostCommentResponse {
     private Long userId;
     private String username;
     private String content;
+    private String category;
 
     @Builder
-    public MyPostCommentResponse(Long commentId, Long postId, Long userId, String username, String content) {
+    public MyPostCommentResponse(Long commentId, Long postId, Long userId, String username, String content, String category) {
         this.commentId = commentId;
         this.postId = postId;
         this.userId = userId;
         this.username = username;
         this.content = content;
+        this.category = category;
     }
 
     public static List<MyPostCommentResponse> from(List<PostCommentEntity> postComments) {
@@ -30,6 +32,7 @@ public class MyPostCommentResponse {
                 .postId(postCommentEntity.getPostEntity().getId())
                 .userId(postCommentEntity.getUserEntity().getId())
                 .username(postCommentEntity.getUserEntity().getName())
-                .content(postCommentEntity.getContent()).build()).collect(Collectors.toList());
+                .content(postCommentEntity.getContent())
+                .category(postCommentEntity.getPostEntity().getCategory()).build()).collect(Collectors.toList());
     }
 }

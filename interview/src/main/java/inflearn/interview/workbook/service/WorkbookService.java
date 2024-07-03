@@ -90,8 +90,6 @@ public class WorkbookService {
         workbook = workbook.plusNumOfQuestion();
         workbook = workbookRepository.save(workbook);
 
-        log.info("question {}", workbook.getNumOfQuestion());
-
         Question question = Question.from(workbook, questionCreate);
         return questionRepository.save(question);
     }
