@@ -1,6 +1,6 @@
 package inflearn.interview.videolike.infrastructure;
 
-import inflearn.interview.user.infrastructure.UserEntity;
+import inflearn.interview.video.domain.Video;
 import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videolike.service.VideoLikeRepository;
@@ -28,5 +28,10 @@ public class VideoLikeRepositoryImpl implements VideoLikeRepository {
     @Override
     public void delete(VideoLike videoLike) {
         videoLikeJpaRepository.delete(VideoLikeEntity.fromModel(videoLike));
+    }
+
+    @Override
+    public void deleteByVideo(Video video) {
+        videoLikeJpaRepository.deleteAllByVideoEntityId(video.getId());
     }
 }

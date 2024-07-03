@@ -1,6 +1,5 @@
 package inflearn.interview.workbook.infrastructure;
 
-import inflearn.interview.question.infrastructure.QuestionEntity;
 import inflearn.interview.user.infrastructure.UserEntity;
 import inflearn.interview.workbook.domain.Workbook;
 import jakarta.persistence.*;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -26,9 +24,6 @@ public class WorkbookEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @OneToMany(mappedBy = "workbookEntity", cascade = CascadeType.REMOVE)
-    private List<QuestionEntity> questionEntities;
-
     private String title;
 
     private int numOfQuestion;
@@ -36,21 +31,6 @@ public class WorkbookEntity {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    public WorkbookEntity(UserEntity userEntity, String title) {
-        this.userEntity = userEntity;
-        this.title = title;
-        this.numOfQuestion = 0;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public void increaseNumOfQuestion() {
-        this.numOfQuestion++;
-    }
-
-    public void decreaseNumOfQuestion() {
-        this.numOfQuestion--;
-    }
 
     public static WorkbookEntity fromModel(Workbook workbook) {
         WorkbookEntity workbookEntity = new WorkbookEntity();

@@ -1,8 +1,6 @@
 package inflearn.interview.post.infrastructure;
 
 import inflearn.interview.post.domain.Post;
-import inflearn.interview.postcomment.infrastructure.PostCommentEntity;
-import inflearn.interview.postlike.infrastructure.PostLikeEntity;
 import inflearn.interview.user.infrastructure.UserEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -25,12 +22,6 @@ public class PostEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
-
-    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.REMOVE)
-    private List<PostCommentEntity> postCommentEntities;
-
-    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.REMOVE)
-    private List<PostLikeEntity> postLikeEntities;
 
     private String title;
 

@@ -1,5 +1,6 @@
 package inflearn.interview.videoquestion.infrastructure;
 
+import inflearn.interview.video.infrastructure.VideoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -7,4 +8,6 @@ import java.util.List;
 public interface VideoQuestionJapRepository extends JpaRepository<VideoQuestionEntity, Long> {
 
     List<VideoQuestionEntity> findAllByVideoEntityId(Long videoId);
+
+    void deleteAllByVideoEntityId(Long id);
 }

@@ -1,5 +1,6 @@
 package inflearn.interview.postlike.infrastructure;
 
+import inflearn.interview.post.domain.Post;
 import inflearn.interview.postlike.domain.PostLike;
 import inflearn.interview.postlike.service.PostLikeRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,10 @@ public class PostLikeRepositoryImpl implements PostLikeRepository {
     @Override
     public void delete(PostLike postLike) {
         postLikeJpaRepository.delete(PostLikeEntity.fromModel(postLike));
+    }
+
+    @Override
+    public void deleteByPost(Post post) {
+        postLikeJpaRepository.deleteAllByPostEntityId(post.getId());
     }
 }

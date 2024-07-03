@@ -2,13 +2,10 @@ package inflearn.interview.postlike.infrastructure;
 
 import inflearn.interview.post.infrastructure.PostEntity;
 import inflearn.interview.postlike.domain.PostLike;
-import inflearn.interview.user.domain.User;
 import inflearn.interview.user.infrastructure.UserEntity;
-import inflearn.interview.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDateTime;
 

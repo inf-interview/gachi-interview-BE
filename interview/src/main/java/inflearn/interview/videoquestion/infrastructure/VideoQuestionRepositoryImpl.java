@@ -1,5 +1,7 @@
 package inflearn.interview.videoquestion.infrastructure;
 
+import inflearn.interview.video.domain.Video;
+import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videoquestion.domain.QuestionFromVideoQuestion;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
 import inflearn.interview.videoquestion.service.VideoQuestionRepository;
@@ -23,5 +25,10 @@ public class VideoQuestionRepositoryImpl implements VideoQuestionRepository {
     @Override
     public VideoQuestion save(VideoQuestion videoQuestion) {
         return videoQuestionJapRepository.save(VideoQuestionEntity.fromModel(videoQuestion)).toModel();
+    }
+
+    @Override
+    public void deleteByVideo(Video video) {
+        videoQuestionJapRepository.deleteAllByVideoEntityId(video.getId());
     }
 }

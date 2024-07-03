@@ -1,5 +1,6 @@
 package inflearn.interview.postcomment.service;
 
+import inflearn.interview.post.domain.Post;
 import inflearn.interview.postcomment.domain.PostComment;
 import inflearn.interview.postcomment.infrastructure.PostCommentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,6 @@ public interface PostCommentRepository {
     Integer getCommentCount(Long postId);
 
     List<PostCommentEntity> findMyComment(Long userId);
+
+    void deleteByPost(Post post);
 }

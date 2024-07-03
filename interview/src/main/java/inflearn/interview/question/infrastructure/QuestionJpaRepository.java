@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface QuestionJpaRepository extends JpaRepository<QuestionEntity, Long> {
     List<QuestionEntity> findAllByWorkbookEntityId(Long workbookId);
+
+    void deleteAllByWorkbookEntityId(Long id);
 }

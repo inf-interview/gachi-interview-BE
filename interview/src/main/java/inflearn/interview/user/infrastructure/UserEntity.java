@@ -1,17 +1,12 @@
 package inflearn.interview.user.infrastructure;
 
 import inflearn.interview.user.domain.User;
-import inflearn.interview.video.infrastructure.VideoEntity;
-import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
-import inflearn.interview.videolike.infrastructure.VideoLikeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -40,15 +35,6 @@ public class UserEntity {
     private String image;
 
     private String refreshToken;
-
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
-    List<VideoEntity> videoEntities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
-    List<VideoCommentEntity> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
-    List<VideoLikeEntity> likes = new ArrayList<>();
 
     private String role;
 

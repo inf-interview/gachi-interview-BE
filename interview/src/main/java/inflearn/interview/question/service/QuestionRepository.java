@@ -2,6 +2,7 @@ package inflearn.interview.question.service;
 
 import inflearn.interview.question.domain.Question;
 import inflearn.interview.question.infrastructure.QuestionEntity;
+import inflearn.interview.workbook.domain.Workbook;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface QuestionRepository {
     void delete(Question question);
 
     List<QuestionEntity> findAllByWorkbook(Long workbookId);
+
+    void deleteByWorkbook(Workbook workbook);
 }

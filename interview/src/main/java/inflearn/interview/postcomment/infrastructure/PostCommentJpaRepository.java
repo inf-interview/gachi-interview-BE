@@ -16,4 +16,6 @@ public interface PostCommentJpaRepository extends JpaRepository<PostCommentEntit
 
     @Query("select count(p) from PostCommentEntity p where p.postEntity.id=:postId")
     Integer findCommentCount(@Param("postId") Long postId);
+
+    void deleteAllByPostEntityId(Long id);
 }

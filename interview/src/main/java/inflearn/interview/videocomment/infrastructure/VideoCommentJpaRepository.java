@@ -13,4 +13,6 @@ public interface VideoCommentJpaRepository extends JpaRepository<VideoCommentEnt
 
     @Query("select vc from VideoCommentEntity vc where vc.userEntity.id=:userId")
     List<VideoCommentEntity> findMyComment(@Param("userId") Long userId);
+
+    void deleteAllByVideoEntityId(Long id);
 }

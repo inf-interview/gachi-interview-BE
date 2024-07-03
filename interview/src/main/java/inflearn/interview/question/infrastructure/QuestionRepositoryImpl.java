@@ -2,6 +2,7 @@ package inflearn.interview.question.infrastructure;
 
 import inflearn.interview.question.domain.Question;
 import inflearn.interview.question.service.QuestionRepository;
+import inflearn.interview.workbook.domain.Workbook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -32,5 +33,10 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Override
     public List<QuestionEntity> findAllByWorkbook(Long workbookId) {
         return questionJpaRepository.findAllByWorkbookEntityId(workbookId);
+    }
+
+    @Override
+    public void deleteByWorkbook(Workbook workbook) {
+        questionJpaRepository.deleteAllByWorkbookEntityId(workbook.getId());
     }
 }

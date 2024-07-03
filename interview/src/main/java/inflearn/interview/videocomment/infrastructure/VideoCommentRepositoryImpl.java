@@ -1,5 +1,7 @@
 package inflearn.interview.videocomment.infrastructure;
 
+import inflearn.interview.video.domain.Video;
+import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videocomment.domain.VideoComment;
 import inflearn.interview.videocomment.service.VideoCommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +39,10 @@ public class VideoCommentRepositoryImpl implements VideoCommentRepository {
     @Override
     public List<VideoCommentEntity> findMyComment(Long userId) {
         return videoCommentJpaRepository.findMyComment(userId);
+    }
+
+    @Override
+    public void deleteByVideo(Video video) {
+        videoCommentJpaRepository.deleteAllByVideoEntityId(video.getId());
     }
 }

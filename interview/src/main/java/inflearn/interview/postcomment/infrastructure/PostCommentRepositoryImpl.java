@@ -1,5 +1,6 @@
 package inflearn.interview.postcomment.infrastructure;
 
+import inflearn.interview.post.domain.Post;
 import inflearn.interview.postcomment.domain.PostComment;
 import inflearn.interview.postcomment.service.PostCommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,10 @@ public class PostCommentRepositoryImpl implements PostCommentRepository {
     @Override
     public List<PostCommentEntity> findMyComment(Long userId) {
         return postCommentJpaRepository.findMyComment(userId);
+    }
+
+    @Override
+    public void deleteByPost(Post post) {
+        postCommentJpaRepository.deleteAllByPostEntityId(post.getId());
     }
 }

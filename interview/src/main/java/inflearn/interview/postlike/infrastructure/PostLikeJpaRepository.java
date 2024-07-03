@@ -10,4 +10,6 @@ public interface PostLikeJpaRepository extends JpaRepository<PostLikeEntity, Lon
 
     @Query("select pl from PostLikeEntity pl where pl.userEntity.id=:userId and pl.postEntity.id=:postId")
     Optional<PostLikeEntity> findPostLikeByUserIdAndPostId(@Param("userId") Long userId, @Param("postId") Long postId);
+
+    void deleteAllByPostEntityId(Long id);
 }

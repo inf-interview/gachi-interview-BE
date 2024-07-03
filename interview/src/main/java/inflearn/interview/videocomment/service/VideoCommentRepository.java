@@ -1,5 +1,6 @@
 package inflearn.interview.videocomment.service;
 
+import inflearn.interview.video.domain.Video;
 import inflearn.interview.videocomment.domain.VideoComment;
 import inflearn.interview.videocomment.infrastructure.VideoCommentEntity;
 
@@ -16,4 +17,6 @@ public interface VideoCommentRepository {
     List<VideoCommentEntity> findCommentList(Long videoId);
 
     List<VideoCommentEntity> findMyComment(Long userId);
+
+    void deleteByVideo(Video video);
 }
