@@ -8,8 +8,11 @@ import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
 import inflearn.interview.video.domain.Video;
 import inflearn.interview.video.domain.VideoCreate;
+import inflearn.interview.video.domain.VideoDelete;
+import inflearn.interview.video.service.FakeVideoService;
 import inflearn.interview.video.service.VideoRepository;
 import inflearn.interview.video.service.VideoServiceImpl;
+import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videolike.domain.VideoLikeRequest;
 import inflearn.interview.workbook.domain.Workbook;
 import inflearn.interview.workbook.domain.WorkbookCreate;
@@ -23,6 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,12 +49,16 @@ class VideoLikeServiceTest {
     private VideoServiceImpl videoServiceImpl;
 
     @Autowired
+    private FakeVideoService fakeVideoService;
+
+    @Autowired
     private VideoRepository videoRepository;
 
     @Autowired
     private VideoLikeService videoLikeService;
 
-
+    @Autowired
+    private VideoLikeRepository videoLikeRepository;
 
     private Long userId;
     private Long workbookId;
@@ -147,5 +155,41 @@ class VideoLikeServiceTest {
         video = videoRepository.findById(id).orElseThrow();
 
         assertThat(video.getNumOfLike()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("비디오 게시글이 삭제될 때 좋아요도 같이 삭제된다")
+    void test3() {
+        VideoCreate videoCreate = VideoCreate.builder()
+                .userId(userId)
+                .exposure(true)
+                .videoLink("videoLink.com")
+                .videoTitle("제목입니다")
+                .questions(new Long[]{questionId})
+                .tags(new String[]{"백엔드", "BE"})
+                .thumbnailLink("thumbnail.com")
+                .build();
+
+        Long id = videoServiceImpl.create(videoCreate);
+
+        Video video = videoRepository.findById(id).orElseThrow();
+
+        VideoLikeRequest videoLikeRequest = VideoLikeRequest.builder()
+                .userId(userId)
+                .videoId(video.getId())
+                .build();
+
+        videoLikeService.addLike(videoLikeRequest);
+
+        VideoDelete videoDelete = VideoDelete.builder()
+                .userId(userId)
+                .videoId(video.getId())
+                .build();
+
+        fakeVideoService.delete(videoDelete);
+
+        Optional<VideoLike> getLike = videoLikeRepository.findVideoLike(userId, video.getId());
+
+        assertThat(getLike).isEmpty();
     }
 }

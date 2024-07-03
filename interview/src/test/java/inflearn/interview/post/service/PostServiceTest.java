@@ -8,7 +8,9 @@ import inflearn.interview.post.domain.PostCreate;
 import inflearn.interview.post.domain.PostDelete;
 import inflearn.interview.post.domain.PostUpdate;
 import inflearn.interview.postlike.controller.response.LikeResponse;
+import inflearn.interview.postlike.domain.PostLike;
 import inflearn.interview.postlike.domain.PostLikeRequest;
+import inflearn.interview.postlike.service.PostLikeRepository;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
@@ -41,6 +43,9 @@ class PostServiceTest {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private PostLikeRepository postLikeRepository;
 
     private Long userId;
 
@@ -304,6 +309,37 @@ class PostServiceTest {
         assertThat(response.get(0).getTag().length).isEqualTo(2);
         assertThat(response).size().isEqualTo(1);
 
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 시 좋아요도 같이 삭제된다")
+    void test10() {
+        PostCreate postCreate = PostCreate.builder()
+                .userId(userId)
+                .postTitle("게시글 제목")
+                .content("내용내용")
+                .category("studies")
+                .tag(new String[]{"안녕", "하세요"})
+                .build();
+
+        Post post = postService.create(postCreate);
+
+        PostLikeRequest postLikeRequest = PostLikeRequest.builder()
+                .postId(post.getId())
+                .userId(userId)
+                .build();
+
+        postService.likePost(postLikeRequest);
+
+        PostDelete postDelete = PostDelete.builder()
+                .userId(userId)
+                .postId(post.getId())
+                .build();
+
+        postService.delete(postDelete);
+
+        Optional<PostLike> getLike = postLikeRepository.findPostLike(userId, post.getId());
+        assertThat(getLike).isEmpty();
     }
 
 
