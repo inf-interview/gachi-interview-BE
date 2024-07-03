@@ -2,6 +2,7 @@ package inflearn.interview.postcomment.service;
 
 import inflearn.interview.post.domain.Post;
 import inflearn.interview.post.domain.PostCreate;
+import inflearn.interview.post.domain.PostDelete;
 import inflearn.interview.post.service.PostService;
 import inflearn.interview.postcomment.controller.response.MyPostCommentResponse;
 import inflearn.interview.postcomment.controller.response.PostCommentCreateResponse;
@@ -87,9 +88,12 @@ class PostCommentServiceTest {
         PostCommentCreateResponse response = postCommentService.create(postCommentCreate, postId);
         PostComment postComment = postCommentRepository.findById(response.getCommentId()).orElseThrow();
 
+        User user = userRepository.findById(userId).orElseThrow();
+
         assertThat(response.getCommentId()).isEqualTo(postComment.getId());
         assertThat(response.getUserId()).isEqualTo(userId);
         assertThat(response.getContent()).isEqualTo("안녕하세요!");
+        assertThat(response.getImage()).isEqualTo(user.getImage());
 
     }
 
@@ -184,6 +188,29 @@ class PostCommentServiceTest {
         assertThat(response.get(0).getUserId()).isEqualTo(userId);
         assertThat(response.get(0).getUsername()).isEqualTo(user.getName());
         assertThat(response.get(0).getContent()).isEqualTo("안녕하세요!");
+
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 시 댓글도 같이 삭제된다")
+    void test6() {
+        PostCommentCreate postCommentCreate = PostCommentCreate.builder()
+                .userId(userId)
+                .content("안녕하세요!")
+                .build();
+
+        PostCommentCreateResponse response = postCommentService.create(postCommentCreate, postId);
+
+        PostDelete postDelete = PostDelete.builder()
+                .userId(userId)
+                .postId(postId)
+                .build();
+
+        postService.delete(postDelete);
+
+        Optional<PostComment> getComment = postCommentRepository.findById(response.getCommentId());
+
+        assertThat(getComment).isEmpty();
 
     }
 

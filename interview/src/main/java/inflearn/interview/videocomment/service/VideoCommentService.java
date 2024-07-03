@@ -45,6 +45,7 @@ public class VideoCommentService {
 
         //댓글 작성 할 게시글
         Video video = videoRepository.findById(videoId).orElseThrow(OptionalNotFoundException::new);
+
         //게시글 주인
         User videoWriter = userRepository.findVideoWriter(videoId);
 
