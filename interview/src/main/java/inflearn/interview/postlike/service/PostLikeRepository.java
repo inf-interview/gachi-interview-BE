@@ -2,10 +2,6 @@ package inflearn.interview.postlike.service;
 
 import inflearn.interview.post.domain.Post;
 import inflearn.interview.postlike.domain.PostLike;
-import inflearn.interview.postlike.infrastructure.PostLikeEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 

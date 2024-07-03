@@ -6,7 +6,6 @@ import inflearn.interview.question.service.QuestionRepository;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
-import inflearn.interview.video.domain.Video;
 import inflearn.interview.video.domain.VideoCreate;
 import inflearn.interview.video.domain.VideoDelete;
 import inflearn.interview.video.service.FakeVideoService;

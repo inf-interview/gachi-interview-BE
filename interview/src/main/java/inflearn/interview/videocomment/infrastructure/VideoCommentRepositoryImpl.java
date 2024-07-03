@@ -1,7 +1,6 @@
 package inflearn.interview.videocomment.infrastructure;
 
 import inflearn.interview.video.domain.Video;
-import inflearn.interview.video.infrastructure.VideoEntity;
 import inflearn.interview.videocomment.domain.VideoComment;
 import inflearn.interview.videocomment.service.VideoCommentRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,5 @@
 package inflearn.interview.videoquestion.infrastructure;
 
-import inflearn.interview.video.infrastructure.VideoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

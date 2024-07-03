@@ -142,7 +142,7 @@ public class QuestionServiceTest {
                 .answerContent("답변이에요")
                 .build();
 
-        Question question = workbookService.createQuestion(workbookId, questionCreate);
+        workbookService.createQuestion(workbookId, questionCreate);
 
         Workbook workbook = workbookRepository.findById(workbookId).orElseThrow();
 
