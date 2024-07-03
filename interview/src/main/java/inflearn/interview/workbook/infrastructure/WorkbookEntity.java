@@ -37,7 +37,7 @@ public class WorkbookEntity {
         workbookEntity.id = workbook.getId();
         workbookEntity.userEntity = UserEntity.fromModel(workbook.getUser());
         workbookEntity.title = workbook.getTitle();
-        workbookEntity.numOfQuestion = workbookEntity.getNumOfQuestion();
+        workbookEntity.numOfQuestion = workbook.getNumOfQuestion();
         workbookEntity.createdAt = workbook.getCreatedAt();
         workbookEntity.updatedAt = workbook.getUpdatedAt();
         return workbookEntity;

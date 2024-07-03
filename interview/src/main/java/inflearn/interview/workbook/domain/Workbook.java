@@ -11,12 +11,12 @@ public class Workbook {
     private Long id;
     private User user;
     private String title;
-    private int numOfQuestion;
+    private Integer numOfQuestion;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
-    public Workbook(Long id, User user, String title, int numOfQuestion, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Workbook(Long id, User user, String title, Integer numOfQuestion, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -30,6 +30,7 @@ public class Workbook {
                 .user(user)
                 .title(workbookCreate.getTitle())
                 .createdAt(LocalDateTime.now())
+                .numOfQuestion(0)
                 .build();
     }
 

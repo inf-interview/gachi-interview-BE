@@ -47,12 +47,12 @@ public class WorkbookService {
         return WorkbookListResponse.from(workbookList);
     }
 
-    public void createWorkbook(WorkbookCreate workbookCreate) throws JsonProcessingException {
+    public Workbook createWorkbook(WorkbookCreate workbookCreate) throws JsonProcessingException {
         User user = userRepository.findById(workbookCreate.getUserId()).orElseThrow(OptionalNotFoundException::new);
         if (workbookCreate.getJob().isEmpty()) {
             Workbook workbook = Workbook.from(user, workbookCreate);
-            workbookRepository.save(workbook);
-            return;
+            workbook = workbookRepository.save(workbook);
+            return workbook;
         }
         if (callCountService.getQuestionCount(user.getId()) < QUESTION_MAX_COUNT) {
             callCountService.plusQuestionCallCount(user.getId());
@@ -68,6 +68,8 @@ public class WorkbookService {
                     .build();
 
             createQuestion(workbook.getId(), questionCreate);
+
+            return workbook;
         } else {
             throw new GptCallCountExceededException();
         }
@@ -83,13 +85,15 @@ public class WorkbookService {
     /**
      *  질문 세트
      */
-    public void createQuestion(Long workbookId, QuestionCreate questionCreate) {
+    public Question createQuestion(Long workbookId, QuestionCreate questionCreate) {
         Workbook workbook = getById(workbookId);
         workbook = workbook.plusNumOfQuestion();
         workbook = workbookRepository.save(workbook);
 
+        log.info("question {}", workbook.getNumOfQuestion());
+
         Question question = Question.from(workbook, questionCreate);
-        questionRepository.save(question);
+        return questionRepository.save(question);
     }
 
     public void deleteQuestion(Long workbookId, Long questionId) {
