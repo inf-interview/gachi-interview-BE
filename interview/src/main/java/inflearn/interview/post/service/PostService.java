@@ -72,6 +72,8 @@ public class PostService {
 
     public void delete(PostDelete postDelete) {
         Post post = getById(postDelete.getPostId());
+        postCommentRepository.deleteByPost(post);
+        postLikeRepository.deleteByPost(post);
         postRepository.delete(post);
     }
 

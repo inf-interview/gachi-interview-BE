@@ -76,6 +76,7 @@ public class WorkbookService {
 
     public void deleteWorkbook(Long workbookId) {
         Workbook workbook = getById(workbookId);
+        questionRepository.deleteByWorkbook(workbook);
         workbookRepository.delete(workbook);
     }
 

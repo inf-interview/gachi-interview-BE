@@ -10,6 +10,7 @@ import inflearn.interview.video.controller.response.VideoDetailResponse;
 import inflearn.interview.video.domain.*;
 import inflearn.interview.common.exception.OptionalNotFoundException;
 import inflearn.interview.common.exception.RequestDeniedException;
+import inflearn.interview.videocomment.service.VideoCommentRepository;
 import inflearn.interview.videolike.domain.VideoLike;
 import inflearn.interview.videolike.service.VideoLikeRepository;
 import inflearn.interview.videoquestion.domain.VideoQuestion;
@@ -29,6 +30,7 @@ import java.util.Optional;
 @Transactional
 @Primary
 public class VideoServiceImpl implements VideoService{
+
     private final VideoRepository videoRepository;
     private final VideoLikeRepository videoLikeRepository;
     private final UserRepository userRepository;
@@ -36,6 +38,7 @@ public class VideoServiceImpl implements VideoService{
     private final QuestionRepository questionRepository;
     private final S3Service s3Service;
     private final CustomVideoRepository customVideoRepository;
+    private final VideoCommentRepository videoCommentRepository;
 
     public Video getById(Long id) {
         return videoRepository.findById(id).orElseThrow(OptionalNotFoundException::new);
@@ -65,6 +68,9 @@ public class VideoServiceImpl implements VideoService{
 
     public void delete(VideoDelete videoDelete){
         Video video = getById(videoDelete.getVideoId());
+        videoLikeRepository.deleteByVideo(video);
+        videoQuestionRepository.deleteByVideo(video);
+        videoCommentRepository.deleteByVideo(video);
         videoRepository.delete(video);
         s3Service.deleteVideo(video.getVideoLink(), video.getThumbnailLink());
     }
