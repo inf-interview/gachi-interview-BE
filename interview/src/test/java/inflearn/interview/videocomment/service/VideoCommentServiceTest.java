@@ -6,7 +6,11 @@ import inflearn.interview.question.service.QuestionRepository;
 import inflearn.interview.user.domain.User;
 import inflearn.interview.user.domain.UserCreate;
 import inflearn.interview.user.service.UserRepository;
+import inflearn.interview.video.domain.Video;
 import inflearn.interview.video.domain.VideoCreate;
+import inflearn.interview.video.domain.VideoDelete;
+import inflearn.interview.video.service.FakeVideoService;
+import inflearn.interview.video.service.VideoRepository;
 import inflearn.interview.video.service.VideoServiceImpl;
 import inflearn.interview.videocomment.controller.response.MyVideoCommentResponse;
 import inflearn.interview.videocomment.controller.response.VideoCommentListResponse;
@@ -53,6 +57,12 @@ class VideoCommentServiceTest {
 
     @Autowired
     private VideoCommentRepository videoCommentRepository;
+
+    @Autowired
+    private FakeVideoService fakeVideoService;
+
+    @Autowired
+    private VideoRepository videoRepository;
 
     private Long userId;
     private Long workbookId;
@@ -194,4 +204,22 @@ class VideoCommentServiceTest {
 
     }
 
+    @Test
+    @DisplayName("비디오가 삭제되면 비디오 댓글도 같이 삭제된다")
+    void test6() {
+        VideoCommentCreate videoCommentCreate = VideoCommentCreate.create(userId, "안녕하세용");
+        VideoComment videoComment = videoCommentService.create(videoId, videoCommentCreate);
+
+        VideoDelete videoDelete = VideoDelete.builder()
+                .userId(userId)
+                .videoId(videoId)
+                .build();
+
+        fakeVideoService.delete(videoDelete);
+
+        Optional<VideoComment> getComment = videoCommentRepository.findById(videoComment.getId());
+
+        assertThat(getComment).isEmpty();
+
+    }
 }
