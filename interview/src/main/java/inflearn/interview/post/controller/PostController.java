@@ -42,7 +42,7 @@ public class PostController {
     }
 
     @PostMapping("/write")
-    public ResponseEntity<PostCreateResponse> postWrite(@RequestBody @Validated(PostResponse.valid1.class) PostCreate postCreate) {
+    public ResponseEntity<PostCreateResponse> postWrite(@RequestBody PostCreate postCreate) {
 
         //PostDto를 서비스로 넘기기
         Post post = postService.create(postCreate);

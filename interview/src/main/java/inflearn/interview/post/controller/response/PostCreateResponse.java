@@ -2,9 +2,11 @@ package inflearn.interview.post.controller.response;
 
 import inflearn.interview.post.domain.Post;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class PostCreateResponse {
     private Long postId;
     private Long userId;
