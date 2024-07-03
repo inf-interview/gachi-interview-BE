@@ -26,5 +26,6 @@ public class Notice {
     public Notice(UserEntity userEntity, String content) {
         this.userEntity = userEntity;
         this.content = content;
+        this.createdAt = LocalDateTime.now();
     }
 }
