@@ -32,6 +32,7 @@ public class PostLikeEntity {
 
     public static PostLikeEntity fromModel(PostLike postLike) {
         PostLikeEntity postLikeEntity = new PostLikeEntity();
+        postLikeEntity.id = postLike.getId();
         postLikeEntity.postEntity = PostEntity.fromModel(postLike.getPost());
         postLikeEntity.userEntity = UserEntity.fromModel(postLike.getUser());
         postLikeEntity.createdAt = postLike.getCreatedAt();
