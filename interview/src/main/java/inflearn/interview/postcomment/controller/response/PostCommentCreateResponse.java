@@ -12,16 +12,16 @@ public class PostCommentCreateResponse {
 
     private Long commentId;
     private Long userId;
-    private String userName;
+    private String username;
     private String content;
     private LocalDateTime createdAt;
     private String image;
 
     @Builder
-    public PostCommentCreateResponse(Long commentId, Long userId, String userName, String content, LocalDateTime createdAt, String image) {
+    public PostCommentCreateResponse(Long commentId, Long userId, String username, String content, LocalDateTime createdAt, String image) {
         this.commentId = commentId;
         this.userId = userId;
-        this.userName = userName;
+        this.username = username;
         this.content = content;
         this.createdAt = createdAt;
         this.image = image;
@@ -31,7 +31,7 @@ public class PostCommentCreateResponse {
         return PostCommentCreateResponse.builder()
                 .commentId(postComment.getId())
                 .userId(user.getId())
-                .userName(user.getName())
+                .username(user.getName())
                 .content(postComment.getContent())
                 .createdAt(postComment.getCreatedAt())
                 .image(user.getImage())
