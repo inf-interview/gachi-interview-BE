@@ -49,12 +49,12 @@ public class VideoServiceImpl implements VideoService{
         Video video = getById(videoId);
         if (video.getExposure()) {
             Optional<VideoLike> videoLike = videoLikeRepository.findVideoLike(user.getId(), videoId);
-            return VideoDetailResponse.from(video, user, videoLike.isPresent());
+            return VideoDetailResponse.from(video, videoLike.isPresent());
         }
         else {
             if (user.equals(video.getUser())) {
                 Optional<VideoLike> videoLike = videoLikeRepository.findVideoLike(user.getId(), videoId);
-                return VideoDetailResponse.from(video, user, videoLike.isPresent());
+                return VideoDetailResponse.from(video, videoLike.isPresent());
             }
             throw new RequestDeniedException();
         }

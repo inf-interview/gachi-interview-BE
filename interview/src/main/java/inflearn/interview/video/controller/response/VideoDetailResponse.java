@@ -1,6 +1,5 @@
 package inflearn.interview.video.controller.response;
 
-import inflearn.interview.user.domain.User;
 import inflearn.interview.video.domain.Video;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,10 +39,10 @@ public class VideoDetailResponse {
         this.isLiked = isLiked;
     }
 
-    public static VideoDetailResponse from(Video video, User user, boolean isLiked) {
+    public static VideoDetailResponse from(Video video, boolean isLiked) {
         return VideoDetailResponse.builder()
-                .userId(user.getId())
-                .userName(user.getName())
+                .userId(video.getUser().getId())
+                .userName(video.getUser().getName())
                 .videoId(video.getId())
                 .exposure(video.getExposure())
                 .videoTitle(video.getVideoTitle())
@@ -53,7 +52,7 @@ public class VideoDetailResponse {
                 .tags(tagConverter(video.getTag()))
                 .thumbnailLink(video.getThumbnailLink())
                 .videoLink(video.getVideoLink())
-                .image(user.getImage())
+                .image(video.getUser().getImage())
                 .isLiked(isLiked)
                 .build();
     }
