@@ -18,9 +18,10 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int numOfLike;
+    private int numOfComment;
 
     @Builder
-    public Post(Long id, User user, String title, String content, String tag, String category, LocalDateTime createdAt, LocalDateTime updatedAt, int numOfLike) {
+    public Post(Long id, User user, String title, String content, String tag, String category, LocalDateTime createdAt, LocalDateTime updatedAt, int numOfLike, int numOfComment) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -30,6 +31,7 @@ public class Post {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.numOfLike = numOfLike;
+        this.numOfComment = numOfComment;
     }
 
     public static Post from(User writer, PostCreate postCreate) {
@@ -40,6 +42,7 @@ public class Post {
                 .category(postCreate.getCategory())
                 .tag(tagConverter(postCreate.getTag()))
                 .createdAt(LocalDateTime.now())
+                .numOfComment(0)
                 .build();
     }
 
@@ -53,6 +56,7 @@ public class Post {
                 .tag(tagConverter(postUpdate.getTag()))
                 .createdAt(createdAt)
                 .updatedAt(LocalDateTime.now())
+                .numOfComment(numOfComment)
                 .build();
     }
 
@@ -67,6 +71,7 @@ public class Post {
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .numOfLike(numOfLike + 1)
+                .numOfComment(numOfComment)
                 .build();
     }
 
@@ -81,6 +86,37 @@ public class Post {
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .numOfLike(numOfLike - 1)
+                .numOfComment(numOfComment)
+                .build();
+    }
+
+    public Post plusComment() {
+        return Post.builder()
+                .id(id)
+                .user(user)
+                .title(title)
+                .content(content)
+                .category(category)
+                .tag(tag)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .numOfLike(numOfLike)
+                .numOfComment(numOfComment + 1)
+                .build();
+    }
+
+    public Post minusComment() {
+        return Post.builder()
+                .id(id)
+                .user(user)
+                .title(title)
+                .content(content)
+                .category(category)
+                .tag(tag)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .numOfLike(numOfLike)
+                .numOfComment(numOfComment - 1)
                 .build();
     }
 

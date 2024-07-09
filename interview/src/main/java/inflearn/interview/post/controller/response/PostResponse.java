@@ -47,7 +47,7 @@ public class PostResponse implements BaseDTO {
     private boolean isLiked;
 
     @QueryProjection
-    public PostResponse(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, Long numOfComment, String tag, String image) {
+    public PostResponse(Long userId, String userName, Long postId, String postTitle, String content, String category, LocalDateTime time, LocalDateTime updateTime, int numOfLike, int numOfComment, String tag, String image) {
         this.userId = userId;
         this.userName = userName;
         this.postId = postId;
@@ -57,7 +57,7 @@ public class PostResponse implements BaseDTO {
         this.time = time;
         this.updateTime = updateTime;
         this.numOfLike = numOfLike;
-        this.numOfComment = Math.toIntExact(numOfComment);
+        this.numOfComment = numOfComment;
         if (tag != null) {
             this.tag = entityToDtoTagConverter(tag);
         }

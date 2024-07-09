@@ -44,6 +44,8 @@ public class PostCommentService {
     public PostCommentCreateResponse create(PostCommentCreate postCommentCreate, Long postId) {
         //댓글이 달릴 게시글
         Post post = postRepository.findById(postId).orElseThrow(OptionalNotFoundException::new);
+        post = post.plusComment();
+        postRepository.save(post);
 
         //게시글 작성자
         User postWriter = userRepository.findPostWriter(postId);
@@ -75,6 +77,9 @@ public class PostCommentService {
 
     public void delete(PostCommentDelete postCommentDelete) {
         PostComment postComment = getById(postCommentDelete.getCommentId());
+        Post post = postRepository.findByComment(postCommentDelete.getCommentId());
+        post = post.minusComment();
+        postRepository.save(post);
         postCommentRepository.delete(postComment);
     }
 

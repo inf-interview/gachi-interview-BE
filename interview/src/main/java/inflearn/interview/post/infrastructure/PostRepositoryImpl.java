@@ -40,4 +40,9 @@ public class PostRepositoryImpl implements PostRepository {
     public List<MyPostResponse> findMyPost(Long userId, String category) {
         return postJpaRepository.findPostByUserId(userId, category);
     }
+
+    @Override
+    public Post findByComment(Long commentId) {
+        return postJpaRepository.findByPostCommentId(commentId).toModel();
+    }
 }

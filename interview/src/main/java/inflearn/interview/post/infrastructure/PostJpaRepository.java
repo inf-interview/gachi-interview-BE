@@ -1,6 +1,7 @@
 package inflearn.interview.post.infrastructure;
 
 import inflearn.interview.post.controller.response.MyPostResponse;
+import inflearn.interview.post.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +16,6 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
             "where p.userEntity.id=:userId and p.category=:category group by p.id order by p.id desc")
     List<MyPostResponse> findPostByUserId(@Param("userId") Long userId, @Param("category") String category);
 
+    @Query("select pc.postEntity from PostCommentEntity pc where pc.id=:commentId")
+    PostEntity findByPostCommentId(Long commentId);
 }

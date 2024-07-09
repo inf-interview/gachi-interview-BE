@@ -2,6 +2,8 @@ package inflearn.interview.post.infrastructure;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import inflearn.interview.post.controller.response.PostResponse;
 import inflearn.interview.post.controller.response.QPostResponse;
@@ -15,9 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.querydsl.jpa.JPAExpressions.select;
 import static inflearn.interview.post.infrastructure.QPostEntity.postEntity;
-import static inflearn.interview.postcomment.infrastructure.QPostCommentEntity.postCommentEntity;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                         postEntity.createdAt,
                         postEntity.updatedAt,
                         postEntity.numOfLike,
-                        select(postCommentEntity.count()).from(postCommentEntity).where(postCommentEntity.postEntity.id.eq(postEntity.id)),
+                        postEntity.numOfComment,
                         postEntity.tag,
                         postEntity.userEntity.image))
                 .from(postEntity)

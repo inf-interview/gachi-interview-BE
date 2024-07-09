@@ -37,6 +37,8 @@ public class PostEntity {
 
     private int numOfLike;
 
+    private int numOfComment;
+
     public static PostEntity fromModel(Post post) {
         PostEntity postEntity = new PostEntity();
         postEntity.id = post.getId();
@@ -48,6 +50,7 @@ public class PostEntity {
         postEntity.createdAt = post.getCreatedAt();
         postEntity.updatedAt = post.getUpdatedAt();
         postEntity.numOfLike = post.getNumOfLike();
+        postEntity.numOfComment = post.getNumOfComment();
         return postEntity;
     }
 
@@ -62,11 +65,12 @@ public class PostEntity {
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .numOfLike(numOfLike)
+                .numOfComment(numOfComment)
                 .build();
     }
 
     @Builder
-    public PostEntity(Long id, UserEntity userEntity, String title, String content, String tag, String category, LocalDateTime createdAt, LocalDateTime updatedAt, int numOfLike) {
+    public PostEntity(Long id, UserEntity userEntity, String title, String content, String tag, String category, LocalDateTime createdAt, LocalDateTime updatedAt, int numOfLike, int numOfComment) {
         this.id = id;
         this.userEntity = userEntity;
         this.title = title;
@@ -76,6 +80,7 @@ public class PostEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.numOfLike = numOfLike;
+        this.numOfComment = numOfComment;
     }
 
     public PostEntity() {
