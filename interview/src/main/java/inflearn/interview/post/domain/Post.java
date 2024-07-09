@@ -57,6 +57,7 @@ public class Post {
                 .createdAt(createdAt)
                 .updatedAt(LocalDateTime.now())
                 .numOfComment(numOfComment)
+                .numOfLike(numOfLike)
                 .build();
     }
 
