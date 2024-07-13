@@ -69,3 +69,16 @@ Service는 인터페이스를 주입받고 그 자식인 구현체는 알지 못
 #### 트레이드오프
 
 서비스에서 JPARepository를 사용하는것이 아닌 인터페이스를 상속받는것이기 때문에 JPA의 주요기능인 변경감지(Dirty Checking)를 사용하지 못하여 repository.save()등을 호출하여 변경이 있는 엔티티를 다시 갱신해주어야 한다
+
+### 4. 의존성 역전을 사용하여 테스트코드 작성 용이하도록 변경
+
+![image](https://github.com/user-attachments/assets/a1f2e164-c0db-46e1-adfe-7fe506136fa4)
+
+사진을 보게되면 비디오를 삭제하는 메서드가 s3의 비디오, 썸네일 삭제 요청과 엮여있어 서비스코드의 테스트가 불가능하다
+
+![image](https://github.com/user-attachments/assets/6f1d3af0-6e33-41a7-8ba1-596c9c48ea04)
+FakeVideoService의 delete 메서드에는 s3 관련 코드가 없다
+
+해결 -> VideoService를 인터페이스로 변경 후 인터페이스를 구현하는 실제 서비스와 s3 내용을 포함하지않는 테스트용 FakeVideoService를 작성하여 테스트를 진행하였다
+
+
